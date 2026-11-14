@@ -29,6 +29,15 @@ import {
   getQualityConfig
 } from './QualityManager';
 import {
+  DartSimulation,
+  DartImpactResult,
+  DartVector3,
+  vDistance,
+  vLength,
+  vSub,
+  DART_HISTORICAL_DATA
+} from './DartSimulation';
+import {
   getMissionText,
   getSpacecraftText,
   getPowerText,
@@ -143,6 +152,17 @@ export const SPACECRAFT_FLEET: SpacecraftDefinition[] = [
     badge: '🚀 NASA ORBITER',
     desc: 'Official NASA winged orbiter model with delta wings and thermal tiles (5 bays).',
     modelUrl: shuttleUrl
+  },
+  {
+    id: 'dart_impactor',
+    name: 'NASA DART Kinetic Impactor',
+    category: 'nasa',
+    mass: 570,
+    cost: 110,
+    cap: 4,
+    rarity: 'epic',
+    badge: '🎯 DART PROBE',
+    desc: 'Authentic DART planetary defense spacecraft (~570 kg) equipped with DRACO imaging navigation and ROSA solar arrays.'
   },
   {
     id: 'apollo_lm',
@@ -377,6 +397,16 @@ export class NasaMissionDesigner {
 
   private activeTab: 'chassis' | 'flags' | 'power' | 'tech' | 'engines' | 'carriers' = 'chassis';
   private activeManualTab: string = 'quickstart';
+
+  // NASA DART Simulation State
+  public dartSimulation: DartSimulation | null = null;
+  private dartImpactHandled = false;
+  private onDartImpactCallback?: (result: DartImpactResult) => void;
+  private dartLastTelemetryTime = 0;
+
+  public onDartImpact(fn: (result: DartImpactResult) => void) {
+    this.onDartImpactCallback = fn;
+  }
 
   // 3D GLB Spacecraft & Battleship Fleet Cache
   private loadedGlbCache: Map<string, THREE.Object3D> = new Map();
@@ -930,6 +960,23 @@ export class NasaMissionDesigner {
             </div>
           </div>
 
+          <!-- NASA DART Planetary Defense Guidance HUD (Q24) -->
+          <div id="dart-flight-gnc-section" class="dart-gnc-box" style="display: none; margin-top: 8px; padding: 10px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-size: 0.74rem; font-weight: 700; color: #f59e0b;" id="dart-hud-target-lbl">${t.dartHudTarget}</span>
+              <button id="dart-btn-toggle-guidance-hud" style="font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #4ade80; cursor: pointer; font-family: monospace;">${t.dartGuidanceActive}</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 0.72rem; font-family: monospace;">
+              <div><span style="color: #94a3b8;" id="dart-lbl-range">${t.dartHudRange}</span> <strong id="dart-val-range" style="color: #38bdf8;">-- km</strong></div>
+              <div><span style="color: #94a3b8;" id="dart-lbl-speed">${t.dartHudClosingSpeed}</span> <strong id="dart-val-speed" style="color: #facc15;">6.14 km/s</strong></div>
+              <div><span style="color: #94a3b8;" id="dart-lbl-tgo">${t.dartHudTgo}</span> <strong id="dart-val-tgo" style="color: #e2e8f0;">-- s</strong></div>
+              <div><span style="color: #94a3b8;" id="dart-lbl-orbit">${t.dartHudOrbitPeriod}</span> <strong id="dart-val-orbit" style="color: #4ade80;">11h 55m 12s</strong></div>
+            </div>
+            <div id="dart-scale-notice" style="font-size: 0.64rem; color: #94a3b8; font-style: italic; margin-top: 6px; line-height: 1.25;">
+              ${t.dartVisualScaleNotice}
+            </div>
+          </div>
+
           <div class="hud-btn-group">
             <button id="hud-btn-debrief" class="hud-btn">📊 INTEL DEBRIEF</button>
             <button id="hud-btn-reconfigure" class="hud-btn">⚙️ HANGAR ARMORY</button>
@@ -943,33 +990,89 @@ export class NasaMissionDesigner {
     const debrief = document.createElement('div');
     debrief.id = 'nasa-debrief-modal';
     debrief.innerHTML = `
-      <div class="debrief-box">
+      <!-- Generic Mission Debrief View -->
+      <div class="debrief-box" id="debrief-generic-view" style="display: block;">
         <div style="font-size: 3.5rem; margin-bottom: 8px;">🛡️</div>
         <div id="debrief-title" style="font-family: var(--font-tech); font-size: 1.6rem; color: var(--stark-gold); margin-bottom: 12px;">
-          EDUCATIONAL SIMULATION REPORT
+          ${t.debriefTitle}
         </div>
         <p style="color: #a0b5d0; font-size: 0.95rem; line-height: 1.6;" id="debrief-summary"></p>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; text-align: left;">
           <div class="gauge-box">
-            <div id="debrief-lbl-science" class="gauge-label">Science Data Collected</div>
+            <div id="debrief-lbl-science" class="gauge-label">${t.debriefScienceLabel}</div>
             <div class="gauge-value" style="color: var(--stark-gold);" id="debrief-score-science">0 pts</div>
           </div>
           <div class="gauge-box">
-            <div id="debrief-lbl-budget" class="gauge-label">Remaining Budget</div>
+            <div id="debrief-lbl-budget" class="gauge-label">${t.debriefBudgetLabel}</div>
             <div class="gauge-value" style="color: var(--stark-cyan);" id="debrief-score-budget">$0M</div>
           </div>
           <div class="gauge-box">
-            <div id="debrief-lbl-reliability" class="gauge-label">Model Mode</div>
+            <div id="debrief-lbl-reliability" class="gauge-label">${t.debriefReliabilityLabel}</div>
             <div class="gauge-value" style="color: #2ecc71;" id="debrief-score-reliability">3D SIM</div>
           </div>
           <div class="gauge-box">
-            <div id="debrief-lbl-cert" class="gauge-label">Simulation Outcome</div>
+            <div id="debrief-lbl-cert" class="gauge-label">${t.debriefCertLabel}</div>
             <div class="gauge-value" style="color: var(--stark-cyan);" id="debrief-rank">NASA FLIGHT DIRECTOR</div>
           </div>
         </div>
         <button id="debrief-btn-restart" class="btn-hyperspace-launch" style="font-size: 0.9rem; padding: 10px 28px; margin: 0 auto;">
-          ↺ RETURN TO HANGAR ARMORY
+          ${t.debriefReturnBtn}
         </button>
+      </div>
+
+      <!-- Dedicated DART Mission Reconstruction View (Q24) -->
+      <div class="debrief-box" id="debrief-dart-view" style="display: none; max-width: 680px; width: 92%;">
+        <div style="font-size: 3rem; margin-bottom: 4px;">🎯</div>
+        <div id="dart-debrief-title" style="font-family: var(--font-tech); font-size: 1.45rem; color: var(--stark-gold); margin-bottom: 10px;">
+          ${t.dartDebriefTitle}
+        </div>
+
+        <!-- Section 1: This Simulation Run -->
+        <div class="dart-report-section" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 8px; padding: 12px; margin-bottom: 12px; text-align: left;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: #38bdf8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+            📍 <span id="dart-lbl-sim-title">${t.dartSimSectionTitle}</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.8rem;">
+            <div><span style="color: #94a3b8;" id="dart-lbl-field-body">${t.dartFieldImpactBody}</span> <strong id="dart-res-body" style="color: #facc15;">--</strong></div>
+            <div><span style="color: #94a3b8;" id="dart-lbl-field-speed">${t.dartFieldRelativeSpeed}</span> <strong id="dart-res-speed" style="color: #facc15;">--</strong></div>
+            <div><span style="color: #94a3b8;" id="dart-lbl-field-pre">${t.dartFieldPreOrbit}</span> <strong id="dart-res-pre-orbit">11h 55m 12s</strong></div>
+            <div><span style="color: #94a3b8;" id="dart-lbl-field-post">${t.dartFieldPostOrbit}</span> <strong id="dart-res-post-orbit" style="color: #4ade80;">--</strong></div>
+            <div style="grid-column: span 2;"><span style="color: #94a3b8;" id="dart-lbl-field-delta">${t.dartFieldPeriodDelta}</span> <strong id="dart-res-delta" style="color: #4ade80; font-size: 0.95rem;">--</strong></div>
+          </div>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.8rem;">
+            <div><span style="color: #94a3b8;" id="dart-lbl-field-outcome">${t.dartFieldOutcome}</span> <strong id="dart-res-outcome" style="color: #38bdf8;">--</strong></div>
+            <div style="margin-top: 4px; color: #cbd5e1; font-size: 0.78rem; line-height: 1.4;" id="dart-res-reason">--</div>
+            <div style="margin-top: 4px; color: #94a3b8; font-size: 0.74rem; font-style: italic;" id="dart-res-advice">--</div>
+          </div>
+        </div>
+
+        <!-- Section 2: Real-World NASA DART Observations -->
+        <div class="dart-report-section" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 8px; padding: 12px; margin-bottom: 16px; text-align: left;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: #f59e0b; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+            🪐 <span id="dart-lbl-real-title">${t.dartRealSectionTitle}</span>
+          </div>
+          <div style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 6px;" id="dart-txt-real-intro">
+            ${t.dartRealContextIntro}
+          </div>
+          <div style="font-size: 0.76rem; color: #94a3b8; line-height: 1.4;">
+            <div id="dart-txt-real-baseline">• <strong>${t.dartRealBaseline}</strong></div>
+            <div id="dart-txt-real-initial">• <strong>${t.dartRealInitialResult}</strong></div>
+            <div id="dart-txt-real-updated">• <strong>${t.dartRealUpdatedStudy}</strong></div>
+          </div>
+          <div style="font-size: 0.7rem; color: #64748b; margin-top: 6px;" id="dart-txt-real-source">
+            ${t.dartRealSourceRef}
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+          <button id="debrief-btn-dart-retry" class="btn-hyperspace-launch" style="font-size: 0.85rem; padding: 8px 20px; background: linear-gradient(135deg, #0284c7, #0369a1);">
+            ${t.dartBtnRetry}
+          </button>
+          <button id="debrief-btn-dart-restart" class="btn-hyperspace-launch" style="font-size: 0.85rem; padding: 8px 20px;">
+            ${t.dartBtnReturnHangar}
+          </button>
+        </div>
       </div>
     `;
     document.body.appendChild(debrief);
@@ -1644,7 +1747,9 @@ export class NasaMissionDesigner {
     };
 
     // 1. Dựng thân tàu theo khung gầm Chassis đã chọn
-    if (this.selectedChassisId === 'milano') {
+    if (this.selectedChassisId === 'dart_impactor') {
+      this.buildDartChassis(this.shipGroup, mats);
+    } else if (this.selectedChassisId === 'milano') {
       this.buildMilanoChassis(this.shipGroup, mats);
     } else if (this.selectedChassisId === 'sanctuary') {
       this.buildSanctuaryChassis(this.shipGroup, mats);
@@ -2095,6 +2200,129 @@ export class NasaMissionDesigner {
       cannon.castShadow = true;
       ship.add(cannon);
     });
+  }
+
+  /**
+   * Dựng mô hình tàu va chạm động năng NASA DART chính xác theo nguyên mẫu lịch sử
+   * Thân hình hộp bọc màng cách nhiệt vàng MLI, ống kính trinh sát DRACO, cánh pin mặt trời cuộn ROSA và động cơ ion NEXT-C
+   */
+  private buildDartChassis(ship: THREE.Group, mats: any) {
+    const dartGroup = new THREE.Group();
+    dartGroup.name = "dart_chassis_group";
+
+    // 1. Thân chính hình khối lập phương ~1.2m bọc màng vàng MLI phản quang cao
+    const busMat = new THREE.MeshStandardMaterial({
+      color: 0xdfab35,
+      metalness: 0.92,
+      roughness: 0.22,
+      bumpMap: this.getOrCreateBumpTexture(),
+      bumpScale: 0.05
+    });
+    const busGeo = new THREE.BoxGeometry(0.85, 0.85, 0.95);
+    const bus = new THREE.Mesh(busGeo, busMat);
+    bus.position.set(0, 0, 0);
+    bus.castShadow = true;
+    bus.receiveShadow = true;
+    dartGroup.add(bus);
+
+    // Khung viền titanium gia cố các cạnh của thân tàu
+    const frameGeo = new THREE.BoxGeometry(0.87, 0.87, 0.97);
+    const frameEdges = new THREE.LineSegments(
+      new THREE.EdgesGeometry(frameGeo),
+      new THREE.LineBasicMaterial({ color: 0x94a3b8, linewidth: 2 })
+    );
+    dartGroup.add(frameEdges);
+
+    // 2. Cụm camera quang học DRACO (Didymos Reconnaissance and Asteroid Camera for Optical navigation)
+    // Hướng nhìn thẳng về phía trước (+Z)
+    const dracoBase = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.35, 24), mats.titaniumTrimMat);
+    dracoBase.rotateX(Math.PI / 2);
+    dracoBase.position.set(0, 0.05, 0.62);
+    dartGroup.add(dracoBase);
+
+    const dracoBaffle = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.28, 24), mats.carbonDarkMat);
+    dracoBaffle.rotateX(Math.PI / 2);
+    dracoBaffle.position.set(0, 0.05, 0.85);
+    dartGroup.add(dracoBaffle);
+
+    // Thấu kính quang học DRACO với độ phản quang pha lê xanh
+    const lensMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    const lens = new THREE.Mesh(new THREE.CircleGeometry(0.09, 24), lensMat);
+    lens.position.set(0, 0.05, 0.99);
+    dartGroup.add(lens);
+
+    // 3. Mảng pin mặt trời cuộn ROSA (Roll-Out Solar Arrays) dang rộng 2 bên (-X và +X)
+    const rosaPanelMat = new THREE.MeshStandardMaterial({
+      color: 0x1e3a8a,
+      emissive: 0x0f172a,
+      emissiveIntensity: 0.3,
+      metalness: 0.85,
+      roughness: 0.18
+    });
+    const rosaGoldTrimMat = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b,
+      metalness: 0.95,
+      roughness: 0.2
+    });
+
+    [-1, 1].forEach(side => {
+      // Trục kéo dài mảng pin (Boom rod)
+      const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.45, 12), mats.titaniumTrimMat);
+      boom.rotateZ(Math.PI / 2);
+      boom.position.set(side * 0.65, 0, 0);
+      dartGroup.add(boom);
+
+      // Tấm pin mặt trời ROSA
+      const panel = new THREE.Mesh(new THREE.BoxGeometry(1.65, 0.02, 0.72), rosaPanelMat);
+      panel.position.set(side * 1.68, 0, 0);
+      panel.castShadow = true;
+      dartGroup.add(panel);
+
+      // Viền khung trợ lực bằng sợi carbon/vàng
+      const panelTrim = new THREE.Mesh(new THREE.BoxGeometry(1.69, 0.03, 0.04), rosaGoldTrimMat);
+      panelTrim.position.set(side * 1.68, 0, 0.36);
+      const panelTrimBack = panelTrim.clone();
+      panelTrimBack.position.set(side * 1.68, 0, -0.36);
+      dartGroup.add(panelTrim, panelTrimBack);
+
+      // Đèn tín hiệu định vị đầu cánh (Nav Beacon)
+      mats.addNavBeacon(new THREE.Vector3(side * 2.52, 0.02, 0), side > 0 ? 0x22c55e : 0xef4444);
+    });
+
+    // 4. Ăng-ten Parabol độ lợi cao (High-Gain Antenna - HGA)
+    const hgaDish = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.06, 0.08, 24), mats.titaniumTrimMat);
+    hgaDish.rotateZ(Math.PI / 6);
+    hgaDish.position.set(0.35, 0.45, -0.15);
+    dartGroup.add(hgaDish);
+
+    const hgaHorn = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 0.14, 12), mats.carbonDarkMat);
+    hgaHorn.rotateZ(Math.PI / 6);
+    hgaHorn.position.set(0.38, 0.52, -0.15);
+    dartGroup.add(hgaHorn);
+
+    // 5. Động cơ ion NEXT-C và cụm đẩy phản lực khí Hydrazine RCS
+    // Động cơ ion ở đuôi tàu (-Z)
+    const ionEngine = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.22, 24), mats.carbonDarkMat);
+    ionEngine.rotateX(Math.PI / 2);
+    ionEngine.position.set(0, 0, -0.56);
+    dartGroup.add(ionEngine);
+
+    const ionGlow = new THREE.Mesh(new THREE.CircleGeometry(0.15, 24), new THREE.MeshBasicMaterial({ color: 0x00f0ff }));
+    ionGlow.rotateY(Math.PI);
+    ionGlow.position.set(0, 0, -0.68);
+    dartGroup.add(ionGlow);
+
+    // 4 cụm vòi phun RCS Hydrazine ở 4 góc
+    [
+      [-0.42, 0.42], [0.42, 0.42],
+      [-0.42, -0.42], [0.42, -0.42]
+    ].forEach(([rx, ry]) => {
+      const rcs = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.06), mats.titaniumTrimMat);
+      rcs.position.set(rx, ry, -0.42);
+      dartGroup.add(rcs);
+    });
+
+    ship.add(dartGroup);
   }
 
   private buildMilanoChassis(ship: THREE.Group, mats: any) {
@@ -2777,7 +3005,9 @@ export class NasaMissionDesigner {
         }
       };
 
-      if (this.selectedChassisId === 'milano') {
+      if (this.selectedChassisId === 'dart_impactor') {
+        this.buildDartChassis(flightGroup, mats);
+      } else if (this.selectedChassisId === 'milano') {
         this.buildMilanoChassis(flightGroup, mats);
       } else if (this.selectedChassisId === 'sanctuary') {
         this.buildSanctuaryChassis(flightGroup, mats);
@@ -2844,12 +3074,55 @@ export class NasaMissionDesigner {
       `;
       item.onclick = () => {
         this.selectedMission = m;
+        if (m.id === 'nasa_dart' && this.selectedChassisId !== 'dart_impactor') {
+          this.selectedChassisId = 'dart_impactor';
+          this.rebuild3DShipModel();
+        }
         this.playClickSound();
         this.renderMissions();
         this.updateLiveTelemetry();
       };
       list.appendChild(item);
     });
+
+    if (this.selectedMission.id === 'nasa_dart') {
+      const dartBrief = document.createElement('div');
+      dartBrief.className = 'dart-brief-card';
+      dartBrief.id = 'dart-brief-banner';
+      dartBrief.style.cssText = `
+        margin-top: 10px;
+        padding: 10px;
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      `;
+      const isGuidanceOn = !this.dartSimulation || this.dartSimulation.guidanceAssistEnabled;
+      dartBrief.innerHTML = `
+        <div style="font-size: 0.75rem; font-weight: 700; color: #f59e0b; margin-bottom: 4px;">🎯 ${t.dartBriefTitle}</div>
+        <div style="font-size: 0.72rem; color: #cbd5e1; line-height: 1.4; margin-bottom: 6px;">${t.dartBriefDesc}</div>
+        <div style="font-size: 0.7rem; color: #94a3b8; line-height: 1.35; margin-bottom: 8px;">
+          <div>• <strong style="color: #38bdf8;">${t.dartTargetDimorphos}</strong></div>
+          <div>• <strong style="color: #e2e8f0;">${t.dartPrimaryDidymos}</strong></div>
+          <div style="margin-top: 2px;">• ${t.dartObjectiveInfo}</div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+          <span style="font-size: 0.68rem; color: #38bdf8;">${t.dartGuidanceAssistLabel}:</span>
+          <button id="btn-toggle-dart-guidance-lobby" style="padding: 2px 8px; font-size: 0.68rem; border-radius: 4px; border: 1px solid ${isGuidanceOn ? '#22c55e' : '#94a3b8'}; background: ${isGuidanceOn ? 'rgba(34, 197, 94, 0.2)' : 'rgba(100, 116, 139, 0.2)'}; color: ${isGuidanceOn ? '#4ade80' : '#cbd5e1'}; cursor: pointer;">
+            ${isGuidanceOn ? t.dartGuidanceActive : t.dartGuidanceManual}
+          </button>
+        </div>
+      `;
+      list.appendChild(dartBrief);
+
+      dartBrief.querySelector('#btn-toggle-dart-guidance-lobby')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.playClickSound();
+        if (!this.dartSimulation) this.dartSimulation = new DartSimulation();
+        this.dartSimulation.guidanceAssistEnabled = !this.dartSimulation.guidanceAssistEnabled;
+        this.renderMissions();
+      });
+    }
 
     const creditEl = document.getElementById('mission-budget-display');
     if (creditEl) creditEl.textContent = `${formatNum(this.selectedMission.budgetCredits, this.currentLanguage, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}M`;
@@ -3340,6 +3613,30 @@ export class NasaMissionDesigner {
     document.getElementById('debrief-btn-restart')?.addEventListener('click', () => {
       document.getElementById('nasa-debrief-modal')!.style.display = 'none';
       this.showLobby();
+    });
+
+    document.getElementById('debrief-btn-dart-restart')?.addEventListener('click', () => {
+      document.getElementById('nasa-debrief-modal')!.style.display = 'none';
+      this.showLobby();
+    });
+
+    document.getElementById('debrief-btn-dart-retry')?.addEventListener('click', () => {
+      document.getElementById('nasa-debrief-modal')!.style.display = 'none';
+      this.launchHyperspace();
+    });
+
+    document.getElementById('dart-btn-toggle-guidance-hud')?.addEventListener('click', () => {
+      this.playClickSound();
+      if (!this.dartSimulation) this.dartSimulation = new DartSimulation();
+      this.dartSimulation.guidanceAssistEnabled = !this.dartSimulation.guidanceAssistEnabled;
+      const btn = document.getElementById('dart-btn-toggle-guidance-hud');
+      const t = getTexts(this.currentLanguage);
+      if (btn) {
+        const isAct = this.dartSimulation.guidanceAssistEnabled;
+        btn.textContent = isAct ? t.dartGuidanceActive : t.dartGuidanceManual;
+        btn.style.borderColor = isAct ? '#22c55e' : '#94a3b8';
+        btn.style.color = isAct ? '#4ade80' : '#cbd5e1';
+      }
     });
 
     // Language Selector
@@ -4263,6 +4560,109 @@ export class NasaMissionDesigner {
       const el = document.getElementById(id);
       if (el) el.textContent = val;
     };
+
+    const debriefGenericView = document.getElementById('debrief-generic-view');
+    const debriefDartView = document.getElementById('debrief-dart-view');
+
+    if (this.selectedMission.id === 'nasa_dart') {
+      if (debriefGenericView) debriefGenericView.style.display = 'none';
+      if (debriefDartView) debriefDartView.style.display = 'block';
+
+      setTxt('dart-debrief-title', t.dartDebriefTitle);
+      setTxt('dart-lbl-sim-title', t.dartSimSectionTitle);
+      setTxt('dart-lbl-field-body', t.dartFieldImpactBody);
+      setTxt('dart-lbl-field-speed', t.dartFieldRelativeSpeed);
+      setTxt('dart-lbl-field-pre', t.dartFieldPreOrbit);
+      setTxt('dart-lbl-field-post', t.dartFieldPostOrbit);
+      setTxt('dart-lbl-field-delta', t.dartFieldPeriodDelta);
+      setTxt('dart-lbl-field-outcome', t.dartFieldOutcome);
+      setTxt('dart-lbl-real-title', t.dartRealSectionTitle);
+      setTxt('dart-txt-real-intro', t.dartRealContextIntro);
+      setTxt('dart-txt-real-source', t.dartRealSourceRef);
+
+      const realBaseEl = document.getElementById('dart-txt-real-baseline');
+      if (realBaseEl) realBaseEl.innerHTML = `• <strong>${t.dartRealBaseline}</strong>`;
+      const realInitEl = document.getElementById('dart-txt-real-initial');
+      if (realInitEl) realInitEl.innerHTML = `• <strong>${t.dartRealInitialResult}</strong>`;
+      const realUpdEl = document.getElementById('dart-txt-real-updated');
+      if (realUpdEl) realUpdEl.innerHTML = `• <strong>${t.dartRealUpdatedStudy}</strong>`;
+
+      setTxt('debrief-btn-dart-retry', t.dartBtnRetry);
+      setTxt('debrief-btn-dart-restart', t.dartBtnReturnHangar);
+
+      // Populate DART simulation metrics from dartSimulation.result
+      const res = this.dartSimulation?.result;
+      if (res) {
+        let bodyName = '--';
+        if (res.impactBodyId === 'dimorphos') bodyName = '🎯 Dimorphos';
+        else if (res.impactBodyId === 'didymos') bodyName = '65803 Didymos';
+        setTxt('dart-res-body', bodyName);
+        setTxt('dart-res-speed', `${formatNum(res.impactSpeedKmS, this.currentLanguage, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} km/s`);
+        setTxt('dart-res-pre-orbit', res.preImpactOrbit.periodFormatted);
+        setTxt('dart-res-post-orbit', res.postImpactOrbit ? res.postImpactOrbit.periodFormatted : '--');
+
+        const deltaEl = document.getElementById('dart-res-delta');
+        if (deltaEl) {
+          if (res.periodChangeMinutes !== null && isFinite(res.periodChangeMinutes)) {
+            const minStr = formatNum(Math.abs(res.periodChangeMinutes), this.currentLanguage, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+            const secStr = formatNum(Math.abs(res.periodChangeSeconds || 0), this.currentLanguage, { maximumFractionDigits: 0 });
+            deltaEl.textContent = `${res.periodChangeMinutes <= 0 ? '-' : '+'}${minStr} min (${res.periodChangeMinutes <= 0 ? '-' : '+'}${secStr} s)`;
+            deltaEl.style.color = res.periodChangeMinutes <= 0 ? '#4ade80' : '#ef4444';
+          } else {
+            deltaEl.textContent = '--';
+            deltaEl.style.color = '#94a3b8';
+          }
+        }
+
+        let outcomeText = t.dartOutcomeInvalid;
+        let reasonText = '';
+        let adviceText = '';
+
+        if (res.state === 'completed') {
+          outcomeText = t.dartOutcomeCompleted;
+          reasonText = this.currentLanguage === 'vi'
+            ? 'Va chạm động năng trực tiếp đối đầu đã truyền xung lực làm giảm vận tốc quỹ đạo của Dimorphos quanh Didymos, rút ngắn chu kỳ quỹ đạo thành công vượt ngưỡng 73 giây của NASA.'
+            : 'Direct head-on retrograde kinetic impact transferred momentum, reducing orbital velocity and shortening the orbital period of Dimorphos around Didymos well beyond NASA\'s 73-second threshold.';
+          adviceText = this.currentLanguage === 'vi'
+            ? 'Tái hiện xuất sắc! Bạn có thể thử nghiệm tắt SMART Nav để tự tay điều khiển lái tàu thủ công.'
+            : 'Excellent reconstruction! You can retry with SMART Nav disabled to test manual piloting.';
+        } else if (res.state === 'insufficient_period_change') {
+          outcomeText = t.dartOutcomeInsufficient;
+          reasonText = this.currentLanguage === 'vi'
+            ? 'Tàu đã va chạm Dimorphos nhưng góc tiếp cận hoặc hướng truyền xung không làm giảm chu kỳ đủ ngưỡng 73 giây yêu cầu.'
+            : 'Spacecraft impacted Dimorphos, but the approach angle or impulse direction failed to shorten the orbit by the required 73-second threshold.';
+          adviceText = this.currentLanguage === 'vi'
+            ? 'Gợi ý: Căn chỉnh hướng tiếp cận trực diện đối đầu (retrograde) để triệt tiêu vận tốc quỹ đạo hiệu quả nhất.'
+            : 'Tip: Align approach head-on (retrograde) against orbital motion to maximize speed reduction.';
+        } else if (res.state === 'hit_wrong_body') {
+          outcomeText = t.dartOutcomeWrongBody;
+          reasonText = this.currentLanguage === 'vi'
+            ? 'Tàu đã va chạm vào tiểu hành tinh chính Didymos thay vì vệ tinh nhỏ Dimorphos. Mục tiêu thử nghiệm làm đổi quỹ đạo không đạt được.'
+            : 'The spacecraft impacted the primary asteroid Didymos instead of the moonlet Dimorphos. Deflection objective not met.';
+          adviceText = this.currentLanguage === 'vi'
+            ? 'Gợi ý: Hãy nhắm kỹ vào mục tiêu nhỏ Dimorphos quay quanh Didymos và bật hỗ trợ SMART Nav.'
+            : 'Tip: Focus tracking on the smaller orbiting moonlet Dimorphos and keep SMART Nav enabled.';
+        } else if (res.state === 'missed') {
+          outcomeText = t.dartOutcomeMissed;
+          reasonText = this.currentLanguage === 'vi'
+            ? 'Tàu bay trượt qua cả Didymos và Dimorphos mà không xảy ra va chạm. Không có động năng nào được truyền.'
+            : 'Spacecraft missed both Didymos and Dimorphos without impact. No kinetic momentum transfer occurred.';
+          adviceText = this.currentLanguage === 'vi'
+            ? 'Gợi ý: Bật chế độ hỗ trợ dẫn đường SMART Nav và giữ hướng ngắm trung tâm mục tiêu.'
+            : 'Tip: Enable SMART Nav guidance assist and keep target centered in the approach corridor.';
+        }
+
+        setTxt('dart-res-outcome', outcomeText);
+        setTxt('dart-res-reason', reasonText);
+        setTxt('dart-res-advice', adviceText);
+      }
+      return;
+    }
+
+    // Generic debrief view for all other missions
+    if (debriefGenericView) debriefGenericView.style.display = 'block';
+    if (debriefDartView) debriefDartView.style.display = 'none';
+
     setTxt('debrief-title', t.debriefTitle);
     setTxt('debrief-lbl-science', t.debriefScienceLabel);
     setTxt('debrief-lbl-budget', t.debriefBudgetLabel);
@@ -4530,11 +4930,51 @@ export class NasaMissionDesigner {
     this.isTrajectoryLocked = false;
     this.currentScienceCollected = 0;
     this.missionTimer = 0;
+    this.dartImpactHandled = false;
+    this.dartLastTelemetryTime = performance.now();
 
     const liveScoreInit = document.getElementById('hud-science-live');
     if (liveScoreInit) liveScoreInit.textContent = `0 pts`;
     const statusInit = document.getElementById('hud-status-text');
-    if (statusInit) statusInit.textContent = t.hudStatusInitial;
+    if (statusInit) {
+      statusInit.textContent = t.hudStatusInitial;
+      statusInit.style.color = 'var(--stark-cyan)';
+    }
+
+    const dartGncEl = document.getElementById('dart-flight-gnc-section');
+    const wsmvEl = document.querySelector('.nasa-wsmv-section') as HTMLElement | null;
+    const sciRow = document.getElementById('hud-lbl-science')?.parentElement;
+    const pwrRow = document.getElementById('hud-lbl-power')?.parentElement;
+
+    if (this.selectedMission.id === 'nasa_dart') {
+      if (!this.dartSimulation) this.dartSimulation = new DartSimulation();
+      this.dartSimulation.resetToInitialConditions();
+
+      if (dartGncEl) dartGncEl.style.display = 'block';
+      if (wsmvEl) wsmvEl.style.display = 'none';
+      if (sciRow) sciRow.style.display = 'none';
+      if (pwrRow) pwrRow.style.display = 'none';
+
+      // Update guidance button in HUD
+      const gncBtn = document.getElementById('dart-btn-toggle-guidance-hud');
+      if (gncBtn) {
+        const isAct = this.dartSimulation.guidanceAssistEnabled;
+        gncBtn.textContent = isAct ? t.dartGuidanceActive : t.dartGuidanceManual;
+        gncBtn.style.borderColor = isAct ? '#22c55e' : '#94a3b8';
+        gncBtn.style.color = isAct ? '#4ade80' : '#cbd5e1';
+      }
+
+      // Trigger WebGL-Orbiter to switch body and scenario
+      this.onLaunchCallback(this.selectedMission, {
+        scenarioName: this.selectedMission.scenarioName
+      });
+      return;
+    }
+
+    if (dartGncEl) dartGncEl.style.display = 'none';
+    if (wsmvEl) wsmvEl.style.display = 'block';
+    if (sciRow) sciRow.style.display = 'flex';
+    if (pwrRow) pwrRow.style.display = 'flex';
 
     // Trigger WebGL-Orbiter to switch body and scenario
     this.onLaunchCallback(this.selectedMission, {
@@ -4639,6 +5079,68 @@ export class NasaMissionDesigner {
 
   public updateFlightTelemetry(o: any, headingApoapsis: number) {
     if (!o) return;
+
+    if (this.isMissionActive && this.selectedMission.id === 'nasa_dart' && this.dartSimulation) {
+      const now = performance.now();
+      const dt = Math.min(0.1, Math.max(0.001, (now - this.dartLastTelemetryTime) / 1000));
+      this.dartLastTelemetryTime = now;
+
+      if (!this.dartImpactHandled) {
+        const impactRes = this.dartSimulation.step(dt);
+
+        // Update live GNC HUD
+        const distMeters = vDistance(this.dartSimulation.dartPos, this.dartSimulation.dimorphosPos);
+        const relSpeed = vLength(vSub(this.dartSimulation.dartVel, this.dartSimulation.dimorphosVel));
+        const tgo = distMeters / Math.max(10, relSpeed);
+
+        const valRange = document.getElementById('dart-val-range');
+        if (valRange) {
+          valRange.textContent = distMeters > 1000
+            ? `${(distMeters / 1000).toFixed(2)} km`
+            : `${distMeters.toFixed(0)} m`;
+        }
+
+        const valSpeed = document.getElementById('dart-val-speed');
+        if (valSpeed) {
+          valSpeed.textContent = `${(relSpeed / 1000).toFixed(2)} km/s`;
+        }
+
+        const valTgo = document.getElementById('dart-val-tgo');
+        if (valTgo) {
+          valTgo.textContent = `${tgo.toFixed(1)} s`;
+        }
+
+        const valOrbit = document.getElementById('dart-val-orbit');
+        if (valOrbit) {
+          valOrbit.textContent = this.dartSimulation.postImpactOrbit
+            ? this.dartSimulation.postImpactOrbit.periodFormatted
+            : '11h 55m 12s';
+        }
+
+        if (impactRes) {
+          this.dartImpactHandled = true;
+          if (typeof o.controllable !== 'undefined') o.controllable = false;
+
+          const st = document.getElementById('hud-status-text');
+          const t = getTexts(this.currentLanguage);
+          if (st) {
+            st.textContent = impactRes.impactBodyId === 'dimorphos'
+              ? t.dartHudImpactConfirmed
+              : (impactRes.impactBodyId === 'didymos' ? t.dartOutcomeWrongBody : t.dartOutcomeMissed);
+            st.style.color = impactRes.meetsSuccessCriteria ? '#4ade80' : '#ef4444';
+          }
+
+          this.onDartImpactCallback?.(impactRes);
+
+          setTimeout(() => {
+            if (this.isMissionActive && this.selectedMission.id === 'nasa_dart') {
+              this.showDebrief();
+            }
+          }, 2600);
+        }
+      }
+      return;
+    }
 
     // Keplerian Elements from NASA WSMV
     const smaEl = document.getElementById('wsmv-a');

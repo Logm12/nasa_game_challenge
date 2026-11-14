@@ -461,6 +461,35 @@ export default class Universe{
             shape.scale.set(radiusInAu, radiusInAu * 0.75, radiusInAu * 0.85);
             shape.up.set(0, 0, 1);
             body.model.add( shape );
+
+            if (pha.name === "65803 Didymos") {
+                // Dimorphos: Moonlet orbiting Didymos, kinetic impact target of NASA DART
+                const dimorphosRadius = 55; // Scaled visual radius for 3D visibility (real: 75.5m)
+                const dimorphosSmaKm = 720; // Visual orbital distance ~3.2x Didymos radius (real: 1.189 km)
+                const dimorphos = addPlanetLocal({
+                    semimajor_axis: dimorphosSmaKm / AU,
+                    eccentricity: 0.0,
+                    inclination: 0.0,
+                    ascending_node: 0.0,
+                    argument_of_perihelion: 0.0,
+                },
+                {
+                    name: "Dimorphos",
+                    parent: body,
+                    color: "#f59e0b",
+                    texture: perlinUrl,
+                    radius: dimorphosRadius,
+                    GM: 1.5e-10 / AU / AU / AU,
+                    axialTilt: 0,
+                    rotationPeriod: 11.92 * hour,
+                    sphereOfInfluence: dimorphosSmaKm * 0.4,
+                });
+                const dimShape = new THREE.Mesh( asteroidGeometry, asteroidMaterial );
+                const dimRadiusInAu = viewScale * dimorphosRadius / AU;
+                dimShape.scale.set(dimRadiusInAu, dimRadiusInAu * 0.7, dimRadiusInAu * 0.85);
+                dimShape.up.set(0, 0, 1);
+                dimorphos.model.add( dimShape );
+            }
         }
 
         // =========================================================================
