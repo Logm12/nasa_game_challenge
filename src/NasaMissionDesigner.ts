@@ -603,83 +603,11 @@ export class NasaMissionDesigner {
             <button id="btn-start-spotlight-tour" class="btn-spotlight-tour" title="Interactive Step-by-Step Guided Tour / Hướng dẫn tương tác sáng đèn">
               ${t.spotlightTourBtn || '✨ TOUR HƯỚNG DẪN'}
             </button>
-            <button id="btn-resource-vault" class="btn-resource-mode" title="${t.assetVaultTitle}">
-              ${t.assetVaultBtn}
-            </button>
-            <button id="btn-import-3d" class="btn-import-mode" title="${t.import3dTitle}">
-              ${t.import3dBtn}
-            </button>
-            <input type="file" id="input-import-3d" accept=".glb,.gltf,.obj" style="display: none;" />
             <button id="btn-toggle-cinematic" class="btn-cinematic-mode" title="${t.cinematicTitle}">
               ${t.cinematicBtn}
             </button>
           </div>
         </header>
-
-        <!-- 3D Import Notification Toast -->
-        <div id="import-3d-toast" class="import-toast" style="display: none;"></div>
-
-        <!-- Free 3D Resources & Asset Vault Modal -->
-        <div id="resource-vault-modal" class="cosmic-dossier-modal" style="display: none;">
-          <div class="dossier-card" style="max-width: 680px;">
-            <div class="dossier-header">
-              <div class="dossier-title-wrap">
-                <span class="dossier-avatar">🌐</span>
-                <div>
-                  <div id="vault-title" style="font-family: var(--font-tech); font-size: 1.45rem; color: #fff; font-weight: 700;">FREE 3D SPACECRAFT REPOSITORIES</div>
-                  <div id="vault-subtitle" style="font-size: 0.85rem; color: var(--stark-cyan); margin-top: 2px;">Official NASA, Smithsonian & CC0 Public Archives</div>
-                </div>
-              </div>
-              <button class="dossier-close-btn" id="vault-btn-close" aria-label="Close 3D asset vault">✕</button>
-            </div>
-            
-            <p id="vault-intro" style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px;">
-              This simulator includes built-in 3D models. You can also download a model from the archives below and load it with <strong>📂 IMPORT 3D</strong> (.glb, .gltf, .obj):
-            </p>
-
-            <div class="vault-sources-list">
-              <div class="vault-source-item">
-                <div id="vault-src-nasa-title" class="vault-source-title">🚀 NASA 3D Resources (Public Domain)</div>
-                <div id="vault-src-nasa-desc" class="vault-source-desc">Official 3D models of the Space Shuttle, Apollo Lunar Module, Orion, Voyager, Hubble, Curiosity, and ISS.</div>
-                <div class="vault-links">
-                  <a href="https://github.com/nasa/NASA-3D-Resources" target="_blank" rel="noopener">GitHub: nasa/NASA-3D-Resources ↗</a>
-                  <a href="https://nasa3d.arc.nasa.gov/" target="_blank" rel="noopener">NASA 3D Portal: nasa3d.arc.nasa.gov ↗</a>
-                </div>
-              </div>
-
-              <div class="vault-source-item">
-                <div id="vault-src-kenney-title" class="vault-source-title">⚔️ Kenney Space Kit (CC0 Public Domain)</div>
-                <div id="vault-src-kenney-desc" class="vault-source-desc">Free sci-fi spacecraft, cargo ships, interceptors, and modular space station parts.</div>
-                <div class="vault-links">
-                  <a href="https://kenney.nl/assets/space-kit" target="_blank" rel="noopener">Kenney.nl Space Kit ↗</a>
-                  <a href="https://github.com/shorepine/kenney" target="_blank" rel="noopener">GitHub: shorepine/kenney ↗</a>
-                </div>
-              </div>
-
-              <div class="vault-source-item">
-                <div id="vault-src-smithsonian-title" class="vault-source-title">🏛️ Smithsonian 3D Digitization</div>
-                <div id="vault-src-smithsonian-desc" class="vault-source-desc">High-resolution 3D scans of the Apollo 11 Command Module Columbia, Space Shuttle Discovery, and historic craft.</div>
-                <div class="vault-links">
-                  <a href="https://3d.si.edu/" target="_blank" rel="noopener">Smithsonian 3D Collection ↗</a>
-                </div>
-              </div>
-
-              <div class="vault-source-item">
-                <div id="vault-src-sketchfab-title" class="vault-source-title">🪐 Sketchfab CC0 Spacecraft</div>
-                <div id="vault-src-sketchfab-desc" class="vault-source-desc">Community-shared sci-fi cruisers and concept spacecraft available under CC0 and CC-BY licenses.</div>
-                <div class="vault-links">
-                  <a href="https://sketchfab.com/search?q=spaceship&type=models&licenses=cc0" target="_blank" rel="noopener">Sketchfab CC0 Spaceships ↗</a>
-                </div>
-              </div>
-            </div>
-
-            <div style="margin-top: 20px; text-align: center;">
-              <button class="dossier-act-btn primary" id="vault-btn-import-shortcut">
-                📂 LOAD YOUR OWN 3D MODEL NOW
-              </button>
-            </div>
-          </div>
-        </div>
 
         <!-- Beginner's Flight Operations Manual Modal -->
         <div id="flight-manual-modal" class="cosmic-dossier-modal" style="display: none;">
@@ -3207,48 +3135,6 @@ export class NasaMissionDesigner {
       });
     });
 
-    // 3D Asset Vault Modal
-    const vaultModal = document.getElementById('resource-vault-modal');
-    const btnVault = document.getElementById('btn-resource-vault');
-    const btnVaultClose = document.getElementById('vault-btn-close');
-    const btnVaultImport = document.getElementById('vault-btn-import-shortcut');
-
-    btnVault?.addEventListener('click', () => {
-      this.playClickSound();
-      if (vaultModal) vaultModal.style.display = 'flex';
-    });
-
-    btnVaultClose?.addEventListener('click', () => {
-      this.playClickSound();
-      if (vaultModal) vaultModal.style.display = 'none';
-    });
-
-    vaultModal?.addEventListener('click', (e) => {
-      if (e.target === vaultModal) {
-        vaultModal.style.display = 'none';
-      }
-    });
-
-    btnVaultImport?.addEventListener('click', () => {
-      if (vaultModal) vaultModal.style.display = 'none';
-      inputImport?.click();
-    });
-
-    // 3D Model Importer (.glb, .gltf, .obj)
-    const btnImport = document.getElementById('btn-import-3d');
-    const inputImport = document.getElementById('input-import-3d') as HTMLInputElement | null;
-    btnImport?.addEventListener('click', () => {
-      this.playClickSound();
-      inputImport?.click();
-    });
-
-    inputImport?.addEventListener('change', (e: any) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        this.loadCustom3DModel(file);
-      }
-    });
-
     // Launch Button
     document.getElementById('btn-approve-launch')?.addEventListener('click', () => {
       this.playLaunchSound();
@@ -4030,8 +3916,6 @@ export class NasaMissionDesigner {
   public startSpotlightTour(stepIndex = 0): void {
     const manualModal = document.getElementById('flight-manual-modal');
     if (manualModal) manualModal.style.display = 'none';
-    const vaultModal = document.getElementById('resource-vault-modal');
-    if (vaultModal) vaultModal.style.display = 'none';
 
     this.isTourActive = true;
     this.currentTourStep = Math.max(0, Math.min(TOUR_STEPS.length - 1, stepIndex));
@@ -4293,10 +4177,6 @@ export class NasaMissionDesigner {
       this.updateTourSpotlight();
     }
 
-    const btnVault = document.getElementById('btn-resource-vault');
-    if (btnVault) { btnVault.textContent = t.assetVaultBtn; btnVault.title = t.assetVaultTitle; }
-    const btnImport = document.getElementById('btn-import-3d');
-    if (btnImport) { btnImport.textContent = t.import3dBtn; btnImport.title = t.import3dTitle; }
     const btnToggleCinematic = document.getElementById('btn-toggle-cinematic');
     if (btnToggleCinematic) { btnToggleCinematic.textContent = t.cinematicBtn; btnToggleCinematic.title = t.cinematicTitle; }
     const btnExitCinematic = document.getElementById('btn-exit-cinematic');
