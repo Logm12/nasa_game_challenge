@@ -274,12 +274,90 @@ export const NASA_MISSIONS: NasaMission[] = [
   }
 ];
 
+export interface TourStep {
+  targetId: string;
+  titleVi: string;
+  titleEn: string;
+  descVi: string;
+  descEn: string;
+  hintVi: string;
+  hintEn: string;
+  preferredPos: 'right' | 'left' | 'top' | 'bottom';
+}
+
+export const TOUR_STEPS: TourStep[] = [
+  {
+    targetId: 'blade-missions',
+    titleVi: '01 // CHỌN NHIỆM VỤ BAY NASA',
+    titleEn: '01 // SELECT FLIGHT MANIFEST',
+    descVi: 'Bắt đầu bằng việc chọn một nhiệm vụ khám phá vũ trụ: Artemis lên Mặt Trăng, DART thử nghiệm va chạm thiên thạch, hoặc Voyager 1 bay vào không gian liên sao. Mỗi nhiệm vụ sẽ quy định ngân sách, vận tốc Δv yêu cầu và mục tiêu khoa học.',
+    descEn: 'Begin by selecting a flight manifest: Artemis to the Moon, DART kinetic impactor, or Voyager 1 interstellar crossing. Each mission sets budget, required orbital Δv, and scientific goals.',
+    hintVi: '💡 Nhấp chọn một nhiệm vụ trong danh sách để xem chi tiết.',
+    hintEn: '💡 Click any mission card to load its flight parameters.',
+    preferredPos: 'right'
+  },
+  {
+    targetId: 'dock-bottom',
+    titleVi: '02 // THIẾT KẾ & TRANG BỊ TÀU (HANGAR ARMORY)',
+    titleEn: '02 // SPACECRAFT HANGAR & OUTFITTING',
+    descVi: 'Khay trang bị dưới chân cho phép bạn chọn vỏ tàu 4K (Space Shuttle, Apollo Lunar Module, Voyager, Flagship hoặc tự nạp file 3D .glb/.obj của bạn), sơn cờ Tổ quốc Việt Nam 🇻🇳, trang bị tấm pin quang năng hoặc lò hạt nhân RTG, động cơ đẩy và tên lửa mang phóng.',
+    descEn: 'Configure your spacecraft: Select official 4K hulls (Shuttle, Apollo LM, Voyager, Flagship or import your own 3D file), apply national decals, install solar arrays or RTGs, propulsion engines, and launch boosters.',
+    hintVi: '💡 Duyệt qua các tab: Hạm đội tàu, Cờ Tổ quốc, Lõi năng lượng, Động cơ, Tên lửa...',
+    hintEn: '💡 Browse tabs: Fleet, Decals, Power, Engines, Boosters...',
+    preferredPos: 'top'
+  },
+  {
+    targetId: 'blade-diagnostics',
+    titleVi: '03 // KIỂM SOÁT THÔNG SỐ AVIONICS',
+    titleEn: '03 // AVIONICS & FLIGHT DYNAMICS',
+    descVi: 'Trước khi phóng, hãy kiểm tra các chỉ số kỹ thuật: Đảm bảo Vận tốc tính toán Delta-V ≥ Delta-V yêu cầu (Phương trình Tsiolkovsky), Khối lượng khô ≤ Sức nâng tên lửa, và Thặng dư ngân sách ≥ $0 (không vượt quá chi phí).',
+    descEn: 'Verify telemetry before flight: Ensure Calculated Delta-V ≥ Required Delta-V (Tsiolkovsky equation), Payload Mass ≤ Booster Capacity, and Budget Surplus ≥ $0.',
+    hintVi: '💡 Các thanh thông số chuyển sang màu xanh lục biểu thị hệ thống đã sẵn sàng.',
+    hintEn: '💡 All bars must turn green for flight authorization.',
+    preferredPos: 'left'
+  },
+  {
+    targetId: 'btn-approve-launch',
+    titleVi: '04 // PHÊ DUYỆT & XUẤT KÍCH VÀO KHÔNG GIAN',
+    titleEn: '04 // AUTHORIZE & INITIATE LAUNCH',
+    descVi: 'Khi hệ thống thông báo "FLIGHT DIRECTOR: ALL SYSTEMS NOMINAL", hãy nhấp vào nút màu cam rực rỡ này để kích hoạt tên lửa đẩy, đưa phi thuyền rời bệ phóng vào không gian 3D thực tế!',
+    descEn: 'When the flight controller announces all systems nominal, click this glowing orange button to ignite boosters and launch into the 3D Keplerian solar system!',
+    hintVi: '💡 Nút sẽ kích hoạt hiệu ứng âm thanh và hiệu ứng bước nhảy không gian.',
+    hintEn: '💡 Initiates launch profile and orbital flight HUD.',
+    preferredPos: 'top'
+  },
+  {
+    targetId: 'btn-toggle-dock-bottom',
+    titleVi: '05 // THU GỌN GIAO DIỆN ĐỂ NGẮM TÀU 3D',
+    titleEn: '05 // COLLAPSIBLE LOBBY PANELS',
+    descVi: 'Nhấp vào thanh ▼ HIDE DOCK ở đây, hoặc các mũi tên ◀ / ▶ ở hai mép màn hình để thu gọn các bảng menu. Khi đó bạn sẽ có một góc nhìn Hangar hoàn toàn sạch sẽ, tự do xoay chuột 360° chiêm ngưỡng tàu vũ trụ 4K không góc chết!',
+    descEn: 'Click the ▼ HIDE DOCK tab here, or the ◀ / ▶ arrow tabs on the edges to collapse panels. This gives you an unobstructed 4K view to admire your 3D spacecraft with zero clutter!',
+    hintVi: '💡 Nhấp lại vào các thanh bất kỳ lúc nào để mở lại bảng menu.',
+    hintEn: '💡 Click any handle again to slide the panels back out.',
+    preferredPos: 'top'
+  },
+  {
+    targetId: 'solar-system-dock',
+    titleVi: '06 // THƯỚC NGẮM THIÊN VĂN & DỊCH CHUYỂN TỨC THÌ',
+    titleEn: '06 // COSMIC ORRERY & INSTANT WARP',
+    descVi: 'Thanh trên đỉnh hiển thị toàn bộ Thái Dương Hệ, các ngôi sao và vũ trụ sâu. Khi nhấp vào bất kỳ hành tinh nào, trong hồ sơ thiên thể hãy nhấp nút "🚀 ESTABLISH ORBIT HERE" để tàu vũ trụ ngay lập tức dịch chuyển vào quỹ đạo tròn Keplerian quanh thiên thể đó!',
+    descEn: 'The top orrery tracks planets, stars, and deep space. Click any celestial body and press "🚀 ESTABLISH ORBIT HERE" in its dossier to warp instantly into a circular Keplerian orbit around it!',
+    hintVi: '💡 Thử nghiệm bay quanh Trái Đất, Mặt Trăng, Sao Hỏa hay áp sát tiểu hành tinh Didymos!',
+    hintEn: '💡 Practice orbital insertions around Earth, Mars, Jupiter, or Didymos!',
+    preferredPos: 'bottom'
+  }
+];
+
 export class NasaMissionDesigner {
   private currentLanguage: SupportedLang = 'en_us';
   private selectedMission: NasaMission = NASA_MISSIONS[0];
   private isTrajectoryLocked = false;
   private missionTickerId: ReturnType<typeof setInterval> | null = null;
   private lastPhaDistAU: number | null = null;
+  private currentTourStep = 0;
+  private isTourActive = false;
+  private tourResizeListener: (() => void) | null = null;
+  private tourKeyListener: ((e: KeyboardEvent) => void) | null = null;
   
   // Active equipped inventory items
   private selectedChassisId = 'quinjet';
@@ -516,6 +594,9 @@ export class NasaMissionDesigner {
                 <option value="es">🇪🇸 Español</option>
               </select>
             </div>
+            <button id="btn-start-spotlight-tour" class="btn-spotlight-tour" title="Interactive Step-by-Step Guided Tour / Hướng dẫn tương tác sáng đèn">
+              ✨ TOUR HƯỚNG DẪN
+            </button>
             <button id="btn-flight-manual" class="btn-flight-manual" title="NASA Flight Operations Manual & Beginner's Guide">
               📖 FLIGHT MANUAL
             </button>
@@ -623,6 +704,44 @@ export class NasaMissionDesigner {
 
             <!-- Content Area -->
             <div class="manual-tabs-body" id="manual-tabs-body"></div>
+          </div>
+        </div>
+
+        <!-- Interactive Spotlight Guided Tour Overlay -->
+        <div id="spotlight-tour-overlay" class="spotlight-tour-overlay" style="display: none;">
+          <!-- Glowing Spotlight Cutout with radar beacon and aerospace corners -->
+          <div id="spotlight-box" class="spotlight-box">
+            <div class="spotlight-beacon-ring"></div>
+            <div class="spotlight-corner tl"></div>
+            <div class="spotlight-corner tr"></div>
+            <div class="spotlight-corner bl"></div>
+            <div class="spotlight-corner br"></div>
+          </div>
+
+          <!-- Floating Aerospace HUD Tooltip Card -->
+          <div id="spotlight-tooltip" class="spotlight-tooltip">
+            <div class="spotlight-tooltip-header">
+              <div class="spotlight-step-badge" id="tour-step-badge">BƯỚC 1 / 6</div>
+              <div class="spotlight-dots" id="tour-dots"></div>
+              <button class="spotlight-close-btn" id="btn-tour-close" title="Đóng hướng dẫn (ESC)">✕</button>
+            </div>
+
+            <div class="spotlight-tooltip-body">
+              <h3 class="spotlight-tooltip-title" id="tour-step-title">01 // CHỌN NHIỆM VỤ BAY</h3>
+              <p class="spotlight-tooltip-desc" id="tour-step-desc">Nhấp chọn một trong các sứ mệnh NASA...</p>
+              <div class="spotlight-action-hint" id="tour-action-hint">
+                <span class="hint-pulse"></span>
+                <span id="tour-hint-text">💡 Mẹo: Bạn có thể nhấp chuột trực tiếp vào vị trí đang sáng đèn để thao tác!</span>
+              </div>
+            </div>
+
+            <div class="spotlight-tooltip-footer">
+              <button class="spotlight-btn-secondary" id="btn-tour-prev">◀ Quay lại</button>
+              <div class="spotlight-footer-right">
+                <button class="spotlight-btn-skip" id="btn-tour-skip">Bỏ qua</button>
+                <button class="spotlight-btn-primary" id="btn-tour-next">Tiếp tục ▶</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -3220,6 +3339,23 @@ export class NasaMissionDesigner {
     const btnManual = document.getElementById('btn-flight-manual');
     const btnManualClose = document.getElementById('manual-btn-close');
 
+    // Spotlight Guided Tour Controls
+    document.getElementById('btn-start-spotlight-tour')?.addEventListener('click', () => {
+      this.startSpotlightTour(0);
+    });
+    document.getElementById('btn-tour-next')?.addEventListener('click', () => {
+      this.nextTourStep();
+    });
+    document.getElementById('btn-tour-prev')?.addEventListener('click', () => {
+      this.prevTourStep();
+    });
+    document.getElementById('btn-tour-skip')?.addEventListener('click', () => {
+      this.endSpotlightTour();
+    });
+    document.getElementById('btn-tour-close')?.addEventListener('click', () => {
+      this.endSpotlightTour();
+    });
+
     btnManual?.addEventListener('click', () => {
       this.playClickSound();
       this.renderFlightManualContent();
@@ -3312,6 +3448,11 @@ export class NasaMissionDesigner {
     if (!container) return;
     const isVi = this.currentLanguage === 'vi';
     container.innerHTML = this.getFlightManualTabHTML(this.activeManualTab, isVi);
+
+    // Wire up the Spotlight Tour CTA button inside the modal
+    document.getElementById('btn-launch-tour-from-modal')?.addEventListener('click', () => {
+      this.startSpotlightTour(0);
+    });
   }
 
   private getFlightManualTabHTML(tabId: string, isVi: boolean): string {
@@ -3322,6 +3463,13 @@ export class NasaMissionDesigner {
             <div class="manual-banner-badge">HƯỚNG DẪN TỔNG QUAN</div>
             <h2 class="manual-banner-title">QUY TRÌNH THỰC HIỆN NHIỆM VỤ TỪ A ĐẾN Z</h2>
             <p class="manual-banner-desc">Khám phá không gian và điều khiển tàu vũ trụ NASA theo chuẩn vật lý Keplerian trong 5 bước cơ bản.</p>
+            <div style="margin-top: 14px;">
+              <button id="btn-launch-tour-from-modal" class="btn-launch-tour-cta">
+                <span class="cta-pulse">✨</span>
+                <strong>BẮT ĐẦU TOUR HƯỚNG DẪN SÁNG ĐÈN TRỰC QUAN (SPOTLIGHT TOUR)</strong>
+                <span style="opacity: 0.85; font-size: 0.72rem;">— Rọi sáng từng nút bấm thực tế</span>
+              </button>
+            </div>
           </div>
 
           <div class="manual-steps-grid">
@@ -3380,6 +3528,13 @@ export class NasaMissionDesigner {
             <div class="manual-banner-badge">OVERVIEW GUIDE</div>
             <h2 class="manual-banner-title">END-TO-END MISSION PROTOCOL</h2>
             <p class="manual-banner-desc">Master NASA deep space exploration and 3D flight dynamics in 5 Keplerian steps.</p>
+            <div style="margin-top: 14px;">
+              <button id="btn-launch-tour-from-modal" class="btn-launch-tour-cta">
+                <span class="cta-pulse">✨</span>
+                <strong>START INTERACTIVE SPOTLIGHT GUIDED TOUR</strong>
+                <span style="opacity: 0.85; font-size: 0.72rem;">— Highlights each button live</span>
+              </button>
+            </div>
           </div>
 
           <div class="manual-steps-grid">
@@ -3876,6 +4031,183 @@ export class NasaMissionDesigner {
     return '';
   }
 
+  public startSpotlightTour(stepIndex = 0): void {
+    const manualModal = document.getElementById('flight-manual-modal');
+    if (manualModal) manualModal.style.display = 'none';
+    const vaultModal = document.getElementById('resource-vault-modal');
+    if (vaultModal) vaultModal.style.display = 'none';
+
+    this.isTourActive = true;
+    this.currentTourStep = Math.max(0, Math.min(TOUR_STEPS.length - 1, stepIndex));
+    this.playClickSound();
+
+    const overlay = document.getElementById('spotlight-tour-overlay');
+    if (overlay) overlay.style.display = 'block';
+
+    if (!this.tourResizeListener) {
+      this.tourResizeListener = () => this.updateTourSpotlight();
+      window.addEventListener('resize', this.tourResizeListener);
+    }
+    if (!this.tourKeyListener) {
+      this.tourKeyListener = (e: KeyboardEvent) => {
+        if (!this.isTourActive) return;
+        if (e.key === 'Escape') {
+          this.endSpotlightTour();
+        } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
+          this.nextTourStep();
+        } else if (e.key === 'ArrowLeft') {
+          this.prevTourStep();
+        }
+      };
+      window.addEventListener('keydown', this.tourKeyListener);
+    }
+
+    setTimeout(() => this.updateTourSpotlight(), 60);
+  }
+
+  public nextTourStep(): void {
+    this.playClickSound();
+    if (this.currentTourStep < TOUR_STEPS.length - 1) {
+      this.currentTourStep++;
+      this.updateTourSpotlight();
+    } else {
+      this.endSpotlightTour();
+    }
+  }
+
+  public prevTourStep(): void {
+    this.playClickSound();
+    if (this.currentTourStep > 0) {
+      this.currentTourStep--;
+      this.updateTourSpotlight();
+    }
+  }
+
+  public endSpotlightTour(): void {
+    this.isTourActive = false;
+    this.playClickSound();
+    const overlay = document.getElementById('spotlight-tour-overlay');
+    if (overlay) overlay.style.display = 'none';
+    if (this.tourResizeListener) {
+      window.removeEventListener('resize', this.tourResizeListener);
+      this.tourResizeListener = null;
+    }
+    if (this.tourKeyListener) {
+      window.removeEventListener('keydown', this.tourKeyListener);
+      this.tourKeyListener = null;
+    }
+  }
+
+  private updateTourSpotlight(): void {
+    if (!this.isTourActive) return;
+    const overlay = document.getElementById('spotlight-tour-overlay');
+    const box = document.getElementById('spotlight-box');
+    const tooltip = document.getElementById('spotlight-tooltip');
+    if (!overlay || !box || !tooltip) return;
+
+    const isVi = this.currentLanguage === 'vi';
+    const step = TOUR_STEPS[this.currentTourStep];
+    if (!step) {
+      this.endSpotlightTour();
+      return;
+    }
+
+    // Automatically expand any collapsed blade if targeted
+    if (step.targetId === 'blade-missions') {
+      const el = document.getElementById('blade-missions');
+      if (el?.classList.contains('collapsed')) {
+        el.classList.remove('collapsed');
+        const icon = document.querySelector('#btn-toggle-blade-left .tab-icon');
+        if (icon) icon.textContent = '◀';
+      }
+    } else if (step.targetId === 'blade-diagnostics') {
+      const el = document.getElementById('blade-diagnostics');
+      if (el?.classList.contains('collapsed')) {
+        el.classList.remove('collapsed');
+        const icon = document.querySelector('#btn-toggle-blade-right .tab-icon');
+        if (icon) icon.textContent = '▶';
+      }
+    } else if (step.targetId === 'dock-bottom' || step.targetId === 'btn-approve-launch' || step.targetId === 'btn-toggle-dock-bottom') {
+      const el = document.getElementById('dock-bottom');
+      if (el?.classList.contains('collapsed')) {
+        el.classList.remove('collapsed');
+        const icon = document.querySelector('#btn-toggle-dock-bottom .dock-tab-icon');
+        const label = document.querySelector('#btn-toggle-dock-bottom .dock-tab-label');
+        if (icon) icon.textContent = '▼';
+        if (label) label.textContent = isVi ? 'THU GỌN BẢNG' : 'HIDE DOCK';
+      }
+    }
+
+    const target = document.getElementById(step.targetId);
+    if (!target) return;
+
+    const rect = target.getBoundingClientRect();
+    const pad = 10;
+    box.style.top = `${Math.max(0, rect.top - pad)}px`;
+    box.style.left = `${Math.max(0, rect.left - pad)}px`;
+    box.style.width = `${rect.width + pad * 2}px`;
+    box.style.height = `${rect.height + pad * 2}px`;
+
+    const badgeEl = document.getElementById('tour-step-badge');
+    const titleEl = document.getElementById('tour-step-title');
+    const descEl = document.getElementById('tour-step-desc');
+    const hintEl = document.getElementById('tour-hint-text');
+    const btnPrev = document.getElementById('btn-tour-prev') as HTMLButtonElement | null;
+    const btnNext = document.getElementById('btn-tour-next') as HTMLButtonElement | null;
+    const btnSkip = document.getElementById('btn-tour-skip') as HTMLButtonElement | null;
+
+    if (badgeEl) badgeEl.textContent = isVi ? `BƯỚC ${this.currentTourStep + 1} / ${TOUR_STEPS.length}` : `STEP ${this.currentTourStep + 1} / ${TOUR_STEPS.length}`;
+    if (titleEl) titleEl.textContent = isVi ? step.titleVi : step.titleEn;
+    if (descEl) descEl.textContent = isVi ? step.descVi : step.descEn;
+    if (hintEl) hintEl.textContent = isVi ? step.hintVi : step.hintEn;
+
+    const dotsContainer = document.getElementById('tour-dots');
+    if (dotsContainer) {
+      dotsContainer.innerHTML = TOUR_STEPS.map((_, i) => 
+        `<span class="spotlight-dot ${i === this.currentTourStep ? 'active' : ''}"></span>`
+      ).join('');
+    }
+
+    if (btnPrev) {
+      btnPrev.style.display = this.currentTourStep === 0 ? 'none' : 'inline-block';
+      btnPrev.textContent = isVi ? '◀ Quay lại' : '◀ Prev';
+    }
+    if (btnNext) {
+      const isLast = this.currentTourStep === TOUR_STEPS.length - 1;
+      btnNext.textContent = isLast 
+        ? (isVi ? 'Hoàn tất 🚀' : 'Finish 🚀') 
+        : (isVi ? 'Tiếp tục ▶' : 'Next ▶');
+    }
+    if (btnSkip) {
+      btnSkip.textContent = isVi ? 'Bỏ qua tour' : 'Skip tour';
+    }
+
+    const tooltipWidth = 360;
+    const tooltipHeight = 220;
+    let tLeft = 0;
+    let tTop = 0;
+
+    if (step.preferredPos === 'right') {
+      tLeft = rect.right + 24;
+      tTop = Math.max(80, Math.min(window.innerHeight - tooltipHeight - 30, rect.top));
+    } else if (step.preferredPos === 'left') {
+      tLeft = rect.left - tooltipWidth - 24;
+      tTop = Math.max(80, Math.min(window.innerHeight - tooltipHeight - 30, rect.top));
+    } else if (step.preferredPos === 'top') {
+      tLeft = Math.max(20, Math.min(window.innerWidth - tooltipWidth - 20, rect.left + (rect.width - tooltipWidth) / 2));
+      tTop = Math.max(20, rect.top - tooltipHeight - 24);
+    } else {
+      tLeft = Math.max(20, Math.min(window.innerWidth - tooltipWidth - 20, rect.left + (rect.width - tooltipWidth) / 2));
+      tTop = Math.min(window.innerHeight - tooltipHeight - 20, rect.bottom + 20);
+    }
+
+    tLeft = Math.max(16, Math.min(window.innerWidth - tooltipWidth - 16, tLeft));
+    tTop = Math.max(16, Math.min(window.innerHeight - tooltipHeight - 16, tTop));
+
+    tooltip.style.left = `${tLeft}px`;
+    tooltip.style.top = `${tTop}px`;
+  }
+
   private updateHeaderShipInfo() {
     const t = getTexts(this.currentLanguage);
     const shipTitle = document.getElementById('hangar-ship-name');
@@ -3960,6 +4292,13 @@ export class NasaMissionDesigner {
 
     const btnFlightManual = document.getElementById('btn-flight-manual');
     if (btnFlightManual) btnFlightManual.textContent = t.flightManualBtn;
+
+    const btnTour = document.getElementById('btn-start-spotlight-tour');
+    if (btnTour) btnTour.textContent = t.spotlightTourBtn;
+
+    if (this.isTourActive) {
+      this.updateTourSpotlight();
+    }
 
     const btnVault = document.getElementById('btn-resource-vault');
     if (btnVault) { btnVault.textContent = t.assetVaultBtn; btnVault.title = t.assetVaultTitle; }
