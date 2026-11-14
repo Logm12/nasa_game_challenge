@@ -1,4 +1,5 @@
 import { rightTitleSetSize, SettingsControl } from './SettingsControl';
+import { getControlTexts, onLangChange } from './i18n';
 import { CelestialBody, AU } from './CelestialBody';
 
 import statsIconUrl from './images/statsIcon.png';
@@ -50,7 +51,7 @@ export class StatsControl{
         this.element.appendChild(icon);
 
         const title = document.createElement('div');
-        title.innerHTML = 'Statistics';
+        title.textContent = getControlTexts().statsTitle;
         title.style.display = 'none';
         title.style.position = 'absolute';
         title.style.top = buttonTop + 'px';
@@ -65,9 +66,11 @@ export class StatsControl{
         this.valueElement.style.background = 'rgba(0, 0, 0, 0.5)';
         this.valueElement.style.border = '3px ridge #7f3f3f';
         this.valueElement.style.padding = '3px';
+        const statTitles: HTMLDivElement[] = [];
         for(let i = 0; i < 3; i++){
             const titleElement = document.createElement('div');
-            titleElement.innerHTML = ['Mission Time', 'Delta-V', 'Ignition&nbsp;Count'][i];
+            titleElement.textContent = getControlTexts().statsLabels[i] || '';
+            statTitles.push(titleElement);
             titleElement.style.fontWeight = 'bold';
             titleElement.style.paddingRight = '1em';
             this.valueElement.appendChild(titleElement);
@@ -76,6 +79,14 @@ export class StatsControl{
             this.valueElements.push(valueElementChild);
             this.valueElement.appendChild(valueElementChild);
         }
+
+        onLangChange((lang) => {
+            const ct = getControlTexts(lang);
+            title.textContent = ct.statsTitle;
+            statTitles.forEach((el, idx) => {
+                if (ct.statsLabels[idx]) el.textContent = ct.statsLabels[idx];
+            });
+        });
 
         setSize();
 

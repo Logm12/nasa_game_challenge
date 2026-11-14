@@ -1,4 +1,5 @@
 import { CelestialBody, AU } from './CelestialBody';
+import { getControlTexts, onLangChange } from './i18n';
 
 import bodiesIconUrl from './images/bodiesIcon.png';
 
@@ -32,7 +33,11 @@ export class BodiesControl{
         iconContainer.appendChild(icon);
 
         const title = document.createElement('div');
-        title.innerHTML = 'Celestial&nbsp;Bodies';
+        title.style.whiteSpace = 'nowrap';
+        title.textContent = getControlTexts().bodiesTitle;
+        onLangChange((lang) => {
+            title.textContent = getControlTexts(lang).bodiesTitle;
+        });
         title.style.display = 'none';
         title.style.position = 'absolute';
         title.style.left = `${buttonWidth}px`;

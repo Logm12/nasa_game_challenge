@@ -1,4 +1,5 @@
 import { CelestialBody, AU } from './CelestialBody';
+import { getControlTexts, onLangChange } from './i18n';
 
 import orbitIconUrl from './images/orbitIcon.png';
 
@@ -29,7 +30,11 @@ export class OrbitalElementsControl{
         iconContainer.appendChild(icon);
 
         const title = document.createElement('div');
-        title.innerHTML = 'Orbital&nbsp;Elements';
+        title.style.whiteSpace = 'nowrap';
+        title.textContent = getControlTexts().orbitalElementsTitle;
+        onLangChange((lang) => {
+            title.textContent = getControlTexts(lang).orbitalElementsTitle;
+        });
         title.style.display = 'none';
         title.style.position = 'absolute';
         title.style.left = `${buttonWidth}px`;
@@ -78,15 +83,16 @@ export class OrbitalElementsControl{
 
         const o = body.orbitalElements;
 
+        const oeLbl = getControlTexts().orbitalElementsLabels;
         this.valueElement.innerHTML = '<table class="table1">'
-            + ' <tr><td>e</td><td>' + (o.eccentricity || 0).toFixed(10) + '</td></tr>'
-            + ' <tr><td>a</td><td>' + unitConvLength(o.semimajor_axis) + '</td></tr>'
-            + ' <tr><td>i</td><td>' + (o.inclination / Math.PI).toFixed(10) + '</td></tr>'
-            + ' <tr><td>Omega</td><td>' + (o.ascending_node / Math.PI).toFixed(10) + '</td></tr>'
-            + ' <tr><td>w</td><td>' + (o.argument_of_perihelion / Math.PI).toFixed(10) + '</td></tr>'
-            + ' <tr><td>Periapsis</td><td>' + unitConvLength(o.semimajor_axis * (1 - o.eccentricity)) + '</td></tr>'
-            + ' <tr><td>Apoapsis</td><td>' + unitConvLength(o.semimajor_axis * (1 + o.eccentricity)) + '</td></tr>'
-            + ' <tr><td>head</td><td>' + headingApoapsis.toFixed(5) + '</td></tr>'
+            + ' <tr><td>' + oeLbl.e + '</td><td>' + (o.eccentricity || 0).toFixed(10) + '</td></tr>'
+            + ' <tr><td>' + oeLbl.a + '</td><td>' + unitConvLength(o.semimajor_axis) + '</td></tr>'
+            + ' <tr><td>' + oeLbl.i + '</td><td>' + (o.inclination / Math.PI).toFixed(10) + '</td></tr>'
+            + ' <tr><td>' + oeLbl.omega + '</td><td>' + (o.ascending_node / Math.PI).toFixed(10) + '</td></tr>'
+            + ' <tr><td>' + oeLbl.w + '</td><td>' + (o.argument_of_perihelion / Math.PI).toFixed(10) + '</td></tr>'
+            + ' <tr><td>' + oeLbl.periapsis + '</td><td>' + unitConvLength(o.semimajor_axis * (1 - o.eccentricity)) + '</td></tr>'
+            + ' <tr><td>' + oeLbl.apoapsis + '</td><td>' + unitConvLength(o.semimajor_axis * (1 + o.eccentricity)) + '</td></tr>'
+            + ' <tr><td>' + oeLbl.head + '</td><td>' + headingApoapsis.toFixed(5) + '</td></tr>'
     //							+ ' omega=' + this.angularVelocity.x.toFixed(10) + ',' + '<br>' + this.angularVelocity.y.toFixed(10) + ',' + '<br>' + this.angularVelocity.z.toFixed(10)
             +'</table>';
     }

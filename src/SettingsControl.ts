@@ -1,5 +1,7 @@
 import settingsIconUrl from './images/settingsIcon.png';
 
+import { getControlTexts, onLangChange } from './i18n';
+
 export function rightTitleSetSize(title: HTMLElement, icon: HTMLElement){
     const r = title.getBoundingClientRect();
     const iconRect = icon.getBoundingClientRect()
@@ -54,7 +56,7 @@ export class SettingsControl{
         element.appendChild(icon);
 
         const title = document.createElement('div');
-        title.innerHTML = 'Settings';
+        title.textContent = getControlTexts().settingsTitle;
         title.style.display = 'none';
         title.style.position = 'absolute';
         title.style.background = 'rgba(0, 0, 0, 0.5)';
@@ -68,6 +70,7 @@ export class SettingsControl{
         this.valueElement.style.background = 'rgba(0, 0, 0, 0.5)';
         this.valueElement.style.border = '3px ridge #7f3f3f';
         this.valueElement.style.padding = '3px';
+        const labelElements: HTMLLabelElement[] = [];
         const names = Object.keys(this.settings);
         for(const i in names){
             const name = names[i];
@@ -84,20 +87,22 @@ export class SettingsControl{
             this.checkElements.push(checkbox);
             const label = document.createElement('label');
             label.setAttribute('for', id);
-            label.innerHTML = [
-                'Show&nbsp;grid&nbsp;(G)',
-                'Chase&nbsp;camera&nbsp;(H)',
-                'Nonlinear&nbsp;scale&nbsp;(N)',
-                'Units in KM&nbsp;(K)',
-                'Show name labels&nbsp;(L)',
-                'Show marker&nbsp;(M)',
-                'Center selected&nbsp;(C)'][i];
+            label.textContent = getControlTexts().settingsLabels[Number(i)] || '';
+            labelElements.push(label);
             lineElement.appendChild(label);
             lineElement.style.fontWeight = 'bold';
             lineElement.style.paddingRight = '1em';
             lineElement.style.whiteSpace = 'nowrap';
             this.valueElement.appendChild(lineElement);
         }
+
+        onLangChange((lang) => {
+            const ct = getControlTexts(lang);
+            title.textContent = ct.settingsTitle;
+            labelElements.forEach((lbl, idx) => {
+                if (ct.settingsLabels[idx]) lbl.textContent = ct.settingsLabels[idx];
+            });
+        });
 
         setSize();
 

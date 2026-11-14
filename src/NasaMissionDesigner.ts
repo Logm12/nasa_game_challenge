@@ -10,6 +10,26 @@ import { OBJLoader } from './OBJLoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { AU, CelestialBody } from './CelestialBody';
 import { SUPPORTED_FLAGS, generateFlagCanvasTexture, generateNasaDecalTexture } from './FlagDecals';
+import {
+  SupportedLang,
+  I18nTexts,
+  HANGAR_I18N,
+  getCurrentLang,
+  setCurrentLang,
+  getTexts,
+  formatTpl,
+  formatNum
+} from './i18n';
+import {
+  getMissionText,
+  getSpacecraftText,
+  getPowerText,
+  getTechText,
+  getEngineText,
+  getCarrierText,
+  getFlagText
+} from './i18n-catalog';
+export { I18nTexts, HANGAR_I18N };
 
 import shuttleUrl from './models/spacecraft/space_shuttle.glb';
 import voyagerUrl from './models/spacecraft/voyager.glb';
@@ -36,25 +56,25 @@ export const SPACECRAFT_FLEET: SpacecraftDefinition[] = [
   // 1. Những con tàu ban đầu của người dùng (Initial Core Fleet)
   {
     id: 'quinjet',
-    name: 'Quinjet Mk-VII (Avengers Stealth)',
+    name: 'Quinjet Mk-VII (Stealth Concept)',
     category: 'marvel',
     mass: 520,
     cost: 85,
     cap: 4,
     rarity: 'legendary',
-    badge: '🛡️ AVENGERS',
-    desc: 'Hợp kim Vibranium tàng hình đa năng với cánh swept-delta gập và quạt nâng VTOL kép.'
+    badge: '🛡️ STEALTH',
+    desc: 'Fictional stealth VTOL hull with folding delta wings. Balanced mass and 4 instrument bays.'
   },
   {
     id: 'milano',
-    name: 'The Milano (Guardians Scout)',
+    name: 'The Milano (Light Scout)',
     category: 'marvel',
     mass: 120,
     cost: 25,
     cap: 2,
     rarity: 'epic',
-    badge: '🪐 GUARDIANS',
-    desc: 'Chiến hạm thám hiểm siêu cơ động của Star-Lord với cánh chim và góc lượn linh hoạt.'
+    badge: '🪐 SCOUT',
+    desc: 'Lightweight fictional scout hull with low dry mass (120 kg) and 2 instrument bays.'
   },
   {
     id: 'benatar',
@@ -65,42 +85,42 @@ export const SPACECRAFT_FLEET: SpacecraftDefinition[] = [
     cap: 5,
     rarity: 'legendary',
     badge: '🚀 CRUISER',
-    desc: 'Tàu tuần dương chỉ huy liên sao viễn không với 4 cánh quét dài và cầu chỉ huy trung tâm.'
+    desc: 'Medium-heavy fictional deep-space cruiser with 5 instrument bays.'
   },
   {
     id: 'sanctuary',
-    name: 'Sanctuary Flagship (Titan Dreadnought)',
+    name: 'Sanctuary Flagship (Dreadnought)',
     category: 'marvel',
     mass: 6500,
     cost: 600,
     cap: 6,
     rarity: 'mythic',
-    badge: '👑 DREADNOUGHT',
-    desc: 'Siêu pháo đài vũ trụ Dreadnought hạng nặng bọc giáp kiên cố, mang tối đa 6 khí tài.'
+    badge: '👑 HEAVY',
+    desc: 'Massive fictional armored hull supporting up to 6 scientific instruments.'
   },
 
   // 2. Tàu tự thiết kế độc quyền (Custom High-End Flagships)
   {
     id: 'hyperion',
-    name: 'Hyperion Interstellar Exploration Flagship',
+    name: 'Hyperion Exploration Flagship',
     category: 'custom',
     mass: 5800,
     cost: 520,
     cap: 6,
     rarity: 'mythic',
     badge: '🌌 FLAGSHIP',
-    desc: 'Soái hạm thám hiểm vũ trụ với sống pháo từ tính, dàn cảm biến và 4 động cơ đẩy ion.'
+    desc: 'Heavy deep-space hull with 6 instrument bays and sensor spine.'
   },
   {
     id: 'ghostwing',
-    name: 'Ghostwing Orbital Reconnaissance Interceptor',
+    name: 'Ghostwing Recon Interceptor',
     category: 'custom',
     mass: 310,
     cost: 65,
     cap: 3,
     rarity: 'legendary',
-    badge: '⚡ INTERCEPTOR',
-    desc: 'Tàu trinh sát đánh chặn siêu thanh cánh vát ngược với laser thông tin quang tử.'
+    badge: '⚡ RECON',
+    desc: 'Light forward-swept reconnaissance hull with 3 instrument bays.'
   },
 
   // 3. Tàu vũ trụ NASA chính thức (Official NASA Exploration Spacecraft)
@@ -113,7 +133,7 @@ export const SPACECRAFT_FLEET: SpacecraftDefinition[] = [
     cap: 5,
     rarity: 'mythic',
     badge: '🚀 NASA ORBITER',
-    desc: 'Tàu con thoi không gian chính thức của NASA với cánh delta khí động học và gạch gốm tản nhiệt.',
+    desc: 'Official NASA winged orbiter model with delta wings and thermal tiles (5 bays).',
     modelUrl: shuttleUrl
   },
   {
@@ -125,19 +145,19 @@ export const SPACECRAFT_FLEET: SpacecraftDefinition[] = [
     cap: 4,
     rarity: 'legendary',
     badge: '🌙 APOLLO 11',
-    desc: 'Tàu đổ bộ Mặt Trăng lịch sử Apollo 11 với chân đáp giảm chấn và lớp chắn bức xạ vàng.',
+    desc: 'Historic lunar lander with shock-absorbing legs and gold thermal foil (4 bays).',
     modelUrl: apolloLmUrl
   },
   {
     id: 'voyager',
-    name: 'NASA Voyager 1 Interstellar Explorer',
+    name: 'NASA Voyager 1 Interstellar Probe',
     category: 'nasa',
     mass: 350,
     cost: 45,
     cap: 3,
     rarity: 'legendary',
     badge: '📡 NASA PROBE',
-    desc: 'Tàu thám hiểm không gian sâu Voyager với chảo phản xạ parabol đường kính lớn và Đĩa Vàng.',
+    desc: 'Deep-space probe with high-gain parabolic dish and Golden Record (3 bays).',
     modelUrl: voyagerUrl
   }
 ];
@@ -254,343 +274,12 @@ export const NASA_MISSIONS: NasaMission[] = [
   }
 ];
 
-export interface I18nTexts {
-  brandSub: string;
-  creditsLabel: string;
-  assetVaultBtn: string;
-  import3dBtn: string;
-  cinematicBtn: string;
-  restoreFlightBtn: string;
-  sectorOpsTitle: string;
-  targetsBadge: string;
-  avionicsDiagTitle: string;
-  budgetSurplus: string;
-  dryMass: string;
-  powerBalance: string;
-  calcDeltaV: string;
-  scienceReturn: string;
-  tabChassis: string;
-  tabFlags: string;
-  tabPower: string;
-  tabTech: string;
-  tabEngines: string;
-  tabCarriers: string;
-  launchBtn: string;
-  equipped: string;
-  clickToEquip: string;
-  clickToApply: string;
-  hudTelemetry: string;
-  hudTargetSector: string;
-  hudCosmicIntel: string;
-  hudArcOutput: string;
-  hudJarvisStatus: string;
-  hudIntelDebrief: string;
-  hudStarkArmory: string;
-}
-
-export const HANGAR_I18N: Record<string, I18nTexts> = {
-  en_us: {
-    brandSub: 'NASA DEEP SPACE FLIGHT ARCHITECTURE & KEPLERIAN DYNAMICS',
-    creditsLabel: 'BUDGET:',
-    assetVaultBtn: '🌐 3D ASSET VAULT',
-    import3dBtn: '📂 IMPORT 3D',
-    cinematicBtn: '👁 CINEMATIC VIEW',
-    restoreFlightBtn: '✕ RESTORE FLIGHT CONTROLS',
-    sectorOpsTitle: '01 // FLIGHT MANIFEST & TARGETS',
-    targetsBadge: 'TARGETS',
-    avionicsDiagTitle: '02 // AVIONICS & FLIGHT DYNAMICS',
-    budgetSurplus: 'Budget Surplus',
-    dryMass: 'Dry Mass vs Limit',
-    powerBalance: 'Power Balance (1 AU)',
-    calcDeltaV: 'Calculated Delta-V',
-    scienceReturn: 'Projected Science Return',
-    tabChassis: '🚀 SPACECRAFT FLEET',
-    tabFlags: '🇺🇸 NATIONAL INSIGNIA',
-    tabPower: '⚛ POWER & PROPULSION CORE',
-    tabTech: '🔬 SCIENTIFIC AVIONICS',
-    tabEngines: '⚡ PROPULSION ENGINES',
-    tabCarriers: '🛸 LAUNCH VEHICLE',
-    launchBtn: 'AUTHORIZE & INITIATE LAUNCH',
-    equipped: '● EQUIPPED',
-    clickToEquip: 'CLICK TO EQUIP',
-    clickToApply: 'CLICK TO APPLY',
-    hudTelemetry: '● ORBITAL TELEMETRY',
-    hudTargetSector: 'Target Destination:',
-    hudCosmicIntel: 'Science Telemetry:',
-    hudArcOutput: 'Electrical Bus Output:',
-    hudJarvisStatus: 'Flight Controller:',
-    hudIntelDebrief: '📊 MISSION DEBRIEF',
-    hudStarkArmory: '⚙️ SPACECRAFT HANGAR'
-  },
-  vi: {
-    brandSub: 'HÀNG KHÔNG VŨ TRỤ VÀ ĐỘNG LỰC HỌC QUỸ ĐẠO NASA',
-    creditsLabel: 'NGÂN SÁCH:',
-    assetVaultBtn: '🌐 KHO MẪU 3D',
-    import3dBtn: '📂 TẢI MẪU 3D',
-    cinematicBtn: '👁 GÓC QUAN SÁT ĐIỆN ẢNH',
-    restoreFlightBtn: '✕ QUAY LẠI ĐIỀU KHIỂN BAY',
-    sectorOpsTitle: '01 // LỊCH TRÌNH VÀ MỤC TIÊU BAY',
-    targetsBadge: 'MỤC TIÊU',
-    avionicsDiagTitle: '02 // ĐIỀU HÀNH ĐỘNG LỰC HỌC BAY',
-    budgetSurplus: 'Thặng Dư Ngân Sách',
-    dryMass: 'Khối Lượng Thô vs Tải Trọng',
-    powerBalance: 'Cân Bằng Năng Lượng (1 AU)',
-    calcDeltaV: 'Vận Tốc Delta-V Dự Tính',
-    scienceReturn: 'Điểm Khoa Học Dự Kiến',
-    tabChassis: '🚀 HẠM ĐỘI TÀU VŨ TRỤ',
-    tabFlags: '🇻🇳 CỜ QUỐC GIA & NASA',
-    tabPower: '⚛ LÕI NĂNG LƯỢNG & ĐỘNG CƠ',
-    tabTech: '🔬 KHÍ TÀI ĐO ĐẠC KHOA HỌC',
-    tabEngines: '⚡ ĐỘNG CƠ ĐẨY PHẢN LỰC',
-    tabCarriers: '🛸 TÊN LỬA ĐẨY & BỆ PHÓNG',
-    launchBtn: 'PHÊ DUYỆT & PHÓNG PHI THUYỀN',
-    equipped: '● ĐÃ TRANG BỊ',
-    clickToEquip: 'NHẤP ĐỂ TRANG BỊ',
-    clickToApply: 'NHẤP ĐỂ SƠN CỜ',
-    hudTelemetry: '● ĐO ĐẠC QUỸ ĐẠO VŨ TRỤ',
-    hudTargetSector: 'Mục Tiêu Đến:',
-    hudCosmicIntel: 'Dữ Liệu Khoa Học:',
-    hudArcOutput: 'Công Suất Nguồn Điện:',
-    hudJarvisStatus: 'Kiểm Soát Chuyến Bay:',
-    hudIntelDebrief: '📊 BÁO CÁO NHIỆM VỤ',
-    hudStarkArmory: '⚙️ NHÀ VÒM TÀU VŨ TRỤ'
-  },
-  en_uk: {
-    brandSub: 'ADVANCED AEROSPACE & INTERSTELLAR FLIGHT ARCHITECT',
-    creditsLabel: 'BUDGET:',
-    assetVaultBtn: '🌐 3D ASSET VAULT',
-    import3dBtn: '📂 IMPORT 3D',
-    cinematicBtn: '👁 CINEMATIC VIEW',
-    restoreFlightBtn: '✕ RESTORE FLIGHT CONTROLS',
-    sectorOpsTitle: '01 // SECTOR OPERATIONS',
-    targetsBadge: 'TARGETS',
-    avionicsDiagTitle: '02 // AVIONICS DIAGNOSTICS',
-    budgetSurplus: 'Budget Surplus',
-    dryMass: 'Dry Mass vs Limit',
-    powerBalance: 'Power Balance (1 AU)',
-    calcDeltaV: 'Calculated Delta-V',
-    scienceReturn: 'Projected Science Return',
-    tabChassis: '🚀 SPACECRAFT HULL',
-    tabFlags: '🇬🇧 NATIONAL INSIGNIA',
-    tabPower: '⚛ ARC & QUANTUM POWER',
-    tabTech: '🔬 SCIENTIFIC AVIONICS',
-    tabEngines: '⚡ PROPULSION & WARP',
-    tabCarriers: '🛸 LAUNCH VEHICLE',
-    launchBtn: 'AUTHORISE & INITIATE LAUNCH',
-    equipped: '● EQUIPPED',
-    clickToEquip: 'CLICK TO EQUIP',
-    clickToApply: 'CLICK TO APPLY',
-    hudTelemetry: '● ORBITAL TELEMETRY',
-    hudTargetSector: 'Target Sector:',
-    hudCosmicIntel: 'Cosmic Intel Data:',
-    hudArcOutput: 'Electrical Bus Output:',
-    hudJarvisStatus: 'Flight Controller:',
-    hudIntelDebrief: '📊 MISSION DEBRIEF',
-    hudStarkArmory: '⚙️ SPACECRAFT HANGAR'
-  },
-  ja: {
-    brandSub: '最先端航空宇宙＆恒星間飛行アーキテクト',
-    creditsLabel: '予算クレジット:',
-    assetVaultBtn: '🌐 3Dアセット保管庫',
-    import3dBtn: '📂 3Dモデル読込',
-    cinematicBtn: '👁 シネマティック視点',
-    restoreFlightBtn: '✕ 飛行制御に戻る',
-    sectorOpsTitle: '01 // 宇宙セクター作戦',
-    targetsBadge: '作戦目標',
-    avionicsDiagTitle: '02 // アビオニクス診断',
-    budgetSurplus: '予算残高',
-    dryMass: '乾燥重量 / 許容積載',
-    powerBalance: '電力バランス (1 AU)',
-    calcDeltaV: '計算デルタV',
-    scienceReturn: '予想科学探査ポイント',
-    tabChassis: '🚀 宇宙船・戦艦船体',
-    tabFlags: '🇯🇵 国旗＆NASA標識',
-    tabPower: '⚛ 電源・推進炉',
-    tabTech: '🔬 科学観測計器',
-    tabEngines: '⚡ 推進＆ワープ機関',
-    tabCarriers: '🛸 母艦・ロケット',
-    launchBtn: '承認して打ち上げ開始',
-    equipped: '● 装備中',
-    clickToEquip: 'クリックで装備',
-    clickToApply: 'クリックで適用',
-    hudTelemetry: '● 軌道テレメトリー',
-    hudTargetSector: '目標セクター:',
-    hudCosmicIntel: '宇宙探査データ:',
-    hudArcOutput: '電源システム出力:',
-    hudJarvisStatus: '管制ステータス:',
-    hudIntelDebrief: '📊 任務報告',
-    hudStarkArmory: '⚙️ 宇宙船ハンガー'
-  },
-  ko: {
-    brandSub: '첨단 항공우주 및 성간 비행 아키텍트',
-    creditsLabel: '예산 크레딧:',
-    assetVaultBtn: '🌐 3D 자산 보관소',
-    import3dBtn: '📂 3D 모델 불러오기',
-    cinematicBtn: '👁 시네마틱 뷰',
-    restoreFlightBtn: '✕ 비행 제어로 복귀',
-    sectorOpsTitle: '01 // 우주 섹터 작전',
-    targetsBadge: '작전 목표',
-    avionicsDiagTitle: '02 // 항공전자 진단',
-    budgetSurplus: '예산 흑자',
-    dryMass: '건조 중량 / 허용 한도',
-    powerBalance: '전력 수지 (1 AU)',
-    calcDeltaV: '계산된 델타-V',
-    scienceReturn: '예상 과학 탐사치',
-    tabChassis: '🚀 우주선 및 전함 선체',
-    tabFlags: '🇰🇷 국기 및 NASA 휘장',
-    tabPower: '⚛ 동력 및 추진 코어',
-    tabTech: '🔬 과학 항법 장비',
-    tabEngines: '⚡ 추진 및 워프 엔진',
-    tabCarriers: '🛸 모함 및 발사체',
-    launchBtn: '승인 및 출격 개시',
-    equipped: '● 장착됨',
-    clickToEquip: '클릭하여 장착',
-    clickToApply: '클릭하여 적용',
-    hudTelemetry: '● 궤도 원격 측정',
-    hudTargetSector: '목표 섹터:',
-    hudCosmicIntel: '우주 정보 데이터:',
-    hudArcOutput: '전력 버스 출력:',
-    hudJarvisStatus: '비행 관제 상태:',
-    hudIntelDebrief: '📊 브리핑',
-    hudStarkArmory: '⚙️ 우주선 격납고'
-  },
-  fr: {
-    brandSub: 'ARCHITECTE AÉROSPATIAL ET VOL INTERSTELLAIRE AVANCÉ',
-    creditsLabel: 'CRÉDITS:',
-    assetVaultBtn: '🌐 COFFRE 3D',
-    import3dBtn: '📂 IMPORTER 3D',
-    cinematicBtn: '👁 VUE CINÉMATIQUE',
-    restoreFlightBtn: '✕ RESTAURER COMMANDES',
-    sectorOpsTitle: '01 // OPÉRATIONS DE SECTEUR',
-    targetsBadge: 'CIBLES',
-    avionicsDiagTitle: '02 // DIAGNOSTIC AVIONIQUE',
-    budgetSurplus: 'Surplus Budgétaire',
-    dryMass: 'Masse à Vide vs Limite',
-    powerBalance: 'Bilan Électrique (1 AU)',
-    calcDeltaV: 'Delta-V Calculé',
-    scienceReturn: 'Rendement Scientifique',
-    tabChassis: '🚀 COQUE DU VAISSEAU',
-    tabFlags: '🇫🇷 INSIGNES NATIONAUX',
-    tabPower: '⚛ CŒUR ÉNERGIE & PROPULSION',
-    tabTech: '🔬 AVIONIQUE SCIENTIFIQUE',
-    tabEngines: '⚡ PROPULSION & DISTORSION',
-    tabCarriers: '🛸 VAISSEAU MÈRE',
-    launchBtn: 'APPROUVER & LANCER LE VOL',
-    equipped: '● ÉQUIPÉ',
-    clickToEquip: 'CLIQUER POUR ÉQUIPER',
-    clickToApply: 'CLIQUER POUR APPLIQUER',
-    hudTelemetry: '● TÉLÉMÉTRIE ORBITALE',
-    hudTargetSector: 'Secteur Cible:',
-    hudCosmicIntel: 'Données Spatiales:',
-    hudArcOutput: 'Puissance Bus Électrique:',
-    hudJarvisStatus: 'Contrôleur de Vol:',
-    hudIntelDebrief: '📊 DÉBRIEF MISSION',
-    hudStarkArmory: '⚙️ HANGAR SPATIAL'
-  },
-  de: {
-    brandSub: 'FORTSCHRITTLICHE LUFT- UND RAUMFAHRT & INTERSTELLARE ARCHITEKTUR',
-    creditsLabel: 'BUDGET:',
-    assetVaultBtn: '🌐 3D-ASSET-TRESOR',
-    import3dBtn: '📂 3D IMPORTIEREN',
-    cinematicBtn: '👁 KINO-ANSICHT',
-    restoreFlightBtn: '✕ FLUGSTEUERUNG WIEDERHERSTELLEN',
-    sectorOpsTitle: '01 // SEKTOR-OPERATIONEN',
-    targetsBadge: 'ZIELE',
-    avionicsDiagTitle: '02 // AVIONIK-DIAGNOSE',
-    budgetSurplus: 'Budgetüberschuss',
-    dryMass: 'Trockenmasse vs Limit',
-    powerBalance: 'Leistungsbilanz (1 AU)',
-    calcDeltaV: 'Berechnetes Delta-V',
-    scienceReturn: 'Wissenschaftsertrag',
-    tabChassis: '🚀 SCHIFFSRUMPF',
-    tabFlags: '🇩🇪 NATIONALE ABZEICHEN',
-    tabPower: '⚛ ENERGIE & PROPULSIONSKERN',
-    tabTech: '🔬 WISSENSCHAFTLICHE AVIONIK',
-    tabEngines: '⚡ ANTRIEB & WARP',
-    tabCarriers: '🛸 TRÄGERSYSTEM',
-    launchBtn: 'FLUG GENEHMIGEN & STARTEN',
-    equipped: '● AUSGERÜSTET',
-    clickToEquip: 'ZUM AUSRÜSTEN KLICKEN',
-    clickToApply: 'ZUM ANWENDEN KLICKEN',
-    hudTelemetry: '● ORBITALE TELEMETRIE',
-    hudTargetSector: 'Zielsektor:',
-    hudCosmicIntel: 'Missionsdaten:',
-    hudArcOutput: 'Stromversorgungsbus:',
-    hudJarvisStatus: 'Flugleitung-Status:',
-    hudIntelDebrief: '📊 DEBRIEFING',
-    hudStarkArmory: '⚙️ RAUMSCHIFF-HANGAR'
-  },
-  it: {
-    brandSub: 'ARCHITETTO AEROSPAZIALE E VOLO INTERSTELLARE AVANZATO',
-    creditsLabel: 'CREDITI:',
-    assetVaultBtn: '🌐 CAVEAU 3D',
-    import3dBtn: '📂 IMPORTA 3D',
-    cinematicBtn: '👁 VISTA CINEMATOGRAFICA',
-    restoreFlightBtn: '✕ RIPRISTINA COMANDI',
-    sectorOpsTitle: '01 // OPERAZIONI DI SETTORE',
-    targetsBadge: 'OBIETTIVI',
-    avionicsDiagTitle: '02 // DIAGNOSTICA AVIONICA',
-    budgetSurplus: 'Surplus di Bilancio',
-    dryMass: 'Massa a Secco vs Limite',
-    powerBalance: 'Bilancio Energetico (1 AU)',
-    calcDeltaV: 'Delta-V Calcolato',
-    scienceReturn: 'Rendimento Scientifico',
-    tabChassis: '🚀 SCAFO ASTRONAVE',
-    tabFlags: '🇮🇹 INSEGNE NAZIONALI',
-    tabPower: '⚛ REATTORE & PROPULSIONE',
-    tabTech: '🔬 AVIONICA SCIENTIFICA',
-    tabEngines: '⚡ PROPULSIONE & WARP',
-    tabCarriers: '🛸 NAVE MADRE',
-    launchBtn: 'APPROVA & INIZIA IL VOLO',
-    equipped: '● EQUIPAGGIATO',
-    clickToEquip: 'CLICCA PER EQUIPAGGIARE',
-    clickToApply: 'CLICCA PER APPLICARE',
-    hudTelemetry: '● TELEMETRIA ORBITALE',
-    hudTargetSector: 'Settore Obiettivo:',
-    hudCosmicIntel: 'Dati di Missione:',
-    hudArcOutput: 'Potenza Bus Elettrico:',
-    hudJarvisStatus: 'Controllo di Volo:',
-    hudIntelDebrief: '📊 REPORT MISSIONE',
-    hudStarkArmory: '⚙️ HANGAR SPAZIALE'
-  },
-  es: {
-    brandSub: 'ARQUITECTO AEROESPACIAL Y DE VUELO INTERESTELAR AVANZADO',
-    creditsLabel: 'CRÉDITOS:',
-    assetVaultBtn: '🌐 BÓVEDA 3D',
-    import3dBtn: '📂 IMPORTAR 3D',
-    cinematicBtn: '👁 VISTA CINEMATOGRÁFICA',
-    restoreFlightBtn: '✕ RESTAURAR MANDOS DE VUELO',
-    sectorOpsTitle: '01 // OPERACIONES DE SECTOR',
-    targetsBadge: 'OBJETIVOS',
-    avionicsDiagTitle: '02 // DIAGNÓSTICO AVIONICO',
-    budgetSurplus: 'Superávit Presupuestario',
-    dryMass: 'Masa en Seco vs Límite',
-    powerBalance: 'Balance de Energía (1 AU)',
-    calcDeltaV: 'Delta-V Calculado',
-    scienceReturn: 'Rendimiento Científico',
-    tabChassis: '🚀 CASCO DE NAVE',
-    tabFlags: '🇪🇸 INSIGNIAS NACIONALES',
-    tabPower: '⚛ REACTOR DE ENERGÍA',
-    tabTech: '🔬 AVIONICA SCIENTIFICA',
-    tabEngines: '⚡ PROPULSIÓN & WARP',
-    tabCarriers: '🛸 NAVE NODRIZA',
-    launchBtn: 'APROBAR & INICIAR LANZAMIENTO',
-    equipped: '● EQUIPADO',
-    clickToEquip: 'CLIC PARA EQUIPAR',
-    clickToApply: 'CLIC PARA APLICAR',
-    hudTelemetry: '● TELEMETRÍA ORBITAL',
-    hudTargetSector: 'Sector Objetivo:',
-    hudCosmicIntel: 'Datos Cósmicos:',
-    hudArcOutput: 'Potencia Barra Eléctrica:',
-    hudJarvisStatus: 'Control de Vuelo:',
-    hudIntelDebrief: '📊 INFORME DE MISIÓN',
-    hudStarkArmory: '⚙️ HANGAR ESPACIAL'
-  }
-};
-
 export class NasaMissionDesigner {
-  private currentLanguage: string = 'en_us';
+  private currentLanguage: SupportedLang = 'en_us';
   private selectedMission: NasaMission = NASA_MISSIONS[0];
+  private isTrajectoryLocked = false;
+  private missionTickerId: ReturnType<typeof setInterval> | null = null;
+  private lastPhaDistAU: number | null = null;
   
   // Active equipped inventory items
   private selectedChassisId = 'quinjet';
@@ -651,12 +340,7 @@ export class NasaMissionDesigner {
     private onLaunchCallback: (mission: NasaMission, telemetry: any) => void,
     private onShipChangedCallback?: () => void
   ) {
-    try {
-      const savedLang = localStorage.getItem('nasa_game_lang');
-      if (savedLang && HANGAR_I18N[savedLang]) {
-        this.currentLanguage = savedLang;
-      }
-    } catch (e) {}
+    this.currentLanguage = setCurrentLang(getCurrentLang());
 
     this.createLobbyDOM();
     this.initAudio();
@@ -798,7 +482,7 @@ export class NasaMissionDesigner {
           <div class="topbar-left">
             <div class="brand-monogram" style="background: linear-gradient(135deg, #0b3d91 0%, #1e3a8a 100%); border-color: rgba(56, 189, 248, 0.4); font-size: 0.85rem; font-weight: 800; letter-spacing: 0.5px;">NASA</div>
             <div class="brand-titles">
-              <div class="brand-name">NASA <span>MISSION-VIZ</span> <span class="tag-sword" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">DEEP SPACE GNC</span></div>
+              <div class="brand-name">NASA <span>MISSION-VIZ</span> <span id="brand-tag" class="tag-sword" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">DEEP SPACE GNC</span></div>
               <div class="brand-sub">INTERSTELLAR FLIGHT ARCHITECTURE & KEPLERIAN DYNAMICS</div>
             </div>
           </div>
@@ -817,7 +501,7 @@ export class NasaMissionDesigner {
               <span class="pill-label">CREDITS:</span>
               <strong id="mission-budget-display" class="pill-val">$480.0M</strong>
             </div>
-            <div class="lang-selector-wrap" title="Select Game Language / Lựa chọn ngôn ngữ">
+            <div id="lang-selector-wrap" class="lang-selector-wrap" title="Select interface language">
               <span class="lang-icon">🌐</span>
               <select id="select-game-language" class="select-game-language" aria-label="Game Language">
                 <option value="en_us">🇺🇸 English (US)</option>
@@ -854,21 +538,21 @@ export class NasaMissionDesigner {
               <div class="dossier-title-wrap">
                 <span class="dossier-avatar">🌐</span>
                 <div>
-                  <div style="font-family: var(--font-tech); font-size: 1.45rem; color: #fff; font-weight: 700;">FREE 3D SPACECRAFT & BATTLESHIP ASSETS</div>
-                  <div style="font-size: 0.85rem; color: var(--stark-cyan); margin-top: 2px;">Official NASA, Smithsonian & CC0 Sci-Fi Repositories</div>
+                  <div id="vault-title" style="font-family: var(--font-tech); font-size: 1.45rem; color: #fff; font-weight: 700;">FREE 3D SPACECRAFT REPOSITORIES</div>
+                  <div id="vault-subtitle" style="font-size: 0.85rem; color: var(--stark-cyan); margin-top: 2px;">Official NASA, Smithsonian & CC0 Public Archives</div>
                 </div>
               </div>
-              <button class="dossier-close-btn" id="vault-btn-close">✕</button>
+              <button class="dossier-close-btn" id="vault-btn-close" aria-label="Close 3D asset vault">✕</button>
             </div>
             
-            <p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px;">
-              The game includes built-in models downloaded directly from official open-source archives. You can also download any model from the sources below and load it instantly using the <strong>📂 IMPORT 3D</strong> button (.glb, .gltf, .obj):
+            <p id="vault-intro" style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px;">
+              This simulator includes built-in 3D models. You can also download a model from the archives below and load it with <strong>📂 IMPORT 3D</strong> (.glb, .gltf, .obj):
             </p>
 
             <div class="vault-sources-list">
               <div class="vault-source-item">
-                <div class="vault-source-title">🚀 NASA 3D Resources (Official Public Domain)</div>
-                <div class="vault-source-desc">Official 3D models of Space Shuttle, Apollo Lunar Module, Orion Artemis, Voyager, Hubble, Curiosity, and ISS.</div>
+                <div id="vault-src-nasa-title" class="vault-source-title">🚀 NASA 3D Resources (Public Domain)</div>
+                <div id="vault-src-nasa-desc" class="vault-source-desc">Official 3D models of the Space Shuttle, Apollo Lunar Module, Orion, Voyager, Hubble, Curiosity, and ISS.</div>
                 <div class="vault-links">
                   <a href="https://github.com/nasa/NASA-3D-Resources" target="_blank" rel="noopener">GitHub: nasa/NASA-3D-Resources ↗</a>
                   <a href="https://nasa3d.arc.nasa.gov/" target="_blank" rel="noopener">NASA 3D Portal: nasa3d.arc.nasa.gov ↗</a>
@@ -876,8 +560,8 @@ export class NasaMissionDesigner {
               </div>
 
               <div class="vault-source-item">
-                <div class="vault-source-title">⚔️ Kenney Space Kit (CC0 Public Domain)</div>
-                <div class="vault-source-desc">High-quality sci-fi battleships, speeders, cargo cruisers, interceptors, and modular space stations. 100% free for any project.</div>
+                <div id="vault-src-kenney-title" class="vault-source-title">⚔️ Kenney Space Kit (CC0 Public Domain)</div>
+                <div id="vault-src-kenney-desc" class="vault-source-desc">Free sci-fi spacecraft, cargo ships, interceptors, and modular space station parts.</div>
                 <div class="vault-links">
                   <a href="https://kenney.nl/assets/space-kit" target="_blank" rel="noopener">Kenney.nl Space Kit ↗</a>
                   <a href="https://github.com/shorepine/kenney" target="_blank" rel="noopener">GitHub: shorepine/kenney ↗</a>
@@ -885,16 +569,16 @@ export class NasaMissionDesigner {
               </div>
 
               <div class="vault-source-item">
-                <div class="vault-source-title">🏛️ Smithsonian 3D Digitization</div>
-                <div class="vault-source-desc">High-precision 3D scans of Apollo 11 Command Module "Columbia", Space Shuttle Discovery, and historic spacecraft.</div>
+                <div id="vault-src-smithsonian-title" class="vault-source-title">🏛️ Smithsonian 3D Digitization</div>
+                <div id="vault-src-smithsonian-desc" class="vault-source-desc">High-resolution 3D scans of the Apollo 11 Command Module Columbia, Space Shuttle Discovery, and historic craft.</div>
                 <div class="vault-links">
                   <a href="https://3d.si.edu/" target="_blank" rel="noopener">Smithsonian 3D Collection ↗</a>
                 </div>
               </div>
 
               <div class="vault-source-item">
-                <div class="vault-source-title">🪐 Sketchfab Creative Commons Spacecraft</div>
-                <div class="vault-source-desc">Thousands of community-created sci-fi cruisers, battle dreadnoughts, and concept spacecraft available under CC0 and CC-BY licenses.</div>
+                <div id="vault-src-sketchfab-title" class="vault-source-title">🪐 Sketchfab CC0 Spacecraft</div>
+                <div id="vault-src-sketchfab-desc" class="vault-source-desc">Community-shared sci-fi cruisers and concept spacecraft available under CC0 and CC-BY licenses.</div>
                 <div class="vault-links">
                   <a href="https://sketchfab.com/search?q=spaceship&type=models&licenses=cc0" target="_blank" rel="noopener">Sketchfab CC0 Spaceships ↗</a>
                 </div>
@@ -1023,7 +707,7 @@ export class NasaMissionDesigner {
             <span id="hud-mission-name">NASA DART KINETIC IMPACTOR</span>
           </div>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="color: var(--stark-cyan); font-size: 0.72rem;">● ORBITAL TELEMETRY</span>
+            <span id="hud-telemetry-badge" style="color: var(--stark-cyan); font-size: 0.72rem;">● ORBITAL TELEMETRY</span>
             <button id="hud-btn-minimize" class="hud-mini-btn" title="Minimize / Expand">—</button>
           </div>
         </div>
@@ -1037,27 +721,27 @@ export class NasaMissionDesigner {
           <div class="nasa-wsmv-section">
             <div class="nasa-wsmv-header">
               <span class="nasa-badge">NASA WSMV</span>
-              <span style="letter-spacing: 0.5px;">KEPLERIAN TELEMETRY & PHA RADAR</span>
+              <span id="hud-wsmv-header" style="letter-spacing: 0.5px;">KEPLERIAN ORBIT & PHA RADAR</span>
             </div>
             
             <div class="wsmv-telemetry-grid">
-              <div class="wsmv-item"><span class="wsmv-lbl">SMA (a):</span><span class="wsmv-val" id="wsmv-a">1.000 AU</span></div>
-              <div class="wsmv-item"><span class="wsmv-lbl">ECC (e):</span><span class="wsmv-val" id="wsmv-e">0.0000</span></div>
-              <div class="wsmv-item"><span class="wsmv-lbl">INC (i):</span><span class="wsmv-val" id="wsmv-i">0.00°</span></div>
-              <div class="wsmv-item"><span class="wsmv-lbl">NODE (Ω):</span><span class="wsmv-val" id="wsmv-node">0.00°</span></div>
-              <div class="wsmv-item"><span class="wsmv-lbl">PERI (ω):</span><span class="wsmv-val" id="wsmv-peri">0.00°</span></div>
-              <div class="wsmv-item"><span class="wsmv-lbl">HEAD:</span><span class="wsmv-val" id="wsmv-head">0.00°</span></div>
+              <div class="wsmv-item"><span class="wsmv-lbl" id="wsmv-lbl-sma">SMA (a):</span><span class="wsmv-val" id="wsmv-a">1.000 AU</span></div>
+              <div class="wsmv-item"><span class="wsmv-lbl" id="wsmv-lbl-ecc">ECC (e):</span><span class="wsmv-val" id="wsmv-e">0.0000</span></div>
+              <div class="wsmv-item"><span class="wsmv-lbl" id="wsmv-lbl-inc">INC (i):</span><span class="wsmv-val" id="wsmv-i">0.00°</span></div>
+              <div class="wsmv-item"><span class="wsmv-lbl" id="wsmv-lbl-node">NODE (Ω):</span><span class="wsmv-val" id="wsmv-node">0.00°</span></div>
+              <div class="wsmv-item"><span class="wsmv-lbl" id="wsmv-lbl-peri">PERI (ω):</span><span class="wsmv-val" id="wsmv-peri">0.00°</span></div>
+              <div class="wsmv-item"><span class="wsmv-lbl" id="wsmv-lbl-head">HEAD:</span><span class="wsmv-val" id="wsmv-head">0.00°</span></div>
             </div>
 
             <!-- Proximity Radar for Potentially Hazardous Asteroids (PHAs) -->
             <div class="pha-radar-box">
               <div class="pha-radar-header">
                 <span class="radar-ping-icon">📡</span>
-                <span>NEAREST PHA:</span>
+                <span id="pha-nearest-label">NEAREST ASTEROID (PHA):</span>
                 <span id="pha-nearest-name" class="pha-name-tag">99942 Apophis</span>
               </div>
               <div class="pha-distance-row">
-                <span class="pha-dist-lbl">RANGE:</span>
+                <span class="pha-dist-lbl" id="pha-range-label">RANGE:</span>
                 <strong id="pha-nearest-dist" class="pha-dist-val">-- AU</strong>
                 <span id="pha-hazard-badge" class="hazard-badge-safe">TRACKING</span>
               </div>
@@ -1082,25 +766,25 @@ export class NasaMissionDesigner {
     debrief.innerHTML = `
       <div class="debrief-box">
         <div style="font-size: 3.5rem; margin-bottom: 8px;">🛡️</div>
-        <div style="font-family: var(--font-tech); font-size: 1.6rem; color: var(--stark-gold); margin-bottom: 12px;">
-          S.W.O.R.D. & NASA MISSION SUMMARY
+        <div id="debrief-title" style="font-family: var(--font-tech); font-size: 1.6rem; color: var(--stark-gold); margin-bottom: 12px;">
+          EDUCATIONAL SIMULATION REPORT
         </div>
         <p style="color: #a0b5d0; font-size: 0.95rem; line-height: 1.6;" id="debrief-summary"></p>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; text-align: left;">
           <div class="gauge-box">
-            <div class="gauge-label">Cosmic Intel Data</div>
+            <div id="debrief-lbl-science" class="gauge-label">Science Data Collected</div>
             <div class="gauge-value" style="color: var(--stark-gold);" id="debrief-score-science">0 pts</div>
           </div>
           <div class="gauge-box">
-            <div class="gauge-label">Mission Budget Preserved</div>
+            <div id="debrief-lbl-budget" class="gauge-label">Remaining Budget</div>
             <div class="gauge-value" style="color: var(--stark-cyan);" id="debrief-score-budget">$0M</div>
           </div>
           <div class="gauge-box">
-            <div class="gauge-label">Hull & Systems Integrity</div>
-            <div class="gauge-value" style="color: #2ecc71;" id="debrief-score-reliability">99.2%</div>
+            <div id="debrief-lbl-reliability" class="gauge-label">Model Mode</div>
+            <div class="gauge-value" style="color: #2ecc71;" id="debrief-score-reliability">3D SIM</div>
           </div>
           <div class="gauge-box">
-            <div class="gauge-label">NASA Flight Certification</div>
+            <div id="debrief-lbl-cert" class="gauge-label">Simulation Outcome</div>
             <div class="gauge-value" style="color: var(--stark-cyan);" id="debrief-rank">NASA FLIGHT DIRECTOR</div>
           </div>
         </div>
@@ -2674,7 +2358,8 @@ export class NasaMissionDesigner {
       }, 5000);
     };
 
-    showToast(`⏳ Loading 3D model: ${file.name}...`);
+    const t = getTexts(this.currentLanguage);
+    showToast(formatTpl(t.toastLoading, { file: file.name }));
 
     if (ext === 'glb' || ext === 'gltf') {
       const reader = new FileReader();
@@ -2684,14 +2369,14 @@ export class NasaMissionDesigner {
           const loader = new GLTFLoader();
           loader.parse(buffer, '', (gltf) => {
             this.applyCustom3DModel(gltf.scene, file.name);
-            showToast(`✓ LOADED 3D ASSET: ${file.name.toUpperCase()}`);
+            showToast(formatTpl(getTexts(this.currentLanguage).toastLoadedGltf, { file: file.name }));
           }, (err: any) => {
             console.error(err);
-            showToast(`⚠️ Error parsing GLTF/GLB: ${err?.message || err}`, true);
+            showToast(formatTpl(getTexts(this.currentLanguage).toastErrParseGltf, { err: err?.message || String(err) }), true);
           });
         } catch (err) {
           console.error(err);
-          showToast(`⚠️ Error reading GLTF file: ${(err as any)?.message || err}`, true);
+          showToast(formatTpl(getTexts(this.currentLanguage).toastErrReadGltf, { err: (err as any)?.message || String(err) }), true);
         }
       };
       reader.readAsArrayBuffer(file);
@@ -2703,15 +2388,15 @@ export class NasaMissionDesigner {
           const loader = new OBJLoader();
           const obj = loader.parse(text);
           this.applyCustom3DModel(obj, file.name);
-          showToast(`✓ LOADED 3D OBJ ASSET: ${file.name.toUpperCase()}`);
+          showToast(formatTpl(getTexts(this.currentLanguage).toastLoadedObj, { file: file.name }));
         } catch (err) {
           console.error(err);
-          showToast(`⚠️ Error parsing OBJ file: ${(err as any)?.message || err}`, true);
+          showToast(formatTpl(getTexts(this.currentLanguage).toastErrParseObj, { err: (err as any)?.message || String(err) }), true);
         }
       };
       reader.readAsText(file);
     } else {
-      showToast(`⚠️ Unsupported file format: .${ext}. Please use .glb, .gltf, or .obj`, true);
+      showToast(formatTpl(t.toastErrUnsupported, { ext: ext || '?' }), true);
     }
   }
 
@@ -2755,11 +2440,16 @@ export class NasaMissionDesigner {
     const shipTitle = document.getElementById('hangar-ship-name');
     const shipClass = document.getElementById('hangar-ship-class');
     if (shipTitle) shipTitle.textContent = fileName.toUpperCase().replace(/\.[^/.]+$/, "");
-    if (shipClass) shipClass.textContent = 'CUSTOM 3D ASSET';
+    if (shipClass) shipClass.textContent = getTexts(this.currentLanguage).customAssetClass;
     this.playEquipSound();
   }
 
   public getSelectedCraftName(): string {
+    if (this.isCustomModelLoaded && this.customModelName) {
+      return this.customModelName.replace(/\.[^/.]+$/, '');
+    }
+    const loc = getSpacecraftText(this.selectedChassisId, this.currentLanguage);
+    if (loc) return loc.name;
     const c = SPACECRAFT_FLEET.find(it => it.id === this.selectedChassisId);
     return c ? c.name : 'Orbital Spacecraft';
   }
@@ -2899,16 +2589,27 @@ export class NasaMissionDesigner {
     if (!list) return;
     list.innerHTML = '';
 
+    const t = getTexts(this.currentLanguage);
+
     NASA_MISSIONS.forEach(m => {
+      const loc = getMissionText(m.id, this.currentLanguage);
+      const title = loc ? loc.title : m.title;
+      const dest = loc ? loc.destination : m.destination;
+      const badge = loc ? loc.badge : m.badge;
+      const desc = loc ? loc.description : m.description;
+      const budgetText = `${formatNum(m.budgetCredits, this.currentLanguage)}M`;
+      const reqText = formatNum(m.reqDeltaV, this.currentLanguage);
+
       const item = document.createElement('div');
       item.className = `nasa-mission-item ${m.id === this.selectedMission.id ? 'active' : ''}`;
+      item.title = desc;
       item.innerHTML = `
-        <div style="font-size: 0.72rem; color: var(--stark-gold); font-weight: 700; margin-bottom: 2px;">${m.badge}</div>
-        <div class="mission-name">${m.title}</div>
-        <div class="mission-dest">📍 ${m.destination}</div>
+        <div style="font-size: 0.72rem; color: var(--stark-gold); font-weight: 700; margin-bottom: 2px;">${badge}</div>
+        <div class="mission-name">${title}</div>
+        <div class="mission-dest">📍 ${dest}</div>
         <div class="mission-meta">
-          <span>Mission Budget: <strong>$${m.budgetCredits}M</strong></span>
-          <span>Req Δv: <strong>${m.reqDeltaV} m/s</strong></span>
+          <span>${formatTpl(t.missionBudgetMeta, { budget: `<strong>${budgetText}</strong>` })}</span>
+          <span>${formatTpl(t.reqDeltaVMeta, { req: `<strong>${reqText}</strong>` })}</span>
         </div>
       `;
       item.onclick = () => {
@@ -2921,7 +2622,7 @@ export class NasaMissionDesigner {
     });
 
     const creditEl = document.getElementById('mission-budget-display');
-    if (creditEl) creditEl.textContent = `$${this.selectedMission.budgetCredits.toFixed(1)}M`;
+    if (creditEl) creditEl.textContent = `${formatNum(this.selectedMission.budgetCredits, this.currentLanguage, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}M`;
   }
 
   private renderArmoryGrid() {
@@ -2929,21 +2630,25 @@ export class NasaMissionDesigner {
     if (!grid) return;
     grid.innerHTML = '';
 
-    const t = HANGAR_I18N[this.currentLanguage] || HANGAR_I18N['en_us'];
+    const t = getTexts(this.currentLanguage);
 
     if (this.activeTab === 'chassis') {
       SPACECRAFT_FLEET.forEach(it => {
         const isEq = it.id === this.selectedChassisId;
+        const loc = getSpacecraftText(it.id, this.currentLanguage);
+        const name = loc ? loc.name : it.name;
+        const badge = (loc && loc.badge) ? loc.badge : it.badge;
+        const desc = loc ? loc.desc : it.desc;
         const card = document.createElement('div');
         card.className = `armory-card ${it.rarity} ${isEq ? 'equipped' : ''}`;
         card.innerHTML = `
           <div>
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;">
-              <span class="armory-item-name">${it.name}</span>
-              <span class="armory-item-badge" style="font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #00f0ff; font-family: monospace; font-weight: 700;">${it.badge}</span>
+              <span class="armory-item-name">${name}</span>
+              <span class="armory-item-badge" style="font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #00f0ff; font-family: monospace; font-weight: 700;">${badge}</span>
             </div>
-            <div class="armory-item-stats">${it.mass.toLocaleString()} kg • $${it.cost}M • Max ${it.cap} Modules</div>
-            <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">${it.desc}</div>
+            <div class="armory-item-stats">${formatTpl(t.cardChassisStats, { mass: formatNum(it.mass, this.currentLanguage), cost: formatNum(it.cost, this.currentLanguage), cap: it.cap })}</div>
+            <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">${desc}</div>
           </div>
           <div class="armory-item-perk">${isEq ? t.equipped : t.clickToEquip}</div>
         `;
@@ -2952,10 +2657,7 @@ export class NasaMissionDesigner {
           this.selectedChassisId = it.id;
           this.playEquipSound();
           this.rebuild3DShipModel();
-          const shipTitle = document.getElementById('hangar-ship-name');
-          const shipClass = document.getElementById('hangar-ship-class');
-          if (shipTitle) shipTitle.textContent = it.name.toUpperCase();
-          if (shipClass) shipClass.textContent = it.desc;
+          this.updateHeaderShipInfo();
           this.renderArmoryGrid();
           this.updateLiveTelemetry();
           this.onShipChangedCallback?.();
@@ -2965,19 +2667,23 @@ export class NasaMissionDesigner {
     } else if (this.activeTab === 'flags') {
       SUPPORTED_FLAGS.forEach(flag => {
         const isEq = flag.id === this.selectedFlagId;
+        const loc = getFlagText(flag.id, this.currentLanguage);
+        const name = loc ? loc.name : flag.name;
+        const agency = loc ? loc.agency : flag.agency;
+        const country = loc ? loc.country : flag.country;
         const card = document.createElement('div');
         card.className = `armory-card legendary ${isEq ? 'equipped' : ''}`;
         card.innerHTML = `
           <div style="display: flex; gap: 12px; align-items: center;">
             <span style="font-size: 2.2rem;">${flag.badge.split(' ')[0]}</span>
             <div>
-              <div class="armory-item-name">${flag.name}</div>
-              <div class="armory-item-stats" style="color: var(--stark-cyan);">${flag.agency}</div>
-              <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">Official 4K Decal Ratio ${flag.ratio}:1 • ${flag.country}</div>
+              <div class="armory-item-name">${name}</div>
+              <div class="armory-item-stats" style="color: var(--stark-cyan);">${agency}</div>
+              <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">${formatTpl(t.cardFlagStats, { ratio: flag.ratio, country })}</div>
             </div>
           </div>
           <div class="armory-item-perk" style="color: ${isEq ? 'var(--stark-cyan)' : 'var(--stark-gold)'};">
-            ${isEq ? `${t.equipped} (4K LIVERY)` : t.clickToApply}
+            ${isEq ? t.equippedLivery : t.clickToApply}
           </div>
         `;
         card.onclick = () => {
@@ -2989,23 +2695,26 @@ export class NasaMissionDesigner {
         };
         grid.appendChild(card);
       });
-        } else if (this.activeTab === 'power') {
+    } else if (this.activeTab === 'power') {
       const items = [
-        { id: 'solar_wings', name: 'UltraFlex Celestial Solar Wings', mass: 85, cost: 35, power: 1500, isSolar: true, rarity: 'epic', desc: 'Pin năng lượng mặt trời (1,500W ở 1 AU, giảm nhanh ở xa).' },
-        { id: 'arc_reactor', name: 'Stark Arc Reactor Mark 85', mass: 180, cost: 195, power: 2200, isSolar: false, rarity: 'mythic', desc: 'Lò phản ứng hạt nhân nano phát điện 2,200W vĩnh viễn ở mọi cự ly!' },
-        { id: 'vibranium_core', name: 'Wakandan Vibranium Matrix', mass: 130, cost: 220, power: 1900, isSolar: false, rarity: 'legendary', desc: 'Ma trận hấp thụ động năng và bức xạ vũ trụ phát 1,900W siêu ổn định.' },
-        { id: 'tesseract_core', name: 'Tesseract Space Stone Siphon', mass: 280, cost: 380, power: 4500, isSolar: false, rarity: 'mythic', desc: 'Khai thác chiều không gian vô tận sinh 4,500W nuôi toàn bộ hệ thống.' }
+        { id: 'solar_wings', mass: 85, cost: 35, power: 1500, rarity: 'epic' },
+        { id: 'arc_reactor', mass: 180, cost: 195, power: 2200, rarity: 'mythic' },
+        { id: 'vibranium_core', mass: 130, cost: 220, power: 1900, rarity: 'legendary' },
+        { id: 'tesseract_core', mass: 280, cost: 380, power: 4500, rarity: 'mythic' }
       ];
 
       items.forEach(it => {
         const isEq = it.id === this.selectedPowerId;
+        const loc = getPowerText(it.id, this.currentLanguage);
+        const name = loc ? loc.name : it.id;
+        const desc = loc ? loc.desc : '';
         const card = document.createElement('div');
         card.className = `armory-card ${it.rarity} ${isEq ? 'equipped' : ''}`;
         card.innerHTML = `
           <div>
-            <div class="armory-item-name">${it.name}</div>
-            <div class="armory-item-stats">${it.mass} kg • $${it.cost}M • ${it.power}W</div>
-            <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">${it.desc}</div>
+            <div class="armory-item-name">${name}</div>
+            <div class="armory-item-stats">${formatTpl(t.cardPowerStats, { mass: formatNum(it.mass, this.currentLanguage), cost: formatNum(it.cost, this.currentLanguage), power: formatNum(it.power, this.currentLanguage) })}</div>
+            <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">${desc}</div>
           </div>
           <div class="armory-item-perk">${isEq ? t.equipped : t.clickToEquip}</div>
         `;
@@ -3021,24 +2730,27 @@ export class NasaMissionDesigner {
       });
     } else if (this.activeTab === 'tech') {
       const items = [
-        { id: 'cerebro', name: 'Cerebro Bio-Scanner', mass: 40, cost: 35, power: 70, points: 45, rarity: 'epic', desc: 'Quét sóng ý thức và dạng sống sinh học ngoài hành tinh.' },
-        { id: 'dark_matter', name: 'Dark Matter Detector (Rocket Mod)', mass: 65, cost: 65, power: 140, points: 70, rarity: 'legendary', desc: 'Cảm biến vật chất tối nâng cấp bởi Rocket Raccoon.' },
-        { id: 'sonic_radar', name: 'Vibranium Sonic Radar (Shuri Tech)', mass: 120, cost: 110, power: 280, points: 110, rarity: 'legendary', desc: 'Sóng âm siêu thanh xuyên qua lớp vỏ băng dày hàng chục km.' },
-        { id: 'pym_bay', name: 'Pym Particle Compression Chamber', mass: 90, cost: 140, power: 310, points: 130, rarity: 'mythic', desc: 'Thu nhỏ mẫu vật chất vũ trụ, nhân đôi điểm dữ liệu khoa học!' },
-        { id: 'kree_array', name: 'Kree Subspace Jump Communicator', mass: 30, cost: 28, power: 45, points: 40, rarity: 'epic', desc: 'Truyền tín hiệu tức thời không độ trễ qua mạng lưới Jump-point.' }
+        { id: 'cerebro', mass: 40, cost: 35, power: 70, points: 45, rarity: 'epic' },
+        { id: 'dark_matter', mass: 65, cost: 65, power: 140, points: 70, rarity: 'legendary' },
+        { id: 'sonic_radar', mass: 120, cost: 110, power: 280, points: 110, rarity: 'legendary' },
+        { id: 'pym_bay', mass: 90, cost: 140, power: 310, points: 130, rarity: 'mythic' },
+        { id: 'kree_array', mass: 30, cost: 28, power: 45, points: 40, rarity: 'epic' }
       ];
 
       items.forEach(it => {
         const isEq = this.selectedTechIds.has(it.id);
+        const loc = getTechText(it.id, this.currentLanguage);
+        const name = loc ? loc.name : it.id;
+        const desc = loc ? loc.desc : '';
         const card = document.createElement('div');
         card.className = `armory-card ${it.rarity} ${isEq ? 'equipped' : ''}`;
         card.innerHTML = `
           <div>
-            <div class="armory-item-name">${it.name}</div>
-            <div class="armory-item-stats">${it.mass} kg • $${it.cost}M • ${it.power}W</div>
-            <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">${it.desc}</div>
+            <div class="armory-item-name">${name}</div>
+            <div class="armory-item-stats">${formatTpl(t.cardTechStats, { mass: formatNum(it.mass, this.currentLanguage), cost: formatNum(it.cost, this.currentLanguage), power: formatNum(it.power, this.currentLanguage) })}</div>
+            <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">${desc}</div>
           </div>
-          <div class="armory-item-perk" style="color: var(--stark-cyan);">${isEq ? `✓ ${t.equipped} (+${it.points} PTS)` : `+ ${t.clickToEquip}`}</div>
+          <div class="armory-item-perk" style="color: var(--stark-cyan);">${isEq ? formatTpl(t.equippedScience, { points: it.points }) : `+ ${t.clickToEquip}`}</div>
         `;
         card.onclick = () => {
           if (this.selectedTechIds.has(it.id)) {
@@ -3056,20 +2768,23 @@ export class NasaMissionDesigner {
       });
     } else if (this.activeTab === 'engines') {
       const items = [
-        { id: 'repulsor', name: 'Stark Repulsor Thrusters', dryMass: 40, fuelMass: 850, cost: 25, isp: 260, rarity: 'epic', desc: 'Động cơ phản lực sóng Repulsor công nghệ Iron Man.' },
-        { id: 'tesseract_drive', name: 'Hydra Tesseract Pulse Engine', dryMass: 90, fuelMass: 2400, cost: 80, isp: 345, rarity: 'legendary', desc: 'Xung năng lượng xanh Tesseract cho lực đẩy liên hành tinh mạnh mẽ.' },
-        { id: 'nova_warp', name: 'Nova Corps Graviton Warp Drive', dryMass: 65, fuelMass: 550, cost: 160, isp: 4400, rarity: 'mythic', desc: 'Động cơ bẻ cong trọng lực Nova Corps cho Delta-V vượt trội (>7,000 m/s)!' }
+        { id: 'repulsor', dryMass: 40, fuelMass: 850, cost: 25, isp: 260, rarity: 'epic' },
+        { id: 'tesseract_drive', dryMass: 90, fuelMass: 2400, cost: 80, isp: 345, rarity: 'legendary' },
+        { id: 'nova_warp', dryMass: 65, fuelMass: 550, cost: 160, isp: 4400, rarity: 'mythic' }
       ];
 
       items.forEach(it => {
         const isEq = it.id === this.selectedEngineId;
+        const loc = getEngineText(it.id, this.currentLanguage);
+        const name = loc ? loc.name : it.id;
+        const desc = loc ? loc.desc : '';
         const card = document.createElement('div');
         card.className = `armory-card ${it.rarity} ${isEq ? 'equipped' : ''}`;
         card.innerHTML = `
           <div>
-            <div class="armory-item-name">${it.name}</div>
-            <div class="armory-item-stats">Isp: ${it.isp}s • Nhiên liệu: ${it.fuelMass.toLocaleString()} kg • $${it.cost}M</div>
-            <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">${it.desc}</div>
+            <div class="armory-item-name">${name}</div>
+            <div class="armory-item-stats">${formatTpl(t.cardEngineStats, { isp: formatNum(it.isp, this.currentLanguage), fuel: formatNum(it.fuelMass, this.currentLanguage), cost: formatNum(it.cost, this.currentLanguage) })}</div>
+            <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">${desc}</div>
           </div>
           <div class="armory-item-perk">${isEq ? t.equipped : t.clickToEquip}</div>
         `;
@@ -3085,21 +2800,24 @@ export class NasaMissionDesigner {
       });
     } else if (this.activeTab === 'carriers') {
       const items = [
-        { id: 'sls_artemis', name: 'NASA Space Launch System (SLS) Block 1', cost: 95, cap: 27000, rarity: 'legendary', desc: 'Heavy lunar exploration launch vehicle lifting Orion spacecraft to Trans-Lunar Injection (TLI).' },
-        { id: 'saturn_v', name: 'NASA Saturn V Apollo Super Heavy Moon Rocket', cost: 120, cap: 45000, rarity: 'mythic', desc: 'Historic 3-stage super heavy-lift rocket with 7.5 million pounds of thrust.' },
-        { id: 'falcon_heavy', name: 'SpaceX Falcon Heavy Triple-Core Booster', cost: 65, cap: 22000, rarity: 'epic', desc: 'Three reusable Falcon 9 cores strapped together for high-energy interplanetary trajectories.' },
-        { id: 'starship_superheavy', name: 'Fully Reusable Starship & Super Heavy System', cost: 150, cap: 150000, rarity: 'mythic', desc: 'Next-generation orbital refueled transit architecture capable of massive payloads.' }
+        { id: 'sls_artemis', cost: 95, cap: 27000, rarity: 'legendary' },
+        { id: 'saturn_v', cost: 120, cap: 45000, rarity: 'mythic' },
+        { id: 'falcon_heavy', cost: 65, cap: 22000, rarity: 'epic' },
+        { id: 'starship_superheavy', cost: 150, cap: 150000, rarity: 'mythic' }
       ];
 
       items.forEach(it => {
         const isEq = it.id === this.selectedCarrierId;
+        const loc = getCarrierText(it.id, this.currentLanguage);
+        const name = loc ? loc.name : it.id;
+        const desc = loc ? loc.desc : '';
         const card = document.createElement('div');
         card.className = `armory-card ${it.rarity} ${isEq ? 'equipped' : ''}`;
         card.innerHTML = `
           <div>
-            <div class="armory-item-name">${it.name}</div>
-            <div class="armory-item-stats">Payload Capacity: ${it.cap.toLocaleString()} kg • $${it.cost}M</div>
-            <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">${it.desc}</div>
+            <div class="armory-item-name">${name}</div>
+            <div class="armory-item-stats">${formatTpl(t.cardCarrierStats, { cap: formatNum(it.cap, this.currentLanguage), cost: formatNum(it.cost, this.currentLanguage) })}</div>
+            <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">${desc}</div>
           </div>
           <div class="armory-item-perk">${isEq ? t.equipped : t.clickToEquip}</div>
         `;
@@ -3196,11 +2914,21 @@ export class NasaMissionDesigner {
     // Tsiolkovsky rocket equation
     const deltaV = Math.round(engine.isp * 9.80665 * Math.log(totalMass / dryMass));
 
+    const t = getTexts(this.currentLanguage);
+
     // Update Telemetry Elements
     const budgetEl = document.getElementById('metric-budget');
     const budgetBar = document.getElementById('bar-budget');
+    const budgetPctEl = document.getElementById('metric-budget-percent');
+    const budgetPct = Math.round((remainingBudget / this.selectedMission.budgetCredits) * 100);
+    if (budgetPctEl) {
+      budgetPctEl.textContent = `${budgetPct}%`;
+      budgetPctEl.style.color = remainingBudget >= 0 ? 'var(--accent-cyan, #38bdf8)' : '#e23636';
+    }
     if (budgetEl && budgetBar) {
-      budgetEl.textContent = `$${remainingBudget.toFixed(1)}M / $${this.selectedMission.budgetCredits}M`;
+      const remStr = formatNum(remainingBudget, this.currentLanguage, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      const totStr = formatNum(this.selectedMission.budgetCredits, this.currentLanguage);
+      budgetEl.textContent = `${remStr}M / ${totStr}M`;
       budgetEl.style.color = remainingBudget >= 0 ? '#00f0ff' : '#e23636';
       budgetBar.style.background = remainingBudget >= 0 ? '#00f0ff' : '#e23636';
       budgetBar.style.width = `${Math.max(0, Math.min(100, (remainingBudget / this.selectedMission.budgetCredits) * 100))}%`;
@@ -3210,8 +2938,8 @@ export class NasaMissionDesigner {
     const massBar = document.getElementById('bar-mass');
     const massLimitEl = document.getElementById('metric-mass-limit');
     if (massEl && massBar && massLimitEl) {
-      massLimitEl.textContent = `Max: ${carrier.cap.toLocaleString()} kg`;
-      massEl.textContent = `${totalMass.toLocaleString()} kg`;
+      massLimitEl.textContent = `${formatTpl(t.massLimitMeta, { max: formatNum(carrier.cap, this.currentLanguage) })} (${formatTpl(t.massBreakdownMeta, { dry: formatNum(dryMass, this.currentLanguage), fuel: formatNum(engine.fuelMass, this.currentLanguage) })})`;
+      massEl.textContent = `${formatNum(totalMass, this.currentLanguage)} kg`;
       const isMassOk = totalMass <= carrier.cap;
       massEl.style.color = isMassOk ? '#00f0ff' : '#e23636';
       massBar.style.background = isMassOk ? '#00f0ff' : '#e23636';
@@ -3222,8 +2950,12 @@ export class NasaMissionDesigner {
     const powerBar = document.getElementById('bar-power');
     const powerDistEl = document.getElementById('metric-power-distance');
     if (powerEl && powerBar && powerDistEl) {
-      powerDistEl.textContent = `@ ${this.selectedMission.distanceAU} AU (Core: ${powerGenerated}W, Cons: ${totalPowerConsumed}W)`;
-      powerEl.textContent = `${powerBalance >= 0 ? '+' : ''}${powerBalance} W`;
+      powerDistEl.textContent = formatTpl(t.powerDistMeta, {
+        au: formatNum(this.selectedMission.distanceAU, this.currentLanguage),
+        gen: formatNum(powerGenerated, this.currentLanguage),
+        cons: formatNum(totalPowerConsumed, this.currentLanguage)
+      });
+      powerEl.textContent = `${powerBalance >= 0 ? '+' : ''}${formatNum(powerBalance, this.currentLanguage)} W`;
       const isPowerOk = powerBalance >= 0;
       powerEl.style.color = isPowerOk ? '#00f0ff' : '#e23636';
       powerBar.style.background = isPowerOk ? '#00f0ff' : '#e23636';
@@ -3234,8 +2966,8 @@ export class NasaMissionDesigner {
     const deltaVBar = document.getElementById('bar-deltav');
     const deltaVReqEl = document.getElementById('metric-deltav-req');
     if (deltaVEl && deltaVBar && deltaVReqEl) {
-      deltaVReqEl.textContent = `Req: ${this.selectedMission.reqDeltaV} m/s`;
-      deltaVEl.textContent = `${deltaV} m/s`;
+      deltaVReqEl.textContent = formatTpl(t.deltaVReqMeta, { req: formatNum(this.selectedMission.reqDeltaV, this.currentLanguage) });
+      deltaVEl.textContent = `${formatNum(deltaV, this.currentLanguage)} m/s`;
       const isDeltaVOk = deltaV >= this.selectedMission.reqDeltaV;
       deltaVEl.style.color = isDeltaVOk ? '#00f0ff' : '#e23636';
       deltaVBar.style.background = isDeltaVOk ? '#00f0ff' : '#e23636';
@@ -3246,8 +2978,8 @@ export class NasaMissionDesigner {
     const scienceBar = document.getElementById('bar-science');
     const scienceTargetEl = document.getElementById('metric-science-target');
     if (scienceEl && scienceBar && scienceTargetEl) {
-      scienceTargetEl.textContent = `Target: ${this.selectedMission.minSciencePoints} pts`;
-      scienceEl.textContent = `${totalScience} pts`;
+      scienceTargetEl.textContent = formatTpl(t.scienceTargetMeta, { target: formatNum(this.selectedMission.minSciencePoints, this.currentLanguage) });
+      scienceEl.textContent = `${formatNum(totalScience, this.currentLanguage)} pts`;
       const isScienceOk = totalScience >= this.selectedMission.minSciencePoints;
       scienceEl.style.color = isScienceOk ? '#f6b800' : '#8fa6c5';
       scienceBar.style.background = '#f6b800';
@@ -3260,25 +2992,25 @@ export class NasaMissionDesigner {
 
     let errorReason = '';
     if (remainingBudget < 0) {
-      errorReason = `🔴 FLIGHT CONTROLLER: MISSION BUDGET EXCEEDED BY $${Math.abs(remainingBudget).toFixed(1)}M. Reconfigure spacecraft payload or launch booster.`;
+      errorReason = formatTpl(t.errBudget, { excess: formatNum(Math.abs(remainingBudget), this.currentLanguage, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) });
     } else if (totalMass > carrier.cap) {
-      errorReason = `🔴 FLIGHT CONTROLLER: PAYLOAD OVERWEIGHT BY ${(totalMass - carrier.cap).toLocaleString()} kg. Launch vehicle capacity exceeded!`;
+      errorReason = formatTpl(t.errOverweight, { excess: formatNum(totalMass - carrier.cap, this.currentLanguage) });
     } else if (powerBalance < 0) {
-      errorReason = `🔴 FLIGHT CONTROLLER: ELECTRICAL POWER DEFICIT (${powerBalance}W). Solar array output insufficient at ${this.selectedMission.distanceAU} AU! Equip RTG or reactor.`;
+      errorReason = formatTpl(t.errPower, { deficit: formatNum(Math.abs(powerBalance), this.currentLanguage), au: formatNum(this.selectedMission.distanceAU, this.currentLanguage) });
     } else if (deltaV < this.selectedMission.reqDeltaV) {
-      errorReason = `🔴 FLIGHT CONTROLLER: INSUFFICIENT ORBITAL DELTA-V (Deficit: ${this.selectedMission.reqDeltaV - deltaV} m/s). Cannot achieve injection orbit!`;
+      errorReason = formatTpl(t.errDeltaV, { deficit: formatNum(this.selectedMission.reqDeltaV - deltaV, this.currentLanguage) });
     } else if (this.selectedTechIds.size === 0) {
-      errorReason = `🔴 FLIGHT CONTROLLER: NO SCIENTIFIC AVIONICS INSTALLED. Spacecraft cannot collect mission telemetry!`;
+      errorReason = t.errNoTech;
     } else if (this.selectedTechIds.size > chassis.cap) {
-      errorReason = `🔴 FLIGHT CONTROLLER: PAYLOAD BAY CAPACITY EXCEEDED: Hull supports a maximum of ${chassis.cap} avionics bays.`;
+      errorReason = formatTpl(t.errMaxTech, { max: chassis.cap });
     }
 
     if (errorReason) {
-      if (msgEl) msgEl.innerHTML = errorReason;
+      if (msgEl) msgEl.textContent = errorReason;
       if (btnLaunch) btnLaunch.disabled = true;
     } else {
       if (msgEl) {
-        msgEl.innerHTML = `<span style="color: #10b981;">●</span> FLIGHT DIRECTOR: ALL SYSTEMS NOMINAL • LAUNCH PROFILE AUTHORIZED`;
+        msgEl.textContent = t.statusNominal;
       }
       if (btnLaunch) btnLaunch.disabled = false;
     }
@@ -3428,57 +3160,115 @@ export class NasaMissionDesigner {
     }
   }
 
-  public setLanguage(lang: string) {
-    if (!HANGAR_I18N[lang]) {
-      lang = 'en_us';
+  private updateHeaderShipInfo() {
+    const t = getTexts(this.currentLanguage);
+    const shipTitle = document.getElementById('hangar-ship-name');
+    const shipClass = document.getElementById('hangar-ship-class');
+    if (this.isCustomModelLoaded && this.customModelName) {
+      if (shipTitle) shipTitle.textContent = this.customModelName.toUpperCase().replace(/\.[^/.]+$/, '');
+      if (shipClass) shipClass.textContent = t.customAssetClass;
+      return;
     }
-    this.currentLanguage = lang;
-    try {
-      localStorage.setItem('nasa_game_lang', lang);
-    } catch (e) {}
+    const craft = SPACECRAFT_FLEET.find(c => c.id === this.selectedChassisId);
+    const loc = getSpacecraftText(this.selectedChassisId, this.currentLanguage);
+    if (shipTitle) shipTitle.textContent = (loc ? loc.name : craft?.name || 'Orbital Spacecraft').toUpperCase();
+    if (shipClass) shipClass.textContent = loc ? loc.desc : (craft?.desc || '');
+  }
+
+  private updatePhaBadgeLanguage() {
+    if (this.lastPhaDistAU === null) return;
+    const t = getTexts(this.currentLanguage);
+    const badgeEl = document.getElementById('pha-hazard-badge');
+    if (!badgeEl) return;
+    if (this.lastPhaDistAU < 0.05) {
+      badgeEl.textContent = t.hudPhaIntercept;
+    } else if (this.lastPhaDistAU < 0.3) {
+      badgeEl.textContent = t.hudPhaApproaching;
+    } else {
+      badgeEl.textContent = t.hudPhaTracking;
+    }
+  }
+
+  private updateDebriefLanguage() {
+    const t = getTexts(this.currentLanguage);
+    const setTxt = (id: string, val: string) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
+    setTxt('debrief-title', t.debriefTitle);
+    setTxt('debrief-lbl-science', t.debriefScienceLabel);
+    setTxt('debrief-lbl-budget', t.debriefBudgetLabel);
+    setTxt('debrief-lbl-reliability', t.debriefReliabilityLabel);
+    setTxt('debrief-lbl-cert', t.debriefCertLabel);
+    setTxt('debrief-btn-restart', t.debriefReturnBtn);
+    setTxt('debrief-score-reliability', '3D SIM');
+
+    const missionLoc = getMissionText(this.selectedMission.id, this.currentLanguage);
+    const destination = missionLoc ? missionLoc.destination : this.selectedMission.destination;
+    const isSuccess = this.currentScienceCollected >= this.selectedMission.minSciencePoints;
+    const rankEl = document.getElementById('debrief-rank');
+    const summaryEl = document.getElementById('debrief-summary');
+    if (rankEl) rankEl.textContent = isSuccess ? t.debriefRankSuccess : t.debriefRankPartial;
+    if (summaryEl) {
+      const tpl = isSuccess ? t.debriefSummarySuccess : t.debriefSummaryPartial;
+      summaryEl.innerHTML = formatTpl(tpl, {
+        actual: formatNum(this.currentScienceCollected, this.currentLanguage),
+        target: formatNum(this.selectedMission.minSciencePoints, this.currentLanguage),
+        destination
+      });
+    }
+  }
+
+  public setLanguage(lang: string) {
+    const resolved = setCurrentLang(lang);
+    this.currentLanguage = resolved;
 
     const langSelect = document.getElementById('select-game-language') as HTMLSelectElement | null;
-    if (langSelect && langSelect.value !== lang) {
-      langSelect.value = lang;
+    if (langSelect && langSelect.value !== resolved) {
+      langSelect.value = resolved;
     }
 
-    const t = HANGAR_I18N[lang] || HANGAR_I18N['en_us'];
+    const t = getTexts(resolved);
 
     // Topbar
     const brandSub = document.querySelector('.brand-sub');
     if (brandSub) brandSub.textContent = t.brandSub;
-
+    const brandTag = document.getElementById('brand-tag');
+    if (brandTag) brandTag.textContent = t.brandTag;
     const creditLabel = document.querySelector('.pill-label');
     if (creditLabel) creditLabel.textContent = t.creditsLabel;
 
+    const langWrap = document.getElementById('lang-selector-wrap');
+    if (langWrap) langWrap.title = t.langSelectorTitle;
+    if (langSelect) langSelect.setAttribute('aria-label', t.langSelectorAria);
+
     const btnVault = document.getElementById('btn-resource-vault');
-    if (btnVault) btnVault.textContent = t.assetVaultBtn;
-
+    if (btnVault) { btnVault.textContent = t.assetVaultBtn; btnVault.title = t.assetVaultTitle; }
     const btnImport = document.getElementById('btn-import-3d');
-    if (btnImport) btnImport.textContent = t.import3dBtn;
-
+    if (btnImport) { btnImport.textContent = t.import3dBtn; btnImport.title = t.import3dTitle; }
     const btnToggleCinematic = document.getElementById('btn-toggle-cinematic');
-    if (btnToggleCinematic) btnToggleCinematic.textContent = t.cinematicBtn;
-
+    if (btnToggleCinematic) { btnToggleCinematic.textContent = t.cinematicBtn; btnToggleCinematic.title = t.cinematicTitle; }
     const btnExitCinematic = document.getElementById('btn-exit-cinematic');
     if (btnExitCinematic) btnExitCinematic.textContent = t.restoreFlightBtn;
 
-    // Sector Operations Blade
-    const sectorTitle = document.querySelector('#blade-missions .blade-title');
-    if (sectorTitle) {
-      sectorTitle.innerHTML = `${t.sectorOpsTitle} <span class="badge-accent">${t.targetsBadge}</span>`;
-    }
+    this.updateHeaderShipInfo();
 
-    // Avionics Blade
-    const avionicsTitle = document.querySelector('#blade-diagnostics .blade-title');
-    if (avionicsTitle) {
-      avionicsTitle.innerHTML = `${t.avionicsDiagTitle} <span class="badge-jarvis">NASA GNC</span>`;
-    }
+    // Left Blade: Missions (actual selector .hud-blade-left)
+    const sectorTitle = document.querySelector('.hud-blade-left .blade-title');
+    if (sectorTitle) sectorTitle.textContent = t.sectorOpsTitle;
+    const sectorBadge = document.querySelector('.hud-blade-left .blade-badge');
+    if (sectorBadge) sectorBadge.textContent = t.targetsBadge;
 
-    const metricLabels = document.querySelectorAll('#blade-diagnostics .gauge-box .gauge-label > span:first-child');
+    // Right Blade: Telemetry & Diagnostics (actual selector .hud-blade-right)
+    const avionicsTitle = document.querySelector('.hud-blade-right .blade-title');
+    if (avionicsTitle) avionicsTitle.textContent = t.avionicsDiagTitle;
+    const avionicsBadge = document.querySelector('.hud-blade-right .blade-badge');
+    if (avionicsBadge) avionicsBadge.textContent = t.avionicsBadge;
+
+    const metricLabels = document.querySelectorAll('.hud-blade-right .gauge-box .gauge-label > span:first-child');
     if (metricLabels.length >= 5) {
       metricLabels[0].textContent = t.budgetSurplus;
-      metricLabels[1].textContent = t.dryMass;
+      metricLabels[1].textContent = t.totalMassLabel;
       metricLabels[2].textContent = t.powerBalance;
       metricLabels[3].textContent = t.calcDeltaV;
       metricLabels[4].textContent = t.scienceReturn;
@@ -3486,36 +3276,58 @@ export class NasaMissionDesigner {
 
     // Category Tabs
     const tabChassis = document.querySelector('[data-tab="chassis"]');
-    if (tabChassis) tabChassis.innerHTML = t.tabChassis;
-
+    if (tabChassis) tabChassis.textContent = t.tabChassis;
     const tabFlags = document.querySelector('[data-tab="flags"]');
-    if (tabFlags) tabFlags.innerHTML = t.tabFlags;
-
+    if (tabFlags) tabFlags.textContent = t.tabFlags;
     const tabPower = document.querySelector('[data-tab="power"]');
-    if (tabPower) tabPower.innerHTML = t.tabPower;
-
+    if (tabPower) tabPower.textContent = t.tabPower;
     const tabTech = document.querySelector('[data-tab="tech"]');
-    if (tabTech) tabTech.innerHTML = t.tabTech;
-
+    if (tabTech) tabTech.textContent = t.tabTech;
     const tabEngines = document.querySelector('[data-tab="engines"]');
-    if (tabEngines) tabEngines.innerHTML = t.tabEngines;
-
+    if (tabEngines) tabEngines.textContent = t.tabEngines;
     const tabCarriers = document.querySelector('[data-tab="carriers"]');
-    if (tabCarriers) tabCarriers.innerHTML = t.tabCarriers;
+    if (tabCarriers) tabCarriers.textContent = t.tabCarriers;
 
     // Launch Button
     const launchBtn = document.getElementById('btn-approve-launch');
-    if (launchBtn) {
-      launchBtn.innerHTML = `<span>⚡</span> ${t.launchBtn}`;
-    }
+    if (launchBtn) launchBtn.innerHTML = `<span>⚡</span> ${t.launchBtn}`;
 
-    // Flight HUD
-    const hudTelem = document.querySelector('.hud-header-title');
-    if (hudTelem) {
-      hudTelem.innerHTML = `${t.hudTelemetry} • <span id="hud-mission-name" style="color: var(--stark-cyan);">${this.selectedMission.title.toUpperCase()}</span>`;
-    }
+    // 3D Asset Vault Modal
+    const setVaultTxt = (id: string, val: string, isHtml = false) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (isHtml) el.innerHTML = val;
+      else el.textContent = val;
+    };
+    setVaultTxt('vault-title', t.vaultTitle);
+    setVaultTxt('vault-subtitle', t.vaultSubtitle);
+    setVaultTxt('vault-intro', t.vaultIntro, true);
+    setVaultTxt('vault-src-nasa-title', t.vaultSourceNasaTitle);
+    setVaultTxt('vault-src-nasa-desc', t.vaultSourceNasaDesc);
+    setVaultTxt('vault-src-kenney-title', t.vaultSourceKenneyTitle);
+    setVaultTxt('vault-src-kenney-desc', t.vaultSourceKenneyDesc);
+    setVaultTxt('vault-src-smithsonian-title', t.vaultSourceSmithsonianTitle);
+    setVaultTxt('vault-src-smithsonian-desc', t.vaultSourceSmithsonianDesc);
+    setVaultTxt('vault-src-sketchfab-title', t.vaultSourceSketchfabTitle);
+    setVaultTxt('vault-src-sketchfab-desc', t.vaultSourceSketchfabDesc);
+    setVaultTxt('vault-btn-import-shortcut', t.vaultImportBtn);
+    document.getElementById('vault-btn-close')?.setAttribute('aria-label', t.vaultCloseAria);
 
-    const hudLabels = document.querySelectorAll('#hud-body-content .hud-info-row .hud-k');
+    // Flight HUD (actual selectors: #hud-flight-panel, #hud-body-content .hud-row > span:first-child)
+    const missionLoc = getMissionText(this.selectedMission.id, resolved);
+    const hudMissionEl = document.getElementById('hud-mission-name');
+    if (hudMissionEl) hudMissionEl.textContent = (missionLoc ? missionLoc.title : this.selectedMission.title).toUpperCase();
+    const hudTargetEl = document.getElementById('hud-target-name');
+    if (hudTargetEl) hudTargetEl.textContent = missionLoc ? missionLoc.destination : this.selectedMission.destination;
+
+    const hudTelemBadge = document.getElementById('hud-telemetry-badge');
+    if (hudTelemBadge) hudTelemBadge.textContent = t.hudTelemetry;
+    const hudDragHandle = document.getElementById('hud-drag-handle');
+    if (hudDragHandle) hudDragHandle.title = t.hudDragTitle;
+    const hudBtnMin = document.getElementById('hud-btn-minimize');
+    if (hudBtnMin) hudBtnMin.title = t.hudMinimizeTitle;
+
+    const hudLabels = document.querySelectorAll('#hud-body-content .hud-row > span:first-child');
     if (hudLabels.length >= 4) {
       hudLabels[0].textContent = t.hudTargetSector;
       hudLabels[1].textContent = t.hudCosmicIntel;
@@ -3523,31 +3335,63 @@ export class NasaMissionDesigner {
       hudLabels[3].textContent = t.hudJarvisStatus;
     }
 
+    const hudStatusEl = document.getElementById('hud-status-text');
+    if (hudStatusEl) {
+      hudStatusEl.textContent = this.isTrajectoryLocked ? t.hudStatusLocked : t.hudStatusInitial;
+    }
+
+    setVaultTxt('hud-wsmv-header', t.hudWsmvHeader);
+    setVaultTxt('wsmv-lbl-sma', t.hudWsmvSma);
+    setVaultTxt('wsmv-lbl-ecc', t.hudWsmvEcc);
+    setVaultTxt('wsmv-lbl-inc', t.hudWsmvInc);
+    setVaultTxt('wsmv-lbl-node', t.hudWsmvNode);
+    setVaultTxt('wsmv-lbl-peri', t.hudWsmvPeri);
+    setVaultTxt('wsmv-lbl-head', t.hudWsmvHead);
+    setVaultTxt('pha-nearest-label', t.hudNearestPha);
+    setVaultTxt('pha-range-label', t.hudPhaRange);
+    this.updatePhaBadgeLanguage();
+
     const btnDebrief = document.getElementById('hud-btn-debrief');
     if (btnDebrief) btnDebrief.textContent = t.hudIntelDebrief;
-
     const btnHangar = document.getElementById('hud-btn-reconfigure');
     if (btnHangar) btnHangar.textContent = t.hudStarkArmory;
 
-    // Re-render items and avionics
+    // Debrief Modal
+    this.updateDebriefLanguage();
+
+    // Re-render dynamic lists & avionics
     this.renderMissions();
     this.renderArmoryGrid();
     this.updateLiveTelemetry();
   }
 
   private launchHyperspace() {
+    const t = getTexts(this.currentLanguage);
+    const missionLoc = getMissionText(this.selectedMission.id, this.currentLanguage);
+
     const modal = document.getElementById('nasa-mission-modal');
     if (modal) modal.style.display = 'none';
 
     const hud = document.getElementById('nasa-flight-hud');
     if (hud) hud.style.display = 'flex';
 
-    document.getElementById('hud-mission-name')!.textContent = this.selectedMission.title.toUpperCase();
-    document.getElementById('hud-target-name')!.textContent = this.selectedMission.destination;
+    document.getElementById('hud-mission-name')!.textContent = (missionLoc ? missionLoc.title : this.selectedMission.title).toUpperCase();
+    document.getElementById('hud-target-name')!.textContent = missionLoc ? missionLoc.destination : this.selectedMission.destination;
+
+    if (this.missionTickerId) {
+      clearInterval(this.missionTickerId);
+      this.missionTickerId = null;
+    }
 
     this.isMissionActive = true;
+    this.isTrajectoryLocked = false;
     this.currentScienceCollected = 0;
     this.missionTimer = 0;
+
+    const liveScoreInit = document.getElementById('hud-science-live');
+    if (liveScoreInit) liveScoreInit.textContent = `0 pts`;
+    const statusInit = document.getElementById('hud-status-text');
+    if (statusInit) statusInit.textContent = t.hudStatusInitial;
 
     // Trigger WebGL-Orbiter to switch body and scenario
     this.onLaunchCallback(this.selectedMission, {
@@ -3555,9 +3399,9 @@ export class NasaMissionDesigner {
     });
 
     // Background intel data collection
-    const ticker = setInterval(() => {
+    this.missionTickerId = setInterval(() => {
       if (!this.isMissionActive) {
-        clearInterval(ticker);
+        if (this.missionTickerId) { clearInterval(this.missionTickerId); this.missionTickerId = null; }
         return;
       }
       this.missionTimer += 1;
@@ -3565,13 +3409,14 @@ export class NasaMissionDesigner {
 
       const liveScore = document.getElementById('hud-science-live');
       if (liveScore) {
-        liveScore.textContent = `${this.currentScienceCollected} pts`;
+        liveScore.textContent = `${formatNum(this.currentScienceCollected, this.currentLanguage)} pts`;
       }
 
       if (this.missionTimer === 12) {
+        this.isTrajectoryLocked = true;
         const st = document.getElementById('hud-status-text');
         if (st) {
-          st.innerHTML = `<span style="color: var(--stark-cyan);">📡 ORBITAL TELEMETRY NOMINAL • TRAJECTORY LOCKED</span>`;
+          st.textContent = getTexts(this.currentLanguage).hudStatusLocked;
         }
       }
     }, 1000);
@@ -3589,32 +3434,9 @@ export class NasaMissionDesigner {
     if (!debrief) return;
 
     debrief.style.display = 'flex';
-    document.getElementById('debrief-score-science')!.textContent = `${this.currentScienceCollected} pts`;
+    document.getElementById('debrief-score-science')!.textContent = `${formatNum(this.currentScienceCollected, this.currentLanguage)} pts`;
     document.getElementById('debrief-score-budget')!.textContent = document.getElementById('metric-budget')!.textContent || '$0M';
-    document.getElementById('debrief-score-reliability')!.textContent = '99.4%';
-
-    const isSuccess = this.currentScienceCollected >= this.selectedMission.minSciencePoints;
-    const rankEl = document.getElementById('debrief-rank');
-    const summaryEl = document.getElementById('debrief-summary');
-
-    if (isSuccess) {
-      if (rankEl) rankEl.textContent = 'SUPREME COSMIC COMMANDER';
-      if (summaryEl) {
-        summaryEl.innerHTML = `
-          <strong>MISSION OBJECTIVES ACCOMPLISHED WITH DISTINCTION!</strong><br>
-          Your spacecraft successfully executed the orbital transfer to <em>${this.selectedMission.destination}</em>, 
-          harvested full deep-space telemetry, and preserved maximum NASA operational mission budget reserves.
-        `;
-      }
-    } else {
-      if (rankEl) rankEl.textContent = 'S.W.O.R.D. ORBITAL SPECIALIST';
-      if (summaryEl) {
-        summaryEl.innerHTML = `
-          <strong>PARTIAL MISSION SUCCESS:</strong><br>
-          The spacecraft safely reached target orbital proximity, but extended orbital dwell time is required to extract complete science telemetry.
-        `;
-      }
-    }
+    this.updateDebriefLanguage();
   }
 
   public updateFlightTelemetry(o: any, headingApoapsis: number) {
@@ -3681,19 +3503,21 @@ export class NasaMissionDesigner {
           }
         }
 
+        this.lastPhaDistAU = nearestDistAU;
         if (badgeEl && barFill) {
+          const t = getTexts(this.currentLanguage);
           if (nearestDistAU < 0.05) {
-            badgeEl.textContent = 'INTERCEPT RANGE';
+            badgeEl.textContent = t.hudPhaIntercept;
             badgeEl.className = 'hazard-badge-danger';
             barFill.style.width = '100%';
             barFill.style.background = '#ef4444';
           } else if (nearestDistAU < 0.3) {
-            badgeEl.textContent = 'APPROACHING';
+            badgeEl.textContent = t.hudPhaApproaching;
             badgeEl.className = 'hazard-badge-warn';
             barFill.style.width = `${Math.max(10, Math.min(100, (1 - nearestDistAU / 0.3) * 100))}%`;
             barFill.style.background = '#f59e0b';
           } else {
-            badgeEl.textContent = 'TRACKING';
+            badgeEl.textContent = t.hudPhaTracking;
             badgeEl.className = 'hazard-badge-safe';
             barFill.style.width = '15%';
             barFill.style.background = '#06b6d4';

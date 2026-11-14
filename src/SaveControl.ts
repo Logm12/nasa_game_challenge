@@ -1,4 +1,5 @@
 import { MenuControl } from './MenuControl';
+import { getControlTexts, onLangChange } from './i18n';
 
 import saveIconUrl from './images/saveIcon.png';
 import trashcanUrl from './images/trashcan.png';
@@ -9,7 +10,7 @@ export class SaveControl extends MenuControl{
     protected updateSaveDataList: () => void;
 
     constructor(serializeState: () => any, sendMessage: (msg: string) => void, showEvent: () => void){
-        super('Save data', saveIconUrl, {
+        super(getControlTexts().saveTitle, saveIconUrl, {
             buttonTop: 34,
             buttonHeight: 32,
             buttonWidth: 32,
@@ -21,16 +22,16 @@ export class SaveControl extends MenuControl{
         inputContainer.style.margin = "5px";
         inputContainer.style.padding = "5px";
         const inputTitle = document.createElement('div');
-        inputTitle.innerHTML = 'New Save Name';
+        inputTitle.textContent = getControlTexts().saveNewLabel;
         const inputElement = document.createElement('input');
         inputElement.setAttribute('type', 'text');
         const inputButton = document.createElement('button');
-        inputButton.innerHTML = 'save'
+        inputButton.textContent = getControlTexts().saveBtn;
         inputButton.onclick = (event) => {
             const saveData = localStorage.getItem('WebGLOrbiterSavedData') ? JSON.parse(localStorage.getItem('WebGLOrbiterSavedData')) : [];
             saveData.push({title: inputElement.value, state: serializeState()});
             localStorage.setItem('WebGLOrbiterSavedData', JSON.stringify(saveData));
-            sendMessage('Game State Saved!');
+            sendMessage(getControlTexts().saveSuccessMsg);
             this.title.style.display = 'none';
             this.visible = false;
             this.valueElement.style.display = 'none';
@@ -40,6 +41,12 @@ export class SaveControl extends MenuControl{
         inputContainer.appendChild(inputElement);
         inputContainer.appendChild(inputButton);
         this.valueElement.appendChild(inputContainer);
+        onLangChange((lang) => {
+            const ct = getControlTexts(lang);
+            this.title.textContent = ct.saveTitle;
+            inputTitle.textContent = ct.saveNewLabel;
+            inputButton.textContent = ct.saveBtn;
+        });
 
         const saveContainer = document.createElement('div');
 

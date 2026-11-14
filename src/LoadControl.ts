@@ -1,4 +1,5 @@
 import { MenuControl } from './MenuControl';
+import { getControlTexts, onLangChange } from './i18n';
 
 import loadIconUrl from './images/loadIcon.png';
 import trashcanUrl from './images/trashcan.png';
@@ -8,7 +9,7 @@ export class LoadControl extends MenuControl{
     protected updateSaveDataList: () => void;
 
     constructor(loadState: (a: any) => void, sendMessage: (msg: string) => void, showEvent: () => void){
-        super('Load data', loadIconUrl, {
+        super(getControlTexts().loadTitle, loadIconUrl, {
             buttonTop: 34 * 2,
             buttonHeight: 32,
             buttonWidth: 32,
@@ -37,7 +38,7 @@ export class LoadControl extends MenuControl{
                     (event: MouseEvent) => {
                         saveData.splice(i, 1);
                         localStorage.setItem('WebGLOrbiterSavedData', JSON.stringify(saveData));
-                        sendMessage('Game State Deleted!');
+                        sendMessage(getControlTexts().deleteSuccessMsg);
                         this.title.style.display = 'none';
                         this.visible = false;
                         this.valueElement.style.display = 'none';
@@ -48,7 +49,7 @@ export class LoadControl extends MenuControl{
                 elem.onclick = ((save) =>
                     () => {
                         loadState(save.state);
-                        sendMessage('Game State Loaded!');
+                        sendMessage(getControlTexts().loadSuccessMsg);
                         this.title.style.display = 'none';
                         this.visible = false;
                         this.valueElement.style.display = 'none';
@@ -58,6 +59,9 @@ export class LoadControl extends MenuControl{
             }
         }
         this.valueElement.appendChild(saveContainer);
+        onLangChange((lang) => {
+            this.title.textContent = getControlTexts(lang).loadTitle;
+        });
     }
 
     setVisible(v: boolean){

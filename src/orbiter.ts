@@ -5,6 +5,8 @@ import Stats from 'three/examples/jsm/libs/stats.module.js';
 import "./main.css";
 import "./nasa_mission.css";
 import { NasaMissionDesigner } from './NasaMissionDesigner';
+import { getTexts, getControlTexts, onLangChange, formatTpl } from './i18n';
+import { getMissionText } from './i18n-catalog';
 import { SolarSystemExplorer } from './SolarSystemExplorer';
 
 import { CelestialBody, AU, AxisAngleQuaternion } from './CelestialBody';
@@ -67,8 +69,11 @@ function init() {
     const headerTitle = document.createElement('div');
     headerTitle.id = 'info';
     headerTitle.style.display = 'none';
-    headerTitle.innerHTML = 'Orbital rocket simulation demo - powered by <a href="http://threejs.org" target="_blank">three.js</a>';
+    headerTitle.innerHTML = getControlTexts().infoHtml;
     document.body.appendChild(headerTitle);
+    onLangChange((lang) => {
+        headerTitle.innerHTML = getControlTexts(lang).infoHtml;
+    });
 
     const metaViewport = document.createElement('meta');
     metaViewport.setAttribute('name', 'viewport');
@@ -299,7 +304,12 @@ function init() {
         }
         equipRocketShip();
         if (messageControl) {
-            messageControl.setText(`NASA Mission-Viz Flight: ${mission.title}! Destination: ${mission.destination}`);
+            const t = getTexts();
+            const mLoc = getMissionText(mission.id);
+            messageControl.setText(formatTpl(t.hudFlightMessage, {
+                title: mLoc ? mLoc.title : mission.title,
+                destination: mLoc ? mLoc.destination : mission.destination
+            }));
         }
     }, () => {
         equipRocketShip();

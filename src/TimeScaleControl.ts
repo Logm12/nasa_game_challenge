@@ -1,4 +1,5 @@
 import forwardActiveUrl from './images/forward.png';
+import { getControlTexts, onLangChange } from './i18n';
 import forwardInactiveUrl from './images/forward-inactive.png';
 
 
@@ -38,7 +39,10 @@ export class TimeScaleControl{
             this.forwards.push(forward);
         }
         this.text = document.createElement('div');
-        this.text.innerHTML = 'Timescale: x1';
+        this.text.textContent = getControlTexts().timescalePrefix + '1';
+        onLangChange((lang) => {
+            this.text.textContent = getControlTexts(lang).timescalePrefix + TimeScaleControl.series[this.timeIndex];
+        });
         this.domElement.appendChild(this.text);
         this.date = document.createElement('div');
         this.domElement.appendChild(this.date);
@@ -49,7 +53,7 @@ export class TimeScaleControl{
             return;
         for(let i = 0; i < this.forwards.length; i++)
             this.forwards[i].src = i <= number ? forwardActiveUrl : forwardInactiveUrl;
-        this.text.innerHTML = 'Timescale: x' + TimeScaleControl.series[number];
+        this.text.textContent = getControlTexts().timescalePrefix + TimeScaleControl.series[number];
         this.timeIndex = number;
     }
 

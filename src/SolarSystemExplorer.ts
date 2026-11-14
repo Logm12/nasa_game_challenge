@@ -6,6 +6,8 @@
  */
 
 import * as THREE from 'three/src/Three';
+import { onLangChange, formatTpl } from './i18n';
+import { getOrreryTexts } from './i18n-catalog';
 import { CelestialBody, AU, AxisAngleQuaternion } from './CelestialBody';
 import { Settings } from './SettingsControl';
 
@@ -488,6 +490,7 @@ export class SolarSystemExplorer {
   private modalElement: HTMLElement | null = null;
   private isDockCollapsed = false;
   private currentTargetBody: CelestialBody | null = null;
+  private currentDossier: PlanetDossier | null = null;
 
   constructor(
     private getSelectObj: () => CelestialBody | null,
@@ -650,6 +653,8 @@ export class SolarSystemExplorer {
     this.modalElement = modal;
 
     this.bindEvents();
+    this.applyLanguage();
+    onLangChange(() => this.applyLanguage());
   }
 
   private bindEvents() {
@@ -811,12 +816,50 @@ export class SolarSystemExplorer {
         cameraControls.update();
       }
 
-      this.sendMessage(`🔭 Optical Sensor Lock: Focused on ${dossier ? dossier.name : body.name}!`);
+      this.sendMessage(formatTpl(getOrreryTexts().focusMessage, { name: dossier ? dossier.name : body.name }));
+    }
+  }
+
+  private applyLanguage() {
+    const ot = getOrreryTexts();
+    const brand = document.getElementById('solar-dock-toggle');
+    if (brand) brand.title = ot.toggleTitle;
+    const dockTitle = document.querySelector('#solar-system-dock .dock-title');
+    if (dockTitle) dockTitle.textContent = ot.title;
+    const tabSolar = document.querySelector('.dock-cat-btn[data-cat="solar"]');
+    if (tabSolar) tabSolar.textContent = ot.tabSolar;
+    const tabExtra = document.querySelector('.dock-cat-btn[data-cat="extrasolar"]');
+    if (tabExtra) tabExtra.textContent = ot.tabExtrasolar;
+    const tabDeep = document.querySelector('.dock-cat-btn[data-cat="deep_cosmos"]');
+    if (tabDeep) tabDeep.textContent = ot.tabDeepCosmos;
+
+    document.querySelectorAll('#solar-system-dock .planet-btn').forEach((btn) => {
+      const target = btn.getAttribute('data-target');
+      if (!target || !ot.targets[target]) return;
+      const info = ot.targets[target];
+      (btn as HTMLElement).title = info.title;
+      const nameEl = btn.querySelector('.p-name');
+      if (nameEl) nameEl.textContent = info.label;
+    });
+
+    const hlTitle = document.querySelector('#cosmic-dossier-modal .dossier-section-title');
+    if (hlTitle) hlTitle.textContent = ot.highlightsTitle;
+    const btnFocus = document.getElementById('dossier-btn-focus');
+    if (btnFocus) btnFocus.textContent = ot.btnFocus;
+    const btnTeleport = document.getElementById('dossier-btn-teleport');
+    if (btnTeleport) btnTeleport.textContent = ot.btnTeleport;
+    const btnClose = document.getElementById('dossier-btn-close');
+    if (btnClose) btnClose.setAttribute('aria-label', ot.closeAria);
+
+    if (this.currentDossier && this.modalElement && this.modalElement.style.display !== 'none') {
+      this.showDossier(this.currentDossier);
     }
   }
 
   private showDossier(dossier: PlanetDossier) {
     if (!this.modalElement) return;
+    this.currentDossier = dossier;
+    const ot = getOrreryTexts();
 
     const iconEl = document.getElementById('dossier-icon');
     const nameEl = document.getElementById('dossier-name');
@@ -832,31 +875,31 @@ export class SolarSystemExplorer {
     if (specsGrid) {
       specsGrid.innerHTML = `
         <div class="dossier-metric">
-          <span class="m-label">Mean Diameter</span>
+          <span class="m-label">${ot.metricDiameter}</span>
           <strong class="m-val">${dossier.diameterKm}</strong>
         </div>
         <div class="dossier-metric">
-          <span class="m-label">Total Mass</span>
+          <span class="m-label">${ot.metricMass}</span>
           <strong class="m-val">${dossier.massKg}</strong>
         </div>
         <div class="dossier-metric">
-          <span class="m-label">Surface Temperature</span>
+          <span class="m-label">${ot.metricTemp}</span>
           <strong class="m-val" style="color: ${dossier.color};">${dossier.surfaceTemp}</strong>
         </div>
         <div class="dossier-metric">
-          <span class="m-label">Surface Gravity</span>
+          <span class="m-label">${ot.metricGravity}</span>
           <strong class="m-val">${dossier.gravity}</strong>
         </div>
         <div class="dossier-metric">
-          <span class="m-label">Rotation Period</span>
+          <span class="m-label">${ot.metricRotation}</span>
           <strong class="m-val">${dossier.rotationPeriod}</strong>
         </div>
         <div class="dossier-metric">
-          <span class="m-label">Orbital Period</span>
+          <span class="m-label">${ot.metricOrbit}</span>
           <strong class="m-val">${dossier.orbitPeriod}</strong>
         </div>
         <div class="dossier-metric full-col">
-          <span class="m-label">Atmospheric Composition</span>
+          <span class="m-label">${ot.metricAtmosphere}</span>
           <strong class="m-val" style="font-size: 0.8rem; font-weight: normal; color: #cbd5e1;">${dossier.atmosphere}</strong>
         </div>
       `;
