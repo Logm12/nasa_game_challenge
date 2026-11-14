@@ -1,4 +1,5 @@
 import * as THREE from 'three/src/Three';
+import { validateGameState, safeStorageGet, safeStorageSet } from './domain/save-validator';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 
@@ -377,13 +378,35 @@ function init() {
     window.addEventListener( 'keydown', onKeyDown, false );
     window.addEventListener( 'keyup', onKeyUp, false );
     window.addEventListener( 'pageshow', function(){
-        const state = localStorage.getItem('WebGLOrbiterAutoSave');
-        if(state){
-            gameState.loadState(JSON.parse(state));
+        try {
+            const storageResult = safeStorageGet('WebGLOrbiterAutoSave');
+            if(storageResult.success && storageResult.data){
+                try {
+                    const parsed = JSON.parse(storageResult.data);
+                    const validation = validateGameState(parsed);
+                    if (validation.isValid && validation.data) {
+                        gameState.loadState(validation.data);
+                    } else {
+                        console.warn('WebGLOrbiterAutoSave không hợp lệ theo validator:', validation.errorMessage);
+                    }
+                } catch(e) {
+                    console.warn('WebGLOrbiterAutoSave parse error, bỏ qua:', e);
+                }
+            }
+        } catch(err) {
+            console.error('Lỗi khi đọc WebGLOrbiterAutoSave:', err);
         }
     });
     window.addEventListener( 'beforeunload', function(){
-        localStorage.setItem('WebGLOrbiterAutoSave', JSON.stringify(gameState.serializeState()));
+        try {
+            const serialized = gameState.serializeState();
+            const validation = validateGameState(serialized);
+            if (validation.isValid && validation.data) {
+                safeStorageSet('WebGLOrbiterAutoSave', JSON.stringify(validation.data));
+            }
+        } catch(e) {
+            console.error('Lỗi khi ghi WebGLOrbiterAutoSave:', e);
+        }
     });
 
     gameState.startTicking();

@@ -1,5 +1,12 @@
 import { MenuControl } from './MenuControl';
 import { getControlTexts, onLangChange } from './i18n';
+import {
+    sanitizeSaveTitle,
+    readRawSaveSlotList,
+    validateGameState,
+    safeStorageSet,
+    safeStorageGet
+} from './domain/save-validator';
 
 import saveIconUrl from './images/saveIcon.png';
 import trashcanUrl from './images/trashcan.png';
@@ -28,10 +35,33 @@ export class SaveControl extends MenuControl{
         const inputButton = document.createElement('button');
         inputButton.textContent = getControlTexts().saveBtn;
         inputButton.onclick = (event) => {
-            const saveData = localStorage.getItem('WebGLOrbiterSavedData') ? JSON.parse(localStorage.getItem('WebGLOrbiterSavedData')) : [];
-            saveData.push({title: inputElement.value, state: serializeState()});
-            localStorage.setItem('WebGLOrbiterSavedData', JSON.stringify(saveData));
-            sendMessage(getControlTexts().saveSuccessMsg);
+            const storageRead = safeStorageGet('WebGLOrbiterSavedData');
+            if (!storageRead.success) {
+                sendMessage(`Lỗi đọc bộ nhớ lưu trữ: ${storageRead.error}`);
+                return;
+            }
+            const slotValidation = readRawSaveSlotList(storageRead.data);
+            if (!slotValidation.isValid) {
+                sendMessage(`Không thể ghi đè vì dữ liệu lưu trữ gốc bị hỏng: ${slotValidation.errorMessage}`);
+                return;
+            }
+
+            const rawState = serializeState();
+            const stateValidation = validateGameState(rawState);
+            if (!stateValidation.isValid) {
+                sendMessage(`Lỗi lưu: ${stateValidation.errorMessage}`);
+                return;
+            }
+
+            const saveData = slotValidation.data!;
+            const safeTitle = sanitizeSaveTitle(inputElement.value);
+            saveData.push({ title: safeTitle, state: stateValidation.data! });
+            const savedOk = safeStorageSet('WebGLOrbiterSavedData', JSON.stringify(saveData));
+            if (savedOk) {
+                sendMessage(getControlTexts().saveSuccessMsg);
+            } else {
+                sendMessage('Lỗi lưu: Bộ nhớ trình duyệt đầy hoặc không thể ghi!');
+            }
             this.title.style.display = 'none';
             this.visible = false;
             this.valueElement.style.display = 'none';
@@ -52,24 +82,38 @@ export class SaveControl extends MenuControl{
 
         this.updateSaveDataList = () => {
             while(0 < saveContainer.children.length) saveContainer.removeChild(saveContainer.children[0]);
-            const saveData = localStorage.getItem('WebGLOrbiterSavedData') ? JSON.parse(localStorage.getItem('WebGLOrbiterSavedData')) : [];
+            const storageRead = safeStorageGet('WebGLOrbiterSavedData');
+            if (!storageRead.success) {
+                sendMessage(`Lỗi đọc danh sách bản lưu: ${storageRead.error}`);
+                return;
+            }
+            const slotValidation = readRawSaveSlotList(storageRead.data);
+            if (!slotValidation.isValid) {
+                sendMessage(`Danh sách bản lưu trong storage bị lỗi: ${slotValidation.errorMessage}`);
+                return;
+            }
+            const saveData = slotValidation.data!;
             for(let i = 0; i < saveData.length; i++){
                 const elem = document.createElement('div');
                 elem.style.margin = "5px";
                 elem.style.padding = "5px";
                 elem.style.border = "1px solid #00ff00";
                 const labelElem = document.createElement('div');
-                labelElem.innerHTML = saveData[i].title;
+                labelElem.textContent = saveData[i].title;
                 labelElem.style.cssText = "width: 100%; margin-right: -32px; display: inline-block; text-align: overflow: auto;";
                 elem.appendChild(labelElem);
                 const deleteElem = document.createElement('img');
                 deleteElem.setAttribute('src', trashcanUrl);
                 deleteElem.style.width = '20px';
-                deleteElem.onclick = ((i) =>
+                deleteElem.onclick = ((idx) =>
                     (event: MouseEvent) => {
-                        saveData.splice(i, 1);
-                        localStorage.setItem('WebGLOrbiterSavedData', JSON.stringify(saveData));
-                        sendMessage('Game State Deleted!');
+                        saveData.splice(idx, 1);
+                        const deletedOk = safeStorageSet('WebGLOrbiterSavedData', JSON.stringify(saveData));
+                        if (deletedOk) {
+                            sendMessage('Game State Deleted!');
+                        } else {
+                            sendMessage('Lỗi cập nhật danh sách bản lưu!');
+                        }
                         this.title.style.display = 'none';
                         this.visible = false;
                         this.valueElement.style.display = 'none';
@@ -79,9 +123,19 @@ export class SaveControl extends MenuControl{
                 elem.appendChild(deleteElem);
                 elem.onclick = ((save) =>
                     (event: MouseEvent) => {
-                        save.state = serializeState();
-                        localStorage.setItem('WebGLOrbiterSavedData', JSON.stringify(saveData));
-                        sendMessage('Game State Saved!');
+                        const rawState = serializeState();
+                        const stateValidation = validateGameState(rawState);
+                        if (!stateValidation.isValid) {
+                            sendMessage(`Lỗi lưu đè: ${stateValidation.errorMessage}`);
+                            return;
+                        }
+                        save.state = stateValidation.data!;
+                        const savedOk = safeStorageSet('WebGLOrbiterSavedData', JSON.stringify(saveData));
+                        if (savedOk) {
+                            sendMessage('Game State Saved!');
+                        } else {
+                            sendMessage('Lỗi lưu đè: Không thể ghi vào bộ nhớ!');
+                        }
                         this.title.style.display = 'none';
                         this.visible = false;
                         this.valueElement.style.display = 'none';

@@ -1,5 +1,11 @@
 import { MenuControl } from './MenuControl';
 import { getControlTexts, onLangChange } from './i18n';
+import {
+    readRawSaveSlotList,
+    validateGameState,
+    safeStorageSet,
+    safeStorageGet
+} from './domain/save-validator';
 
 import loadIconUrl from './images/loadIcon.png';
 import trashcanUrl from './images/trashcan.png';
@@ -21,24 +27,38 @@ export class LoadControl extends MenuControl{
 
         this.updateSaveDataList = () => {
             while(0 < saveContainer.children.length) saveContainer.removeChild(saveContainer.children[0]);
-            const saveData = localStorage.getItem('WebGLOrbiterSavedData') ? JSON.parse(localStorage.getItem('WebGLOrbiterSavedData')) : [];
+            const storageRead = safeStorageGet('WebGLOrbiterSavedData');
+            if (!storageRead.success) {
+                sendMessage(`Lỗi đọc danh sách bản lưu: ${storageRead.error}`);
+                return;
+            }
+            const slotValidation = readRawSaveSlotList(storageRead.data);
+            if (!slotValidation.isValid) {
+                sendMessage(`Danh sách bản lưu trong storage bị lỗi: ${slotValidation.errorMessage}`);
+                return;
+            }
+            const saveData = slotValidation.data!;
             for(let i = 0; i < saveData.length; i++){
                 const elem = document.createElement('div');
                 elem.style.margin = "5px";
                 elem.style.padding = "5px";
                 elem.style.border = "1px solid #ff00ff";
                 const labelElem = document.createElement('div');
-                labelElem.innerHTML = saveData[i].title;
+                labelElem.textContent = saveData[i].title;
                 labelElem.style.cssText = "width: 100%; margin-right: -32px; display: inline-block; text-align: overflow: auto;";
                 elem.appendChild(labelElem);
                 const deleteElem = document.createElement('img');
                 deleteElem.setAttribute('src', trashcanUrl);
                 deleteElem.style.width = '20px';
-                deleteElem.onclick = ((i) =>
+                deleteElem.onclick = ((idx) =>
                     (event: MouseEvent) => {
-                        saveData.splice(i, 1);
-                        localStorage.setItem('WebGLOrbiterSavedData', JSON.stringify(saveData));
-                        sendMessage(getControlTexts().deleteSuccessMsg);
+                        saveData.splice(idx, 1);
+                        const deletedOk = safeStorageSet('WebGLOrbiterSavedData', JSON.stringify(saveData));
+                        if (deletedOk) {
+                            sendMessage(getControlTexts().deleteSuccessMsg);
+                        } else {
+                            sendMessage('Lỗi xóa bản lưu khỏi bộ nhớ!');
+                        }
                         this.title.style.display = 'none';
                         this.visible = false;
                         this.valueElement.style.display = 'none';
@@ -48,6 +68,11 @@ export class LoadControl extends MenuControl{
                 elem.appendChild(deleteElem);
                 elem.onclick = ((save) =>
                     () => {
+                        const stateValidation = validateGameState(save.state);
+                        if (!stateValidation.isValid) {
+                            sendMessage(`Bản lưu lỗi không thể tải: ${stateValidation.errorMessage}`);
+                            return;
+                        }
                         loadState(save.state);
                         sendMessage(getControlTexts().loadSuccessMsg);
                         this.title.style.display = 'none';

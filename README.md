@@ -42,7 +42,8 @@ Whether conducting orbital insertion around Jupiter, intercepting hazardous near
 4. [Unified Aerospace Flight Deck & Controls](#-unified-aerospace-flight-deck--controls)
 5. [Architecture & Project Structure](#-architecture--project-structure)
 6. [Building & Running Locally](#-building--running-locally)
-7. [License & Acknowledgments](#-license--acknowledgments)
+7. [Mission Backend & Service Architecture](#-mission-backend--service-architecture)
+8. [License & Acknowledgments](#-license--acknowledgments)
 
 ---
 
@@ -382,6 +383,20 @@ WebGL-Orbiter/
    npm run build
    ```
    Generates optimized `bundle.js` and assets inside the `dist/` directory.
+
+5. **Run tests**:
+   ```bash
+   npm test
+   ```
+   Executes domain, security, save baseline, and API test suites.
+
+---
+
+## 🛰️ Mission Backend & Service Architecture
+
+For detailed technical specifications, local in-process service architecture, domain lifecycle rules, and security validations (FIX-BE01, FIX-BE02, FIX-BE03), refer to:
+
+📖 [Local Mission Service Documentation](docs/mission-backend-local.md)
 
 ---
 
