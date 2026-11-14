@@ -184,9 +184,10 @@ export default class Universe{
             sphereOfInfluence: 5e5
         });
 
-        // 1. Photorealistic Earth Day/Night Terminator & NASA Black Marble Night Lights
+        // 1. Photorealistic Earth with Uniform 100% Illumination & Authentic NASA Blue Marble Map
         const earthRadiusInAu = viewScale * 6534 / AU;
         const earthTex = new THREE.TextureLoader().load(earthUrl);
+        earthTex.anisotropy = 16;
         const earthMat = createEarthDayNightMaterial(earthTex);
         const earthMesh = new THREE.Mesh(new THREE.SphereGeometry(earthRadiusInAu, 64, 64), earthMat);
         earthMesh.rotation.x = Math.PI / 2;
