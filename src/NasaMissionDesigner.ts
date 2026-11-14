@@ -4735,8 +4735,6 @@ export class NasaMissionDesigner {
         }
       }
     }
-      }
-    }
 
     const target = document.getElementById(step.targetId);
     if (!target) return;
@@ -5089,10 +5087,10 @@ export class NasaMissionDesigner {
     };
 
     // Mobile Bottom Navigation Bar Labels
-    setTxt('lbl-nav-missions', isVi ? 'SỨ MỆNH' : 'MISSIONS');
-    setTxt('lbl-nav-outfit', isVi ? 'TRANG BỊ' : 'OUTFIT');
-    setTxt('lbl-nav-telemetry', isVi ? 'THÔNG SỐ' : 'AVIONICS');
-    setTxt('lbl-nav-view3d', isVi ? 'XEM 3D' : '3D VIEW');
+    setTxt('lbl-nav-missions', t.navMissions);
+    setTxt('lbl-nav-outfit', t.navOutfit);
+    setTxt('lbl-nav-telemetry', t.navTelemetry);
+    setTxt('lbl-nav-view3d', t.navView3d);
 
     // Left Blade: Missions (both ID and class)
     setTxt('blade-missions-title', t.sectorOpsTitle);

@@ -265,6 +265,10 @@ export interface I18nTexts {
   dartSourceOverview: string;
   dartSourceResults2022: string;
   dartSourceStudy2024: string;
+  navMissions: string;
+  navOutfit: string;
+  navTelemetry: string;
+  navView3d: string;
 }
 
 export interface ControlTexts {
@@ -553,7 +557,11 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartSourceHeading: 'Official NASA Documentation & Sources:',
     dartSourceOverview: 'DART Mission Overview (NASA Science)',
     dartSourceResults2022: 'NASA Impact Confirmation & Orbital Change (Oct 2022)',
-    dartSourceStudy2024: 'Updated Orbit Dynamics & Asteroid Shape Study (Mar 2024)'
+    dartSourceStudy2024: 'Updated Orbit Dynamics & Asteroid Shape Study (Mar 2024)',
+    navMissions: 'MISSIONS',
+    navOutfit: 'OUTFIT',
+    navTelemetry: 'AVIONICS',
+    navView3d: '3D VIEW'
   },
 
   vi: {
@@ -774,7 +782,11 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartSourceHeading: 'Tài liệu & Nguồn kiểm chứng chính thức từ NASA:',
     dartSourceOverview: 'Tổng quan nhiệm vụ DART (NASA Science)',
     dartSourceResults2022: 'Xác nhận va chạm & Thay đổi quỹ đạo ban đầu (Tháng 10/2022)',
-    dartSourceStudy2024: 'Nghiên cứu cập nhật động lực học quỹ đạo & Hình dạng (Tháng 3/2024)'
+    dartSourceStudy2024: 'Nghiên cứu cập nhật động lực học quỹ đạo & Hình dạng (Tháng 3/2024)',
+    navMissions: 'SỨ MỆNH',
+    navOutfit: 'TRANG BỊ',
+    navTelemetry: 'THÔNG SỐ',
+    navView3d: 'XEM 3D'
   },
 
   en_uk: {
@@ -996,7 +1008,11 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartSourceHeading: 'Official NASA Documentation & Sources:',
     dartSourceOverview: 'DART Mission Overview (NASA Science)',
     dartSourceResults2022: 'NASA Impact Confirmation & Orbital Change (Oct 2022)',
-    dartSourceStudy2024: 'Updated Orbit Dynamics & Asteroid Shape Study (Mar 2024)'
+    dartSourceStudy2024: 'Updated Orbit Dynamics & Asteroid Shape Study (Mar 2024)',
+    navMissions: 'MISSIONS',
+    navOutfit: 'OUTFIT',
+    navTelemetry: 'AVIONICS',
+    navView3d: '3D VIEW'
   },
 
   ja: {
@@ -1217,7 +1233,11 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartSourceHeading: 'NASA公式資料・検証ソース：',
     dartSourceOverview: 'DARTミッション概要（NASA Science）',
     dartSourceResults2022: '衝突確認と初期軌道変化（2022年10月）',
-    dartSourceStudy2024: '軌道力学と小惑星形状の最新研究（2024年3月）'
+    dartSourceStudy2024: '軌道力学と小惑星形状の最新研究（2024年3月）',
+    navMissions: 'ミッション',
+    navOutfit: '装備',
+    navTelemetry: 'アビオニクス',
+    navView3d: '3D表示'
   },
 
   ko: {
@@ -1438,7 +1458,11 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartSourceHeading: 'NASA 공식 문서 및 출처:',
     dartSourceOverview: 'DART 임무 개요 (NASA Science)',
     dartSourceResults2022: '충돌 확인 및 초기 궤도 변화 발표 (2022년 10월)',
-    dartSourceStudy2024: '궤도 역학 및 소행성 형상 최신 연구 (2024년 3월)'
+    dartSourceStudy2024: '궤도 역학 및 소행성 형상 최신 연구 (2024년 3월)',
+    navMissions: '임무',
+    navOutfit: '장비',
+    navTelemetry: '전자장비',
+    navView3d: '3D 보기'
   },
 
   fr: {
@@ -1659,7 +1683,11 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartSourceHeading: 'Documentation officielle et sources de la NASA :',
     dartSourceOverview: 'Vue d’ensemble de la mission DART (NASA Science)',
     dartSourceResults2022: 'Confirmation de l’impact et changement d’orbite (octobre 2022)',
-    dartSourceStudy2024: 'Étude mise à jour sur la dynamique orbitale et la forme (mars 2024)'
+    dartSourceStudy2024: 'Étude mise à jour sur la dynamique orbitale et la forme (mars 2024)',
+    navMissions: 'MISSIONS',
+    navOutfit: 'ÉQUIPEMENT',
+    navTelemetry: 'AVIONIQUE',
+    navView3d: 'VUE 3D'
   },
 
   de: {
@@ -1880,7 +1908,11 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartSourceHeading: 'Offizielle NASA-Dokumentation & Quellen:',
     dartSourceOverview: 'DART-Missionsübersicht (NASA Science)',
     dartSourceResults2022: 'NASA-Einschlagsbestätigung & Bahnänderung (Okt. 2022)',
-    dartSourceStudy2024: 'Aktualisierte Studie zu Bahndynamik & Asteroidenform (März 2024)'
+    dartSourceStudy2024: 'Aktualisierte Studie zu Bahndynamik & Asteroidenform (März 2024)',
+    navMissions: 'MISSIONEN',
+    navOutfit: 'AUSRÜSTUNG',
+    navTelemetry: 'AVIONIK',
+    navView3d: '3D-ANSICHT'
   },
 
   it: {
@@ -2102,7 +2134,11 @@ spotlightTourBtn: '✨ TOUR GUIDATO',
     dartSourceHeading: 'Documentazione e fonti ufficiali NASA:',
     dartSourceOverview: 'Panoramica della missione DART (NASA Science)',
     dartSourceResults2022: 'Conferma impatto e variazione orbitale (ottobre 2022)',
-    dartSourceStudy2024: 'Studio aggiornato sulla dinamica orbitale e la forma (marzo 2024)'
+    dartSourceStudy2024: 'Studio aggiornato sulla dinamica orbitale e la forma (marzo 2024)',
+    navMissions: 'MISSIONI',
+    navOutfit: 'DOTAZIONE',
+    navTelemetry: 'AVIONICA',
+    navView3d: 'VISTA 3D'
   },
 
   es: {
@@ -2323,7 +2359,11 @@ spotlightTourBtn: '✨ TOUR GUIDATO',
     dartSourceHeading: 'Documentación y fuentes oficiales de la NASA:',
     dartSourceOverview: 'Visión general de la misión DART (NASA Science)',
     dartSourceResults2022: 'Confirmación del impacto y cambio orbital (octubre de 2022)',
-    dartSourceStudy2024: 'Estudio actualizado sobre dinámica orbital y forma (marzo de 2024)'
+    dartSourceStudy2024: 'Estudio actualizado sobre dinámica orbital y forma (marzo de 2024)',
+    navMissions: 'MISIONES',
+    navOutfit: 'EQUIPAMIENTO',
+    navTelemetry: 'AVIÓNICA',
+    navView3d: 'VISTA 3D'
   }
 };
 
