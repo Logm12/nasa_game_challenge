@@ -257,6 +257,7 @@ export const NASA_MISSIONS: NasaMission[] = [
 export interface I18nTexts {
   brandSub: string;
   creditsLabel: string;
+  flightManualBtn: string;
   assetVaultBtn: string;
   import3dBtn: string;
   cinematicBtn: string;
@@ -292,6 +293,7 @@ export const HANGAR_I18N: Record<string, I18nTexts> = {
   en_us: {
     brandSub: 'NASA DEEP SPACE FLIGHT ARCHITECTURE & KEPLERIAN DYNAMICS',
     creditsLabel: 'BUDGET:',
+    flightManualBtn: '📖 FLIGHT MANUAL',
     assetVaultBtn: '🌐 3D ASSET VAULT',
     import3dBtn: '📂 IMPORT 3D',
     cinematicBtn: '👁 CINEMATIC VIEW',
@@ -325,6 +327,7 @@ export const HANGAR_I18N: Record<string, I18nTexts> = {
   vi: {
     brandSub: 'HÀNG KHÔNG VŨ TRỤ VÀ ĐỘNG LỰC HỌC QUỸ ĐẠO NASA',
     creditsLabel: 'NGÂN SÁCH:',
+    flightManualBtn: '📖 HƯỚNG DẪN BAY',
     assetVaultBtn: '🌐 KHO MẪU 3D',
     import3dBtn: '📂 TẢI MẪU 3D',
     cinematicBtn: '👁 GÓC QUAN SÁT ĐIỆN ẢNH',
@@ -358,6 +361,7 @@ export const HANGAR_I18N: Record<string, I18nTexts> = {
   en_uk: {
     brandSub: 'ADVANCED AEROSPACE & INTERSTELLAR FLIGHT ARCHITECT',
     creditsLabel: 'BUDGET:',
+    flightManualBtn: '📖 FLIGHT MANUAL',
     assetVaultBtn: '🌐 3D ASSET VAULT',
     import3dBtn: '📂 IMPORT 3D',
     cinematicBtn: '👁 CINEMATIC VIEW',
@@ -391,6 +395,7 @@ export const HANGAR_I18N: Record<string, I18nTexts> = {
   ja: {
     brandSub: '最先端航空宇宙＆恒星間飛行アーキテクト',
     creditsLabel: '予算クレジット:',
+    flightManualBtn: '📖 フライトマニュアル',
     assetVaultBtn: '🌐 3Dアセット保管庫',
     import3dBtn: '📂 3Dモデル読込',
     cinematicBtn: '👁 シネマティック視点',
@@ -424,9 +429,10 @@ export const HANGAR_I18N: Record<string, I18nTexts> = {
   ko: {
     brandSub: '첨단 항공우주 및 성간 비행 아키텍트',
     creditsLabel: '예산 크레딧:',
+    flightManualBtn: '📖 비행 매뉴얼',
     assetVaultBtn: '🌐 3D 자산 보관소',
     import3dBtn: '📂 3D 모델 불러오기',
-    cinematicBtn: '👁 시네마틱 뷰',
+    cinematicBtn: '👁 시네マ틱 뷰',
     restoreFlightBtn: '✕ 비행 제어로 복귀',
     sectorOpsTitle: '01 // 우주 섹터 작전',
     targetsBadge: '작전 목표',
@@ -457,6 +463,7 @@ export const HANGAR_I18N: Record<string, I18nTexts> = {
   fr: {
     brandSub: 'ARCHITECTE AÉROSPATIAL ET VOL INTERSTELLAIRE AVANCÉ',
     creditsLabel: 'CRÉDITS:',
+    flightManualBtn: '📖 MANUEL DE VOL',
     assetVaultBtn: '🌐 COFFRE 3D',
     import3dBtn: '📂 IMPORTER 3D',
     cinematicBtn: '👁 VUE CINÉMATIQUE',
@@ -490,6 +497,7 @@ export const HANGAR_I18N: Record<string, I18nTexts> = {
   de: {
     brandSub: 'FORTSCHRITTLICHE LUFT- UND RAUMFAHRT & INTERSTELLARE ARCHITEKTUR',
     creditsLabel: 'BUDGET:',
+    flightManualBtn: '📖 FLUGHANDBUCH',
     assetVaultBtn: '🌐 3D-ASSET-TRESOR',
     import3dBtn: '📂 3D IMPORTIEREN',
     cinematicBtn: '👁 KINO-ANSICHT',
@@ -523,6 +531,7 @@ export const HANGAR_I18N: Record<string, I18nTexts> = {
   it: {
     brandSub: 'ARCHITETTO AEROSPAZIALE E VOLO INTERSTELLARE AVANZATO',
     creditsLabel: 'CREDITI:',
+    flightManualBtn: '📖 MANUALE DI VOLO',
     assetVaultBtn: '🌐 CAVEAU 3D',
     import3dBtn: '📂 IMPORTA 3D',
     cinematicBtn: '👁 VISTA CINEMATOGRAFICA',
@@ -556,6 +565,7 @@ export const HANGAR_I18N: Record<string, I18nTexts> = {
   es: {
     brandSub: 'ARQUITECTO AEROESPACIAL Y DE VUELO INTERESTELAR AVANZADO',
     creditsLabel: 'CRÉDITOS:',
+    flightManualBtn: '📖 MANUAL DE VUELO',
     assetVaultBtn: '🌐 BÓVEDA 3D',
     import3dBtn: '📂 IMPORTAR 3D',
     cinematicBtn: '👁 VISTA CINEMATOGRÁFICA',
@@ -601,6 +611,7 @@ export class NasaMissionDesigner {
   private selectedTechIds: Set<string> = new Set(['dark_matter', 'cerebro']);
 
   private activeTab: 'chassis' | 'flags' | 'power' | 'tech' | 'engines' | 'carriers' = 'chassis';
+  private activeManualTab: string = 'quickstart';
 
   // 3D GLB Spacecraft & Battleship Fleet Cache
   private loadedGlbCache: Map<string, THREE.Object3D> = new Map();
@@ -831,6 +842,9 @@ export class NasaMissionDesigner {
                 <option value="es">🇪🇸 Español</option>
               </select>
             </div>
+            <button id="btn-flight-manual" class="btn-flight-manual" title="NASA Flight Operations Manual & Beginner's Guide">
+              📖 FLIGHT MANUAL
+            </button>
             <button id="btn-resource-vault" class="btn-resource-mode" title="Free 3D Spacecraft & Battleship Repositories">
               🌐 3D ASSET VAULT
             </button>
@@ -909,20 +923,67 @@ export class NasaMissionDesigner {
           </div>
         </div>
 
+        <!-- Beginner's Flight Operations Manual Modal -->
+        <div id="flight-manual-modal" class="cosmic-dossier-modal" style="display: none;">
+          <div class="dossier-card flight-manual-card">
+            <div class="dossier-header">
+              <div class="dossier-title-wrap">
+                <span class="dossier-avatar">📖</span>
+                <div>
+                  <div class="manual-modal-title">NASA FLIGHT OPERATIONS MANUAL & GUIDE</div>
+                  <div class="manual-modal-sub">Beginner's Handbook • Orbital Dynamics • Hangar Architecture</div>
+                </div>
+              </div>
+              <button class="dossier-close-btn" id="manual-btn-close">✕</button>
+            </div>
+
+            <!-- Manual Category Tabs -->
+            <div class="manual-tabs-nav">
+              <button class="manual-nav-btn active" data-manual-tab="quickstart">🚀 QUICKSTART</button>
+              <button class="manual-nav-btn" data-manual-tab="missions">🛰️ MISSIONS & BUDGET</button>
+              <button class="manual-nav-btn" data-manual-tab="armory">🛠️ SHIPBUILDING</button>
+              <button class="manual-nav-btn" data-manual-tab="controls">🕹️ FLIGHT CONTROLS & SAS</button>
+              <button class="manual-nav-btn" data-manual-tab="orrery">🌌 ORRERY & WARP</button>
+              <button class="manual-nav-btn" data-manual-tab="lobby">👁️ HANGAR VIEW</button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="manual-tabs-body" id="manual-tabs-body"></div>
+          </div>
+        </div>
+
         <!-- Left Operations Blade: Sector Missions -->
-        <aside class="hud-blade hud-blade-left">
+        <aside class="hud-blade hud-blade-left" id="blade-missions">
+          <!-- Floating Edge Toggle Rail -->
+          <button id="btn-toggle-blade-left" class="blade-edge-tab blade-edge-left" title="Thu gọn / Mở rộng bảng Nhiệm vụ (Collapse/Expand)">
+            <span class="tab-icon">◀</span>
+            <span class="tab-label">MISSIONS</span>
+          </button>
+
           <div class="blade-header">
             <div class="blade-title">01 // SECTOR OPERATIONS</div>
-            <div class="blade-badge">TARGETS</div>
+            <div class="blade-header-right">
+              <div class="blade-badge">TARGETS</div>
+              <button id="btn-collapse-blade-left" class="btn-blade-collapse-header" title="Thu gọn bảng (Collapse)">◀</button>
+            </div>
           </div>
           <div class="blade-content" id="marvel-missions-list"></div>
         </aside>
 
         <!-- Right Avionics Blade: Realtime Telemetry & Diagnostics -->
-        <aside class="hud-blade hud-blade-right">
+        <aside class="hud-blade hud-blade-right" id="blade-diagnostics">
+          <!-- Floating Edge Toggle Rail -->
+          <button id="btn-toggle-blade-right" class="blade-edge-tab blade-edge-right" title="Thu gọn / Mở rộng bảng Avionics (Collapse/Expand)">
+            <span class="tab-icon">▶</span>
+            <span class="tab-label">AVIONICS</span>
+          </button>
+
           <div class="blade-header">
             <div class="blade-title">02 // AVIONICS & FLIGHT DYNAMICS</div>
-            <div class="blade-badge">FLIGHT DYNAMICS</div>
+            <div class="blade-header-right">
+              <div class="blade-badge">FLIGHT DYNAMICS</div>
+              <button id="btn-collapse-blade-right" class="btn-blade-collapse-header" title="Thu gọn bảng (Collapse)">▶</button>
+            </div>
           </div>
           <div class="blade-content">
             <!-- Remaining Stark Budget -->
@@ -978,7 +1039,12 @@ export class NasaMissionDesigner {
         </aside>
 
         <!-- Bottom Subsystem Armory Dock & Launch Control -->
-        <footer class="hud-dock-bottom">
+        <footer class="hud-dock-bottom" id="dock-bottom">
+          <!-- Dock Collapse/Expand Tab at Top Center -->
+          <button id="btn-toggle-dock-bottom" class="dock-collapse-tab" title="Thu gọn / Mở rộng sảnh trang bị (Collapse/Expand Dock)">
+            <span class="dock-tab-icon">▼</span>
+            <span class="dock-tab-label">HIDE DOCK</span>
+          </button>
           <div class="dock-tabs-row">
             <button class="inv-tab-btn active" data-tab="chassis">🚀 SPACECRAFT HULL</button>
             <button class="inv-tab-btn" data-tab="flags">🇺🇸 NATIONAL INSIGNIA</button>
@@ -3426,6 +3492,666 @@ export class NasaMissionDesigner {
         this.setLanguage(langSelect.value);
       });
     }
+
+    // Flight Manual Modal
+    const manualModal = document.getElementById('flight-manual-modal');
+    const btnManual = document.getElementById('btn-flight-manual');
+    const btnManualClose = document.getElementById('manual-btn-close');
+
+    btnManual?.addEventListener('click', () => {
+      this.playClickSound();
+      this.renderFlightManualContent();
+      if (manualModal) manualModal.style.display = 'flex';
+    });
+
+    btnManualClose?.addEventListener('click', () => {
+      this.playClickSound();
+      if (manualModal) manualModal.style.display = 'none';
+    });
+
+    manualModal?.addEventListener('click', (e) => {
+      if (e.target === manualModal) {
+        manualModal.style.display = 'none';
+      }
+    });
+
+    // Manual Tab Navigation
+    const manualTabs = document.querySelectorAll('.manual-nav-btn');
+    manualTabs.forEach(btn => {
+      btn.addEventListener('click', (e: any) => {
+        manualTabs.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.activeManualTab = btn.getAttribute('data-manual-tab') || 'quickstart';
+        this.playClickSound();
+        this.renderFlightManualContent();
+      });
+    });
+
+    // Left Blade Collapse Toggles
+    const bladeLeft = document.getElementById('blade-missions');
+    const btnToggleLeft = document.getElementById('btn-toggle-blade-left');
+    const btnCollapseLeft = document.getElementById('btn-collapse-blade-left');
+
+    const toggleLeftBlade = () => {
+      if (!bladeLeft) return;
+      this.playClickSound();
+      const isCollapsed = bladeLeft.classList.toggle('collapsed');
+      const icon = btnToggleLeft?.querySelector('.tab-icon');
+      if (icon) icon.textContent = isCollapsed ? '▶' : '◀';
+      const headerBtn = btnCollapseLeft;
+      if (headerBtn) headerBtn.textContent = isCollapsed ? '▶' : '◀';
+      btnToggleLeft?.setAttribute('title', isCollapsed ? 'Mở rộng bảng Nhiệm vụ (Expand)' : 'Thu gọn bảng Nhiệm vụ (Collapse)');
+    };
+    btnToggleLeft?.addEventListener('click', toggleLeftBlade);
+    btnCollapseLeft?.addEventListener('click', toggleLeftBlade);
+
+    // Right Blade Collapse Toggles
+    const bladeRight = document.getElementById('blade-diagnostics');
+    const btnToggleRight = document.getElementById('btn-toggle-blade-right');
+    const btnCollapseRight = document.getElementById('btn-collapse-blade-right');
+
+    const toggleRightBlade = () => {
+      if (!bladeRight) return;
+      this.playClickSound();
+      const isCollapsed = bladeRight.classList.toggle('collapsed');
+      const icon = btnToggleRight?.querySelector('.tab-icon');
+      if (icon) icon.textContent = isCollapsed ? '◀' : '▶';
+      const headerBtn = btnCollapseRight;
+      if (headerBtn) headerBtn.textContent = isCollapsed ? '◀' : '▶';
+      btnToggleRight?.setAttribute('title', isCollapsed ? 'Mở rộng bảng Avionics (Expand)' : 'Thu gọn bảng Avionics (Collapse)');
+    };
+    btnToggleRight?.addEventListener('click', toggleRightBlade);
+    btnCollapseRight?.addEventListener('click', toggleRightBlade);
+
+    // Bottom Dock Collapse Toggle
+    const dockBottom = document.getElementById('dock-bottom');
+    const btnToggleDock = document.getElementById('btn-toggle-dock-bottom');
+
+    const toggleBottomDock = () => {
+      if (!dockBottom) return;
+      this.playClickSound();
+      const isCollapsed = dockBottom.classList.toggle('collapsed');
+      const icon = btnToggleDock?.querySelector('.dock-tab-icon');
+      const label = btnToggleDock?.querySelector('.dock-tab-label');
+      if (icon) icon.textContent = isCollapsed ? '▲' : '▼';
+      if (label) {
+        const isVi = this.currentLanguage === 'vi';
+        label.textContent = isCollapsed 
+          ? (isVi ? 'MỞ RỘNG BẢNG TRANG BỊ' : 'SHOW DOCK') 
+          : (isVi ? 'THU GỌN BẢNG' : 'HIDE DOCK');
+      }
+      btnToggleDock?.setAttribute('title', isCollapsed ? 'Mở rộng bảng Trang bị (Expand Dock)' : 'Thu gọn bảng Trang bị (Collapse Dock)');
+    };
+    btnToggleDock?.addEventListener('click', toggleBottomDock);
+  }
+
+  private renderFlightManualContent() {
+    const container = document.getElementById('manual-tabs-body');
+    if (!container) return;
+    const isVi = this.currentLanguage === 'vi';
+    container.innerHTML = this.getFlightManualTabHTML(this.activeManualTab, isVi);
+  }
+
+  private getFlightManualTabHTML(tabId: string, isVi: boolean): string {
+    if (tabId === 'quickstart') {
+      return isVi ? `
+        <div class="manual-section">
+          <div class="manual-banner">
+            <div class="manual-banner-badge">HƯỚNG DẪN TỔNG QUAN</div>
+            <h2 class="manual-banner-title">QUY TRÌNH THỰC HIỆN NHIỆM VỤ TỪ A ĐẾN Z</h2>
+            <p class="manual-banner-desc">Khám phá không gian và điều khiển tàu vũ trụ NASA theo chuẩn vật lý Keplerian trong 5 bước cơ bản.</p>
+          </div>
+
+          <div class="manual-steps-grid">
+            <div class="manual-step-card">
+              <div class="step-badge">BƯỚC 1</div>
+              <h3>🛰️ CHỌN NHIỆM VỤ BAY</h3>
+              <p>Nhìn vào cột bên trái <strong>01 // SECTOR OPERATIONS</strong>. Nhấp chọn 1 trong các sứ mệnh NASA nổi tiếng: <em>Artemis TLI (Mặt Trăng)</em>, <em>Apollo 11</em>, <em>DART (Phòng thủ hành tinh)</em>, <em>Voyager 1 (Liên sao)</em>, v.v. Mỗi nhiệm vụ sẽ quy định ngân sách, vận tốc &Delta;v yêu cầu và mục tiêu khoa học.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">BƯỚC 2</div>
+              <h3>🛠️ THIẾT KẾ & TRANG BỊ TÀU</h3>
+              <p>Dưới thanh Dock, tùy biến phi thuyền: 
+              <strong>Hạm đội tàu</strong> (Shuttle, Apollo 11, Voyager 1, Hyperion, Ghostwing, Quinjet hoặc tự tải file 3D .glb/.gltf/.obj); 
+              <strong>Cờ Tổ quốc</strong> (sơn cờ Việt Nam 🇻🇳, NASA 🇺🇸); 
+              <strong>Lõi năng lượng</strong> (Pin mặt trời / RTG hạt nhân); 
+              <strong>Khí tài khoa học</strong>; 
+              <strong>Động cơ đẩy</strong>; 
+              <strong>Tên lửa mang phóng</strong>.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">BƯỚC 3</div>
+              <h3>📊 KIỂM TRA AVIONICS & PHÓNG TÀU</h3>
+              <p>Nhìn sang cột bên phải <strong>02 // AVIONICS & FLIGHT DYNAMICS</strong>: Đảm bảo <em>Thặng dư ngân sách &ge; $0</em>, <em>Khối lượng khô &le; Tải trọng tên lửa</em>, <em>Cân bằng điện &ge; 0W</em>, và <em>&Delta;v &ge; &Delta;v yêu cầu</em>. Khi thông số hợp lệ, nhấp nút màu cam <strong>AUTHORIZE & INITIATE LAUNCH</strong>!</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">BƯỚC 4</div>
+              <h3>🕹️ ĐIỀU KHIỂN BUỒNG LÁI & SAS</h3>
+              <p>Trong không gian, điều khiển tàu bằng phím: 
+              <span class="kbd-badge">W</span>/<span class="kbd-badge">S</span> (Góc chúi/ngửa), 
+              <span class="kbd-badge">A</span>/<span class="kbd-badge">D</span> (Lăn cánh), 
+              <span class="kbd-badge">Q</span>/<span class="kbd-badge">E</span> (Đảo hướng mũi), 
+              <span class="kbd-badge">Shift</span>/<span class="kbd-badge">Ctrl</span> (Tăng/giảm ga), 
+              <span class="kbd-badge">Space</span> (Phanh ngược), 
+              <span class="kbd-badge">T</span> hoặc nút <strong>STAB LOCK</strong> để khóa cố định hướng mũi tàu.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">BƯỚC 5</div>
+              <h3>🌌 DỊCH CHUYỂN QUỸ ĐẠO TỨC THÌ (WARP)</h3>
+              <p>Nhấp vào bất kỳ hành tinh, mặt trăng hoặc tiểu hành tinh nào trên thanh <strong>Cosmic Orrery</strong> ở trên cùng. Trong bảng hồ sơ thiên thể, nhấn nút <strong>🚀 ESTABLISH ORBIT HERE</strong> để phi thuyền nhảy bước nhảy không gian vào ngay quỹ đạo tròn Keplerian ổn định!</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">MẸO GIAO DIỆN</div>
+              <h3>👁️ THU GỌN GIAO DIỆN SẢNH CHỜ</h3>
+              <p>Nhấp vào thanh <strong>◀ / ▶</strong> ở mép 2 bên hoặc <strong>▼ HIDE DOCK</strong> ở mép dưới để thu gọn các bảng menu. Khi đó bạn có thể thưởng thức toàn cảnh tàu vũ trụ 3D trong Hangar với chất lượng 4K sắc nét và không gian bao la không hề bị che khuất!</p>
+            </div>
+          </div>
+        </div>
+      ` : `
+        <div class="manual-section">
+          <div class="manual-banner">
+            <div class="manual-banner-badge">OVERVIEW GUIDE</div>
+            <h2 class="manual-banner-title">END-TO-END MISSION PROTOCOL</h2>
+            <p class="manual-banner-desc">Master NASA deep space exploration and 3D flight dynamics in 5 Keplerian steps.</p>
+          </div>
+
+          <div class="manual-steps-grid">
+            <div class="manual-step-card">
+              <div class="step-badge">STEP 1</div>
+              <h3>🛰️ SELECT FLIGHT MANIFEST</h3>
+              <p>Inspect the left blade <strong>01 // SECTOR OPERATIONS</strong>. Select your mission profile: <em>Artemis TLI (Moon)</em>, <em>Apollo 11</em>, <em>DART (Planetary Defense)</em>, <em>Voyager 1 (Interstellar)</em>, etc. Each mission sets budget, required &Delta;v, and target science return.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">STEP 2</div>
+              <h3>🛠️ HANGAR OUTFITTING</h3>
+              <p>Use the bottom dock shelf to engineer your craft: 
+              <strong>Fleet Chassis</strong> (Shuttle, Apollo 11, Voyager 1, Hyperion, Ghostwing, Quinjet or import custom .glb/.gltf/.obj); 
+              <strong>National Insignia</strong> (apply Vietnam 🇻🇳, NASA 🇺🇸, UK, etc.); 
+              <strong>Power Core</strong> (Solar arrays / RTG); 
+              <strong>Scientific Avionics</strong>; 
+              <strong>Propulsion Engines</strong>; 
+              <strong>Launch Booster</strong>.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">STEP 3</div>
+              <h3>📊 AVIONICS VERIFICATION & LAUNCH</h3>
+              <p>Examine the right blade <strong>02 // AVIONICS & FLIGHT DYNAMICS</strong>: Ensure <em>Budget Surplus &ge; $0</em>, <em>Dry Mass &le; Booster Limit</em>, <em>Electrical Power &ge; 0W</em>, and <em>&Delta;v &ge; Mission Requirement</em>. When green, click <strong>AUTHORIZE & INITIATE LAUNCH</strong>!</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">STEP 4</div>
+              <h3>🕹️ FLIGHT DECK & AUTOPILOT</h3>
+              <p>Control the ship in zero-g: 
+              <span class="kbd-badge">W</span>/<span class="kbd-badge">S</span> (Pitch), 
+              <span class="kbd-badge">A</span>/<span class="kbd-badge">D</span> (Roll), 
+              <span class="kbd-badge">Q</span>/<span class="kbd-badge">E</span> (Yaw), 
+              <span class="kbd-badge">Shift</span>/<span class="kbd-badge">Ctrl</span> (Throttle), 
+              <span class="kbd-badge">Space</span> (Retro-Brake), 
+              <span class="kbd-badge">T</span> or click <strong>STAB LOCK</strong> on the console to damp angular rates and lock heading.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">STEP 5</div>
+              <h3>🌌 ORRERY & INSTANT WARP INSERTION</h3>
+              <p>Click any celestial body on the top <strong>Cosmic Orrery</strong> bar. In the body dossier, click <strong>🚀 ESTABLISH ORBIT HERE</strong> to warp into a circular Keplerian orbit around that planet or asteroid!</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">UI TIP</div>
+              <h3>👁️ COLLAPSIBLE LOBBY PANELS</h3>
+              <p>Click the <strong>◀ / ▶</strong> tabs on the screen edges or <strong>▼ HIDE DOCK</strong> at the bottom to collapse panels, giving you an unobstructed 4K view of your spacecraft in the hangar!</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (tabId === 'missions') {
+      return isVi ? `
+        <div class="manual-section">
+          <div class="manual-banner">
+            <div class="manual-banner-badge">SỨ MỆNH KHÔNG GIAN</div>
+            <h2 class="manual-banner-title">DANH MỤC NHIỆM VỤ & QUẢN LÝ NGÂN SÁCH NASA</h2>
+            <p class="manual-banner-desc">Mỗi sứ mệnh mô phỏng một dự án thực tế của NASA với thông số quỹ đạo, cự ly và yêu cầu vận tốc riêng biệt.</p>
+          </div>
+
+          <div class="manual-table-wrap">
+            <table class="manual-table">
+              <thead>
+                <tr>
+                  <th>Sứ Mệnh</th>
+                  <th>Mục Tiêu Thiên Thể</th>
+                  <th>Cự Ly (AU)</th>
+                  <th>&Delta;v Tối Thiểu</th>
+                  <th>Ngân Sách Cấp</th>
+                  <th>Điểm Khoa Học</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>NASA Artemis TLI</strong></td><td>Mặt Trăng (Moon)</td><td>1.00 AU</td><td>3,150 m/s</td><td>$890M</td><td>220 pts</td></tr>
+                <tr><td><strong>NASA Apollo 11</strong></td><td>Mặt Trăng (Eagle LM)</td><td>1.00 AU</td><td>3,900 m/s</td><td>$480M</td><td>180 pts</td></tr>
+                <tr><td><strong>NASA DART</strong></td><td>Tiểu hành tinh Didymos</td><td>1.25 AU</td><td>3,450 m/s</td><td>$330M</td><td>280 pts</td></tr>
+                <tr><td><strong>NASA OSIRIS-REx</strong></td><td>Tiểu hành tinh Bennu</td><td>1.12 AU</td><td>2,800 m/s</td><td>$800M</td><td>310 pts</td></tr>
+                <tr><td><strong>NASA 99942 Apophis</strong></td><td>Apophis (Phòng thủ)</td><td>0.98 AU</td><td>3,200 m/s</td><td>$550M</td><td>250 pts</td></tr>
+                <tr><td><strong>NASA Voyager 1</strong></td><td>Biên giới Liên sao</td><td>158.0 AU</td><td>4,200 m/s</td><td>$450M</td><td>500 pts</td></tr>
+                <tr><td><strong>NASA New Horizons</strong></td><td>Vành đai Kuiper / Pluto</td><td>32.0 AU</td><td>4,100 m/s</td><td>$700M</td><td>420 pts</td></tr>
+                <tr><td><strong>NASA Juno</strong></td><td>Sao Mộc (Jupiter)</td><td>5.20 AU</td><td>3,850 m/s</td><td>$1,100M</td><td>360 pts</td></tr>
+                <tr><td><strong>NASA JWST</strong></td><td>Điểm Lagrange L2</td><td>1.01 AU</td><td>3,600 m/s</td><td>$1,200M</td><td>450 pts</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="manual-callout-tip">
+            <strong>💡 Quy tắc quản lý ngân sách:</strong> Mỗi linh kiện lắp thêm vào tàu (thân tàu, động cơ phản lực, tấm pin quang năng, thiết bị đo đạc, tên lửa đẩy) đều tiêu tốn ngân sách. Hãy giữ <em>Thặng dư ngân sách &ge; $0</em> để được Flight Director phê duyệt lệnh phóng!
+          </div>
+        </div>
+      ` : `
+        <div class="manual-section">
+          <div class="manual-banner">
+            <div class="manual-banner-badge">FLIGHT MANIFEST</div>
+            <h2 class="manual-banner-title">NASA MISSIONS & BUDGET PROTOCOLS</h2>
+            <p class="manual-banner-desc">Each mission simulates a real NASA flight program with rigorous orbital constraints.</p>
+          </div>
+
+          <div class="manual-table-wrap">
+            <table class="manual-table">
+              <thead>
+                <tr>
+                  <th>Mission</th>
+                  <th>Target Destination</th>
+                  <th>Distance (AU)</th>
+                  <th>Min &Delta;v</th>
+                  <th>NASA Budget</th>
+                  <th>Science Target</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>NASA Artemis TLI</strong></td><td>The Moon (TLI)</td><td>1.00 AU</td><td>3,150 m/s</td><td>$890M</td><td>220 pts</td></tr>
+                <tr><td><strong>NASA Apollo 11</strong></td><td>The Moon (Eagle LM)</td><td>1.00 AU</td><td>3,900 m/s</td><td>$480M</td><td>180 pts</td></tr>
+                <tr><td><strong>NASA DART</strong></td><td>65803 Didymos</td><td>1.25 AU</td><td>3,450 m/s</td><td>$330M</td><td>280 pts</td></tr>
+                <tr><td><strong>NASA OSIRIS-REx</strong></td><td>101955 Bennu</td><td>1.12 AU</td><td>2,800 m/s</td><td>$800M</td><td>310 pts</td></tr>
+                <tr><td><strong>NASA 99942 Apophis</strong></td><td>99942 Apophis</td><td>0.98 AU</td><td>3,200 m/s</td><td>$550M</td><td>250 pts</td></tr>
+                <tr><td><strong>NASA Voyager 1</strong></td><td>Interstellar Boundary</td><td>158.0 AU</td><td>4,200 m/s</td><td>$450M</td><td>500 pts</td></tr>
+                <tr><td><strong>NASA New Horizons</strong></td><td>Kuiper Belt / Pluto</td><td>32.0 AU</td><td>4,100 m/s</td><td>$700M</td><td>420 pts</td></tr>
+                <tr><td><strong>NASA Juno</strong></td><td>Jupiter Polar Orbit</td><td>5.20 AU</td><td>3,850 m/s</td><td>$1,100M</td><td>360 pts</td></tr>
+                <tr><td><strong>NASA JWST</strong></td><td>Sun-Earth L2 Lagrange</td><td>1.01 AU</td><td>3,600 m/s</td><td>$1,200M</td><td>450 pts</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="manual-callout-tip">
+            <strong>💡 Budget Allocation Rule:</strong> Every equipped module, chassis, engine, and launch carrier consumes credits. Maintain a <em>Budget Surplus &ge; $0</em> to receive Flight Director launch approval!
+          </div>
+        </div>
+      `;
+    }
+
+    if (tabId === 'armory') {
+      return isVi ? `
+        <div class="manual-section">
+          <div class="manual-banner">
+            <div class="manual-banner-badge">KỸ THUẬT VÀ KHÍ TÀI</div>
+            <h2 class="manual-banner-title">HẠM ĐỘI TÀU, CỜ TỔ QUỐC & CÔNG THỨC TSIOLKOVSKY</h2>
+            <p class="manual-banner-desc">Tự do trang bị hạm đội tàu vũ trụ hoặc tải mô hình 3D của riêng bạn (.glb, .gltf, .obj).</p>
+          </div>
+
+          <div class="manual-steps-grid">
+            <div class="manual-step-card">
+              <h3>🚀 Hạm Đội Tàu Vũ Trụ Chuẩn 4K</h3>
+              <p>• <strong>Space Shuttle Orbiter (Discovery OV-103)</strong>: Cánh tam giác khí động học, gạch gốm tản nhiệt.<br>
+              • <strong>Apollo 11 Lunar Module (Eagle)</strong>: Chân giảm chấn tiếp đất và lớp chắn bức xạ vàng Kapton.<br>
+              • <strong>Voyager 1 Explorer</strong>: Đĩa ăng-ten parabol đường kính lớn High-Gain Antenna.<br>
+              • <strong>Hyperion Flagship</strong>: Soái hạm bọc giáp titan với 4 động cơ cơ động lớn.<br>
+              • <strong>Ghostwing Interceptor</strong>: Cánh vát ngược tàng hình với cảm biến quang tử lượng tử.<br>
+              • <strong>Quinjet Tactical Craft</strong>: Động cơ phản lực lưỡng dụng khí quyển và vũ trụ.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>📂 Nhập Mẫu 3D Tùy Biến (.glb, .gltf, .obj)</h3>
+              <p>Bạn có thể tải bất kỳ mô hình tàu chiến, phi thuyền nào từ NASA 3D Resources hoặc Sketchfab CC0, nhấp nút <strong>📂 IMPORT 3D</strong> trên thanh công cụ để đưa trực tiếp vào Hangar và bay tự do trong Thái Dương Hệ!</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>🇻🇳 Cờ Tổ Quốc & Phù Hiệu Quốc Gia</h3>
+              <p>Sơn cờ Việt Nam 🇻🇳, cờ NASA 🇺🇸, Anh 🇬🇧, Nhật Bản 🇯🇵, v.v. trực tiếp lên vỏ tàu 3D với độ nét cao PBR.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>⚛ Năng Lượng & Nghịch Đảo Bình Phương</h3>
+              <p>Quang năng tấm pin mặt trời giảm mạnh theo khoảng cách:<br>
+              <code>P(r) = P_0 / r²</code><br>
+              Khi bay xa ngoài Sao Mộc (r > 5 AU), ánh sáng rất yếu, bắt buộc trang bị Lò nhiệt hạch hạt nhân RTG (Plutonium-238) để duy trì sự sống và hệ thống điều khiển!</p>
+            </div>
+          </div>
+
+          <div class="formula-box">
+            <div class="formula-title">📐 PHƯƠNG TRÌNH TÊN LỬA TSIOLKOVSKY</div>
+            <div>&Delta;v = I_sp &bull; g_0 &bull; ln(m_0 / m_f)</div>
+            <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 4px;">
+              Trong đó: I_sp là xung lực riêng của động cơ (giây), g_0 = 9.80665 m/s², m_0 là tổng khối lượng xuất phát, m_f là khối lượng khô (Dry Mass).
+            </div>
+          </div>
+        </div>
+      ` : `
+        <div class="manual-section">
+          <div class="manual-banner">
+            <div class="manual-banner-badge">AEROSPACE ENGINEERING</div>
+            <h2 class="manual-banner-title">SPACECRAFT FLEET & TSIOLKOVSKY ROCKET DYNAMICS</h2>
+            <p class="manual-banner-desc">Customize official NASA craft or import your own 3D assets (.glb, .gltf, .obj).</p>
+          </div>
+
+          <div class="manual-steps-grid">
+            <div class="manual-step-card">
+              <h3>🚀 Official 4K Spacecraft Fleet</h3>
+              <p>• <strong>Space Shuttle Orbiter (Discovery OV-103)</strong>: Delta wings & thermal tiles.<br>
+              • <strong>Apollo 11 Lunar Module (Eagle)</strong>: Quad shock landing legs & Kapton gold foil.<br>
+              • <strong>Voyager 1 Explorer</strong>: High-gain parabolic antenna dish.<br>
+              • <strong>Hyperion Flagship</strong>: Titanium-armored interstellar exploration cruiser.<br>
+              • <strong>Ghostwing Interceptor</strong>: Forward-swept stealth reconnaissance craft.<br>
+              • <strong>Quinjet Tactical Craft</strong>: Dual-environment atmospheric and orbital jet.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>📂 Custom 3D Model Importer</h3>
+              <p>Download free spacecraft from NASA 3D Resources or Sketchfab CC0 and load them via <strong>📂 IMPORT 3D</strong> to fly them instantly in the solar system!</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>🇻🇳 National Insignia & Decals</h3>
+              <p>Apply Vietnam 🇻🇳, NASA 🇺🇸, UK 🇬🇧, Japan 🇯🇵, or European decals onto the 4K PBR hull texture.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>⚛ Power & Inverse Square Law</h3>
+              <p>Solar flux falls off sharply with distance:<br>
+              <code>P(r) = P_0 / r²</code><br>
+              Beyond Jupiter (r > 5 AU), sunlight is insufficient. Equip an RTG nuclear core to maintain positive power balance!</p>
+            </div>
+          </div>
+
+          <div class="formula-box">
+            <div class="formula-title">📐 TSIOLKOVSKY ROCKET EQUATION</div>
+            <div>&Delta;v = I_sp &bull; g_0 &bull; ln(m_0 / m_f)</div>
+            <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 4px;">
+              Where I_sp is engine specific impulse (seconds), g_0 = 9.80665 m/s², m_0 is wet launch mass, and m_f is dry burn-out mass.
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (tabId === 'controls') {
+      return isVi ? `
+        <div class="manual-section">
+          <div class="manual-banner">
+            <div class="manual-banner-badge">BUỒNG LÁI & AUTOPILOT</div>
+            <h2 class="manual-banner-title">HỆ THỐNG ĐIỀU KHIỂN BAY & LÁI TỰ ĐỘNG SAS</h2>
+            <p class="manual-banner-desc">Điều khiển phi thuyền 6 bậc tự do (6-DoF) trong môi trường không trọng lực với hệ thống tự cân bằng SAS.</p>
+          </div>
+
+          <div class="manual-table-wrap">
+            <table class="manual-table">
+              <thead>
+                <tr>
+                  <th>Phím Tắt</th>
+                  <th>Thao Tác</th>
+                  <th>Chức Năng Hàng Không Vũ Trụ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="kbd-badge">W</span></td><td>Pitch Down</td><td>Chúc mũi tàu xuống dưới</td></tr>
+                <tr><td><span class="kbd-badge">S</span></td><td>Pitch Up</td><td>Ngửa mũi tàu lên trên</td></tr>
+                <tr><td><span class="kbd-badge">A</span></td><td>Roll Left</td><td>Lăn lộn cánh phi thuyền sang trái (ngược chiều kim đồng hồ)</td></tr>
+                <tr><td><span class="kbd-badge">D</span></td><td>Roll Right</td><td>Lăn lộn cánh phi thuyền sang phải (thuận chiều kim đồng hồ)</td></tr>
+                <tr><td><span class="kbd-badge">Q</span></td><td>Yaw Left</td><td>Đảo hướng mũi tàu sang trái trên mặt phẳng nằm ngang</td></tr>
+                <tr><td><span class="kbd-badge">E</span></td><td>Yaw Right</td><td>Đảo hướng mũi tàu sang phải trên mặt phẳng nằm ngang</td></tr>
+                <tr><td><span class="kbd-badge">Shift</span></td><td>Throttle Up</td><td>Tăng công suất bướm ga động cơ đẩy (+5% mỗi lần nhấn)</td></tr>
+                <tr><td><span class="kbd-badge">Ctrl</span></td><td>Throttle Down</td><td>Giảm công suất bướm ga động cơ đẩy (-5% mỗi lần nhấn)</td></tr>
+                <tr><td><span class="kbd-badge">Z</span></td><td>Max Throttle</td><td>Đặt công suất động cơ lên 100% cực đại ngay lập tức</td></tr>
+                <tr><td><span class="kbd-badge">X</span></td><td>Cutoff Engine</td><td>Cắt toàn bộ lực đẩy động cơ khẩn cấp (0% Throttle)</td></tr>
+                <tr><td><span class="kbd-badge">Space</span></td><td>Retro-Brake</td><td>Kích hoạt cụm động cơ RCS hãm ngược chiều bay để giảm tốc</td></tr>
+                <tr><td><span class="kbd-badge">T</span></td><td>SAS Autopilot</td><td>Bật/Tắt hệ thống hỗ trợ ổn định hướng bay tự động</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="manual-steps-grid" style="margin-top: 14px;">
+            <div class="manual-step-card">
+              <h3>🔒 STAB LOCK (Khóa Cố Định Hướng)</h3>
+              <p>Tự động tính toán vận tốc góc xoay và tạo mô-men hãm triệt tiêu dao động quay tự do, giữ mũi tàu cố định hoàn toàn theo hướng đã định trong chân không.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>🎯 PROGRADE (Theo Hướng Bay)</h3>
+              <p>Tự động quay mũi tàu hướng theo vector vận tốc bay (+v). Khi nhấn tăng ga ở chế độ này, bạn sẽ gia tăng cơ năng quỹ đạo, nâng cao điểm cực viễn (Apoapsis).</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>🔄 RETROGRADE (Ngược Hướng Bay)</h3>
+              <p>Tự động quay mũi tàu ngược 180° so với vector vận tốc (-v). Khi kích hoạt động cơ đẩy, tốc độ quỹ đạo sẽ giảm xuống, hạ thấp điểm cực cận (Periapsis) để tiếp cận khí quyển hoặc đổ bộ.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>🕹️ MANUAL (Thủ Công Tự Do)</h3>
+              <p>Tắt toàn bộ can thiệp tự động để phi công hoàn toàn làm chủ góc quay tự do theo định luật 1 Newton (quán tính vĩnh cửu trong chân không vũ trụ).</p>
+            </div>
+          </div>
+        </div>
+      ` : `
+        <div class="manual-section">
+          <div class="manual-banner">
+            <div class="manual-banner-badge">FLIGHT DECK & AUTOPILOT</div>
+            <h2 class="manual-banner-title">IN-FLIGHT 6-DoF CONTROLS & SAS AUTOPILOT</h2>
+            <p class="manual-banner-desc">Master full 6-degree-of-freedom zero-g attitude control with active SAS damping.</p>
+          </div>
+
+          <div class="manual-table-wrap">
+            <table class="manual-table">
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Action</th>
+                  <th>Aerospace Function</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="kbd-badge">W</span></td><td>Pitch Down</td><td>Pitches nose downward</td></tr>
+                <tr><td><span class="kbd-badge">S</span></td><td>Pitch Up</td><td>Pitches nose upward</td></tr>
+                <tr><td><span class="kbd-badge">A</span></td><td>Roll Left</td><td>Rolls spacecraft counter-clockwise</td></tr>
+                <tr><td><span class="kbd-badge">D</span></td><td>Roll Right</td><td>Rolls spacecraft clockwise</td></tr>
+                <tr><td><span class="kbd-badge">Q</span></td><td>Yaw Left</td><td>Yaws spacecraft nose to the port (left)</td></tr>
+                <tr><td><span class="kbd-badge">E</span></td><td>Yaw Right</td><td>Yaws spacecraft nose to the starboard (right)</td></tr>
+                <tr><td><span class="kbd-badge">Shift</span></td><td>Throttle Up</td><td>Increases engine thrust (+5% per tap)</td></tr>
+                <tr><td><span class="kbd-badge">Ctrl</span></td><td>Throttle Down</td><td>Decreases engine thrust (-5% per tap)</td></tr>
+                <tr><td><span class="kbd-badge">Z</span></td><td>Max Throttle</td><td>Instant 100% full engine throttle</td></tr>
+                <tr><td><span class="kbd-badge">X</span></td><td>Cutoff Engine</td><td>Instant emergency engine thrust cutoff (0%)</td></tr>
+                <tr><td><span class="kbd-badge">Space</span></td><td>Retro-Brake</td><td>Fires RCS retro thrusters opposing velocity vector</td></tr>
+                <tr><td><span class="kbd-badge">T</span></td><td>SAS Autopilot</td><td>Toggles Stability Augmentation System</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="manual-steps-grid" style="margin-top: 14px;">
+            <div class="manual-step-card">
+              <h3>🔒 STAB LOCK (Heading Hold)</h3>
+              <p>Computes angular drift rates and applies active counter-torque damping to lock spacecraft heading solidly in inertial space.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>🎯 PROGRADE (Velocity Aligned)</h3>
+              <p>Automatically rotates the nose toward the orbital velocity vector (+v). Burning engines here raises orbital energy and Apoapsis altitude.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>🔄 RETROGRADE (Anti-Velocity Burn)</h3>
+              <p>Automatically aligns 180° opposing velocity (-v). Burning engines here slows orbital velocity and lowers Periapsis for atmospheric reentry or capture.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>🕹️ MANUAL (Newtonian Inertia)</h3>
+              <p>Disengages autopilot dampers, allowing complete manual attitude control under pure Newton's First Law of inertial motion.</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (tabId === 'orrery') {
+      return isVi ? `
+        <div class="manual-section">
+          <div class="manual-banner">
+            <div class="manual-banner-badge">ĐIỀU HƯỚNG QUỸ ĐẠO</div>
+            <h2 class="manual-banner-title">THƯỚC NGẮM THIÊN VĂN & NHẢY QUỸ ĐẠO TỨC THÌ</h2>
+            <p class="manual-banner-desc">Định vị mọi hành tinh, ngôi sao liên sao và thiên thạch nguy hiểm với thanh Cosmic Orrery.</p>
+          </div>
+
+          <div class="manual-steps-grid">
+            <div class="manual-step-card">
+              <h3>☀️ Thái Dương Hệ (Solar System)</h3>
+              <p>Bao gồm Mặt Trời, 8 hành tinh chính (Sao Thủy, Sao Kim, Trái Đất, Sao Hỏa, Sao Mộc, Sao Thổ, Sao Thiên Vương, Sao Hải Vương), Mặt Trăng, Vành đai Tiểu hành tinh, Sao chổi Halley và các thiên thạch nguy hiểm.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>✨ Hệ Sao Ngoài (Extrasolar Stars)</h3>
+              <p>Alpha Centauri, Proxima Centauri, Sirius, Vega, Betelgeuse, v.v. với quang phổ Harvard thực tế.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>🌌 Vũ Trụ Sâu (Deep Cosmos)</h3>
+              <p>Tinh vân Lạp Hộ (Orion Nebula), Tinh vân Con Cua, Thiên hà Tiên Nữ Andromeda.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>🚀 Dịch Chuyển Quỹ Đạo Tức Thì (Instant Warp)</h3>
+              <p>Khi nhấp vào bất kỳ thiên thể nào, mở bảng hồ sơ và nhấp nút <strong>🚀 ESTABLISH ORBIT HERE</strong>. Tàu vũ trụ sẽ lập tức dịch chuyển tới vị trí an toàn và đạt vận tốc tròn Keplerian chuẩn xác:<br>
+              <code>v_circ = &radic;(G &bull; M / r)</code><br>
+              Giúp bạn ngay lập tức bay quanh thiên thể đó mà không mất thời gian chờ đợi hàng tháng!</p>
+            </div>
+          </div>
+        </div>
+      ` : `
+        <div class="manual-section">
+          <div class="manual-banner">
+            <div class="manual-banner-badge">CELESTIAL NAVIGATION</div>
+            <h2 class="manual-banner-title">COSMIC ORRERY & INSTANT WARP INSERTION</h2>
+            <p class="manual-banner-desc">Target planets, extrasolar stars, and hazardous asteroids with instant Keplerian orbital insertion.</p>
+          </div>
+
+          <div class="manual-steps-grid">
+            <div class="manual-step-card">
+              <h3>☀️ Solar System</h3>
+              <p>The Sun, Mercury, Venus, Earth, Moon, Mars, Asteroid Belt, Jupiter, Saturn, Uranus, Neptune, Halley's Comet, and NASA PHAs.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>✨ Extrasolar Stars</h3>
+              <p>Alpha Centauri, Proxima, Sirius, Vega, Betelgeuse with authentic Harvard spectral class colors.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>🌌 Deep Cosmos</h3>
+              <p>Orion Nebula, Crab Nebula, and the Andromeda Galaxy.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <h3>🚀 Instant Warp Orbital Insertion</h3>
+              <p>Click any celestial body and press <strong>🚀 ESTABLISH ORBIT HERE</strong> to warp directly into a stable Keplerian circular orbit around that world:<br>
+              <code>v_circ = &radic;(G &bull; M / r)</code><br>
+              Instant orbit capture without years of interplanetary Hohmann transfers!</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (tabId === 'lobby') {
+      return isVi ? `
+        <div class="manual-section">
+          <div class="manual-banner">
+            <div class="manual-banner-badge">TỐI ƯU HÓA SẢNH CHỜ</div>
+            <h2 class="manual-banner-title">THU GỌN GIAO DIỆN & GÓC QUAN SÁT ĐIỆN ẢNH</h2>
+            <p class="manual-banner-desc">Tạo không gian Hangar thoáng đãng, lộng lẫy để ngắm trọn vẹn tàu vũ trụ 3D chất lượng 4K.</p>
+          </div>
+
+          <div class="manual-steps-grid">
+            <div class="manual-step-card">
+              <div class="step-badge">◀ BẢNG TRÁI</div>
+              <h3>Thu Gọn Bảng Nhiệm Vụ</h3>
+              <p>Nhấp vào tab <strong>◀ MISSIONS</strong> ở mép ngoài hoặc nút <strong>◀</strong> trên thanh tiêu đề của bảng <em>01 // SECTOR OPERATIONS</em>. Bảng sẽ trượt vào mép trái, để lại một thanh cầm nhỏ <strong>▶</strong> để bạn mở lại bất kỳ lúc nào.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">▶ BẢNG PHẢI</div>
+              <h3>Thu Gọn Bảng Avionics</h3>
+              <p>Nhấp vào tab <strong>▶ AVIONICS</strong> ở mép ngoài hoặc nút <strong>▶</strong> trên thanh tiêu đề của bảng <em>02 // AVIONICS</em>. Bảng sẽ trượt vào mép phải, để lại thanh cầm nhỏ <strong>◀</strong> để mở lại.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">▼ ĐÁY MÀN HÌNH</div>
+              <h3>Thu Gọn Bảng Trang Bị & Phóng</h3>
+              <p>Nhấp vào thanh <strong>▼ HIDE DOCK</strong> ở phía trên khu vực trang bị. Toàn bộ khay trang bị và bệ phóng sẽ trượt xuống mép dưới, hiển thị thanh nhỏ <strong>▲ SHOW DOCK</strong> nổi ở đáy màn hình.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">👁 CINEMATIC</div>
+              <h3>Chế Độ Quan Sát Điện Ảnh 360°</h3>
+              <p>Nhấn nút <strong>👁 CINEMATIC VIEW</strong> trên thanh công cụ trên cùng để ẩn toàn bộ HUD và kích hoạt camera xoay tự do 360° quanh tàu vũ trụ 4K!</p>
+            </div>
+          </div>
+
+          <div class="manual-callout-tip">
+            <strong>✨ Trải nghiệm hoàn hảo:</strong> Khi thu gọn cả 3 bảng, bạn sẽ có một góc nhìn Hangar hoàn toàn sạch sẽ, không bị che khuất, ngắm nhìn ánh sáng phản chiếu PBR trên lớp sơn kim loại và phù hiệu cờ Tổ quốc với độ sắc nét tuyệt đối!
+          </div>
+        </div>
+      ` : `
+        <div class="manual-section">
+          <div class="manual-banner">
+            <div class="manual-banner-badge">LOBBY ERGONOMICS</div>
+            <h2 class="manual-banner-title">COLLAPSIBLE PANELS & CINEMATIC CAMERA</h2>
+            <p class="manual-banner-desc">Enjoy an unobstructed 4K view of your spacecraft with single-click collapsible blades.</p>
+          </div>
+
+          <div class="manual-steps-grid">
+            <div class="manual-step-card">
+              <div class="step-badge">◀ LEFT BLADE</div>
+              <h3>Collapse Sector Missions</h3>
+              <p>Click the <strong>◀ MISSIONS</strong> edge tab or the header <strong>◀</strong> button on <em>01 // SECTOR OPERATIONS</em>. The panel slides off-screen, leaving a slim <strong>▶</strong> handle on the edge to re-open.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">▶ RIGHT BLADE</div>
+              <h3>Collapse Avionics Telemetry</h3>
+              <p>Click the <strong>▶ AVIONICS</strong> edge tab or the header <strong>▶</strong> button on <em>02 // AVIONICS</em>. The panel slides off-screen, leaving a slim <strong>◀</strong> handle on the right edge.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">▼ BOTTOM DOCK</div>
+              <h3>Collapse Outfitting Shelf</h3>
+              <p>Click the <strong>▼ HIDE DOCK</strong> tab centered above the launch bar. The dock glides down, leaving a floating <strong>▲ SHOW DOCK</strong> tab at the bottom edge.</p>
+            </div>
+
+            <div class="manual-step-card">
+              <div class="step-badge">👁 CINEMATIC</div>
+              <h3>360° Cinematic Spacecraft View</h3>
+              <p>Click <strong>👁 CINEMATIC VIEW</strong> in the top header to hide all interface elements and enter full-screen 360° orbital camera rotation!</p>
+            </div>
+          </div>
+
+          <div class="manual-callout-tip">
+            <strong>✨ Pristine Presentation:</strong> Collapsing all three panels gives you a clean, unobstructed studio view to admire your 4K PBR spacecraft and custom decals without interface distraction!
+          </div>
+        </div>
+      `;
+    }
+
+    return '';
   }
 
   public setLanguage(lang: string) {
@@ -3451,6 +4177,9 @@ export class NasaMissionDesigner {
     const creditLabel = document.querySelector('.pill-label');
     if (creditLabel) creditLabel.textContent = t.creditsLabel;
 
+    const btnFlightManual = document.getElementById('btn-flight-manual');
+    if (btnFlightManual) btnFlightManual.textContent = t.flightManualBtn;
+
     const btnVault = document.getElementById('btn-resource-vault');
     if (btnVault) btnVault.textContent = t.assetVaultBtn;
 
@@ -3462,6 +4191,21 @@ export class NasaMissionDesigner {
 
     const btnExitCinematic = document.getElementById('btn-exit-cinematic');
     if (btnExitCinematic) btnExitCinematic.textContent = t.restoreFlightBtn;
+
+    const manualModal = document.getElementById('flight-manual-modal');
+    if (manualModal && manualModal.style.display === 'flex') {
+      this.renderFlightManualContent();
+    }
+
+    const isVi = lang === 'vi';
+    const dockBottom = document.getElementById('dock-bottom');
+    const isCollapsedDock = dockBottom?.classList.contains('collapsed');
+    const dockLabel = document.querySelector('#btn-toggle-dock-bottom .dock-tab-label');
+    if (dockLabel) {
+      dockLabel.textContent = isCollapsedDock
+        ? (isVi ? 'MỞ RỘNG BẢNG TRANG BỊ' : 'SHOW DOCK')
+        : (isVi ? 'THU GỌN BẢNG' : 'HIDE DOCK');
+    }
 
     // Sector Operations Blade
     const sectorTitle = document.querySelector('#blade-missions .blade-title');
