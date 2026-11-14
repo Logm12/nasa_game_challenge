@@ -2,9 +2,17 @@
   command = "npm run build"
   publish = "dist"
 
+[functions]
+  directory = "netlify/functions"
+
 [build.environment]
   NODE_VERSION = "20"
   NODE_OPTIONS = "--openssl-legacy-provider"
+
+[[redirects]]
+  from = "/api/missions/history/*"
+  to = "/.netlify/functions/mission-history"
+  status = 200
 
 [[redirects]]
   from = "/*"

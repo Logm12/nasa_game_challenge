@@ -397,6 +397,7 @@ WebGL-Orbiter/
 For detailed technical specifications, local in-process service architecture, domain lifecycle rules, and security validations (FIX-BE01, FIX-BE02, FIX-BE03), refer to:
 
 📖 [Local Mission Service Documentation](docs/mission-backend-local.md)
+📖 [Online Mission History & Serverless Architecture](docs/mission-history-online.md)
 
 ---
 

@@ -85,6 +85,7 @@ export interface IMissionStorageRepository {
   getRun(runId: string): Promise<StoredRunRecord | null>;
   recordCommand(command: MissionCommand, result: { success: boolean; error?: ValidationError }): Promise<boolean>;
   getRecordedCommand(commandId: string): Promise<{ command: MissionCommand; result: { success: boolean; error?: ValidationError } } | null>;
+  getRecordedCommandsForRun(runId: string): Promise<Array<{ command: MissionCommand; result: { success: boolean; error?: ValidationError } }>>;
   saveReport(ownerSessionId: string, report: RunResult): Promise<boolean>;
   getReport(runId: string): Promise<StoredReportRecord | null>;
   
@@ -143,6 +144,18 @@ export class InMemoryMissionStorageRepository implements IMissionStorageReposito
     const item = this.commands.get(commandId);
     if (!item) return null;
     return JSON.parse(JSON.stringify(item));
+  }
+
+  async getRecordedCommandsForRun(runId: string): Promise<Array<{ command: MissionCommand; result: { success: boolean; error?: ValidationError } }>> {
+    const list: Array<{ command: MissionCommand; result: { success: boolean; error?: ValidationError } }> = [];
+    for (const entry of this.commands.values()) {
+      if (entry.command.runId === runId) {
+        list.push(JSON.parse(JSON.stringify(entry)));
+      }
+    }
+    // Sắp xếp theo timestamp nếu có
+    list.sort((a, b) => (a.command.timestamp || 0) - (b.command.timestamp || 0));
+    return list;
   }
 
   async saveReport(ownerSessionId: string, report: RunResult): Promise<boolean> {

@@ -25,6 +25,18 @@ import {
 import { evaluateM1Quiz, evaluateM2SampleReturn } from './mission-rules';
 import { buildDebriefReport } from './mission-report';
 
+export interface MissionRunSnapshot {
+  status: MissionProgress['status'];
+  revision: number;
+  currentBudget?: number;
+  elapsedTimeSeconds: number;
+  m1Answers: [string, number][];
+  m2CurrentSite: ValidM2LandingSite | null;
+  m2CollectedRecords: CollectedSampleRecord[];
+  processedCommandMap: [string, { payloadJson: string; result: { success: boolean; error?: ValidationError } }][];
+  cachedFinalReport: RunResult | null;
+}
+
 export class MissionRunManager {
   private config: MissionRunConfig;
   private status: MissionProgress['status'] = 'NOT_STARTED';
@@ -73,6 +85,94 @@ export class MissionRunManager {
 
   public getStatus(): MissionProgress['status'] {
     return this.status;
+  }
+
+  /**
+   * Tạo bản sao lưu trạng thái Manager để rollback khi lưu repository thất bại
+   */
+  public createSnapshot(): MissionRunSnapshot {
+    return {
+      status: this.status,
+      revision: this.revision,
+      currentBudget: this.currentBudget,
+      elapsedTimeSeconds: this.elapsedTimeSeconds,
+      m1Answers: Array.from(this.m1Answers.entries()),
+      m2CurrentSite: this.m2CurrentSite,
+      m2CollectedRecords: JSON.parse(JSON.stringify(this.m2CollectedRecords)),
+      processedCommandMap: Array.from(this.processedCommandMap.entries()),
+      cachedFinalReport: this.cachedFinalReport ? JSON.parse(JSON.stringify(this.cachedFinalReport)) : null
+    };
+  }
+
+  /**
+   * Khôi phục trạng thái Manager từ bản snapshot
+   */
+  public restoreSnapshot(snap: MissionRunSnapshot): void {
+    this.status = snap.status;
+    this.revision = snap.revision;
+    this.currentBudget = snap.currentBudget;
+    this.elapsedTimeSeconds = snap.elapsedTimeSeconds;
+    this.m1Answers = new Map(snap.m1Answers);
+    this.m2CurrentSite = snap.m2CurrentSite;
+    this.m2CollectedRecords = JSON.parse(JSON.stringify(snap.m2CollectedRecords));
+    this.processedCommandMap = new Map(snap.processedCommandMap);
+    this.cachedFinalReport = snap.cachedFinalReport ? JSON.parse(JSON.stringify(snap.cachedFinalReport)) : null;
+  }
+
+  /**
+   * Phục hồi hoàn chỉnh Manager từ dữ liệu lưu trữ trong Repository
+   */
+  public static restoreFromStored(
+    config: MissionRunConfig,
+    progress: MissionProgress,
+    recordedCommands?: Array<{ command: MissionCommand; result: { success: boolean; error?: ValidationError } }>
+  ): MissionRunManager {
+    const manager = new MissionRunManager(config);
+    manager.status = progress.status;
+    manager.revision = progress.revision;
+    manager.currentBudget = progress.remainingBudgetCredits;
+    manager.elapsedTimeSeconds = progress.elapsedTimeSeconds;
+
+    if (recordedCommands) {
+      for (const record of recordedCommands) {
+        const payloadJson = JSON.stringify(record.command);
+        manager.processedCommandMap.set(record.command.commandId, {
+          payloadJson,
+          result: JSON.parse(JSON.stringify(record.result))
+        });
+
+        // Replay các thao tác thành công vào bộ nhớ Manager
+        if (record.result.success) {
+          if (
+            record.command.type === 'ANSWER_QUIZ' &&
+            record.command.questionId !== undefined &&
+            record.command.selectedOptionIndex !== undefined
+          ) {
+            manager.m1Answers.set(record.command.questionId, record.command.selectedOptionIndex);
+          } else if (record.command.type === 'LAND_AND_COLLECT_SAMPLE') {
+            const cmd = record.command;
+            const siteId = cmd.siteId as ValidM2LandingSite;
+            const sampleItem = config.m2AvailableSamples?.find(
+              s => s.id === cmd.sampleId && s.siteId === siteId
+            );
+            if (sampleItem) {
+              manager.m2CurrentSite = siteId;
+              manager.m2CollectedRecords.push({
+                sample: sampleItem,
+                collectedAtSite: siteId,
+                timestamp: cmd.timestamp || 0
+              });
+            }
+          }
+        }
+      }
+    }
+
+    if (progress.status === 'COMPLETED' || progress.status === 'FAILED') {
+      manager.cachedFinalReport = buildDebriefReport(config, progress);
+    }
+
+    return manager;
   }
 
   public startRun(): { success: boolean; error?: ValidationError } {

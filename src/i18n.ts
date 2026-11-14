@@ -229,6 +229,27 @@ export interface ControlTexts {
   rollCcwTitle: string;
   rollCwTitle: string;
   sasEngagedMsg: string;
+
+  // Save & Load Error Messages (i18n)
+  saveErrRead: string;
+  saveErrCorrupt: string;
+  saveErrDelete: string;
+  saveErrInvalidState: string;
+  saveErrInvalidTitle: string;
+  saveErrCreate: string;
+  saveErrOverwrite: string;
+  saveErrStorageWrite: string;
+
+  // Online History UI
+  historyTitle: string;
+  historyEmpty: string;
+  historyLoading: string;
+  historyError: string;
+  historySaving: string;
+  historySavedOnline: string;
+  historySaveFailed: string;
+  historyRetry: string;
+  historyViewReport: string;
 }
 
 export const HANGAR_I18N: Record<SupportedLang, I18nTexts> = {
@@ -1405,7 +1426,24 @@ export const CONTROLS_I18N: Record<SupportedLang, ControlTexts> = {
     yawRightTitle: 'Yaw Right (D key)',
     rollCcwTitle: 'Roll CCW (Q key)',
     rollCwTitle: 'Roll CW (E key)',
-    sasEngagedMsg: 'SAS Autopilot: {mode}'
+    sasEngagedMsg: 'SAS Autopilot: {mode}',
+    saveErrRead: 'Error reading save list: {error}',
+    saveErrCorrupt: 'Corrupted save data in storage: {error}',
+    saveErrDelete: 'Failed to delete save slot from storage!',
+    saveErrInvalidState: 'Corrupted save file cannot be loaded: {error}',
+    saveErrInvalidTitle: 'Invalid save title (cannot be empty or whitespace only)',
+    saveErrCreate: 'Failed to create new save: Current state is invalid',
+    saveErrOverwrite: 'Failed to overwrite save: {error}',
+    saveErrStorageWrite: 'Storage write failure: Unable to write to memory!',
+    historyTitle: 'MISSION HISTORY',
+    historyEmpty: 'No mission runs recorded yet.',
+    historyLoading: 'Loading history...',
+    historyError: 'Error loading history',
+    historySaving: 'Saving online...',
+    historySavedOnline: 'Saved online',
+    historySaveFailed: 'Online save failed',
+    historyRetry: 'Retry',
+    historyViewReport: 'View Report'
   },
   vi: {
     infoHtml: 'Mô phỏng quỹ đạo không gian — chạy trên <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a>',
@@ -1459,7 +1497,24 @@ export const CONTROLS_I18N: Record<SupportedLang, ControlTexts> = {
     yawRightTitle: 'Lượn phải (Phím D)',
     rollCcwTitle: 'Lăn ngược chiều kim đồng hồ (Phím Q)',
     rollCwTitle: 'Lăn theo chiều kim đồng hồ (Phím E)',
-    sasEngagedMsg: 'Lái tự động SAS: {mode}'
+    sasEngagedMsg: 'Lái tự động SAS: {mode}',
+    saveErrRead: 'Lỗi đọc danh sách bản lưu: {error}',
+    saveErrCorrupt: 'Danh sách bản lưu trong bộ nhớ bị lỗi: {error}',
+    saveErrDelete: 'Lỗi xóa bản lưu khỏi bộ nhớ!',
+    saveErrInvalidState: 'Bản lưu lỗi không thể tải: {error}',
+    saveErrInvalidTitle: 'Tên bản lưu không hợp lệ (không được để trống)',
+    saveErrCreate: 'Không thể tạo bản lưu mới: Trạng thái không hợp lệ',
+    saveErrOverwrite: 'Lỗi lưu đè bản lưu: {error}',
+    saveErrStorageWrite: 'Lỗi ghi vào bộ nhớ lưu trữ!',
+    historyTitle: 'LỊCH SỬ NHIỆM VỤ',
+    historyEmpty: 'Chưa có lượt chơi nào được ghi nhận.',
+    historyLoading: 'Đang tải lịch sử...',
+    historyError: 'Lỗi tải lịch sử',
+    historySaving: 'Đang lưu online...',
+    historySavedOnline: 'Đã lưu online',
+    historySaveFailed: 'Lưu online thất bại',
+    historyRetry: 'Thử lại',
+    historyViewReport: 'Xem báo cáo'
   },
   en_uk: {
     infoHtml: 'Orbital mission simulator — powered by <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a>',
@@ -1513,7 +1568,24 @@ export const CONTROLS_I18N: Record<SupportedLang, ControlTexts> = {
     yawRightTitle: 'Yaw Right (D key)',
     rollCcwTitle: 'Roll CCW (Q key)',
     rollCwTitle: 'Roll CW (E key)',
-    sasEngagedMsg: 'SAS Autopilot: {mode}'
+    sasEngagedMsg: 'SAS Autopilot: {mode}',
+    saveErrRead: 'Error reading save list: {error}',
+    saveErrCorrupt: 'Corrupted save data in storage: {error}',
+    saveErrDelete: 'Failed to delete save slot from storage!',
+    saveErrInvalidState: 'Corrupted save file cannot be loaded: {error}',
+    saveErrInvalidTitle: 'Invalid save title (cannot be empty or whitespace only)',
+    saveErrCreate: 'Failed to create new save: Current state is invalid',
+    saveErrOverwrite: 'Failed to overwrite save: {error}',
+    saveErrStorageWrite: 'Storage write failure: Unable to write to memory!',
+    historyTitle: 'MISSION HISTORY',
+    historyEmpty: 'No mission runs recorded yet.',
+    historyLoading: 'Loading history...',
+    historyError: 'Error loading history',
+    historySaving: 'Saving online...',
+    historySavedOnline: 'Saved online',
+    historySaveFailed: 'Online save failed',
+    historyRetry: 'Retry',
+    historyViewReport: 'View Report'
   },
   ja: {
     infoHtml: '軌道シミュレーション — <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> 搭載',
@@ -1567,7 +1639,24 @@ export const CONTROLS_I18N: Record<SupportedLang, ControlTexts> = {
     yawRightTitle: 'ヨー右（Dキー）',
     rollCcwTitle: '左ロール（Qキー）',
     rollCwTitle: '右ロール（Eキー）',
-    sasEngagedMsg: 'SAS 自動操縦作動: {mode}'
+    sasEngagedMsg: 'SAS 自動操縦作動: {mode}',
+    saveErrRead: 'セーブデータの読み込みエラー: {error}',
+    saveErrCorrupt: 'ストレージ内のセーブデータが破損しています: {error}',
+    saveErrDelete: 'セーブスロットの削除に失敗しました！',
+    saveErrInvalidState: '破損したセーブファイルを読み込めません: {error}',
+    saveErrInvalidTitle: '無効なセーブ名です（空白のみは不可）',
+    saveErrCreate: '新規セーブの作成に失敗しました: 現在の状態が無効です',
+    saveErrOverwrite: '上書き保存に失敗しました: {error}',
+    saveErrStorageWrite: 'ストレージ書き込みエラー: メモリに書き込めません！',
+    historyTitle: 'ミッション履歴',
+    historyEmpty: '記録されたミッション履歴はありません。',
+    historyLoading: '履歴を読み込み中...',
+    historyError: '履歴読み込みエラー',
+    historySaving: 'オンライン保存中...',
+    historySavedOnline: 'オンライン保存完了',
+    historySaveFailed: 'オンライン保存に失敗しました',
+    historyRetry: '再試行',
+    historyViewReport: 'レポートを表示'
   },
   ko: {
     infoHtml: '궤도 임무 시뮬레이터 — <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> 기반',
@@ -1621,7 +1710,24 @@ export const CONTROLS_I18N: Record<SupportedLang, ControlTexts> = {
     yawRightTitle: '우회전 (D 키)',
     rollCcwTitle: '반시계방향 롤 (Q 키)',
     rollCwTitle: '시계방향 롤 (E 키)',
-    sasEngagedMsg: 'SAS 오토파일럿 활성화: {mode}'
+    sasEngagedMsg: 'SAS 오토파일럿 활성화: {mode}',
+    saveErrRead: '저장 목록 읽기 오류: {error}',
+    saveErrCorrupt: '스토리지의 저장 데이터가 손상되었습니다: {error}',
+    saveErrDelete: '스토리지에서 저장을 삭제하지 못했습니다!',
+    saveErrInvalidState: '손상된 저장 파일을 불러올 수 없습니다: {error}',
+    saveErrInvalidTitle: '잘못된 저장 이름입니다 (공백만 사용할 수 없음)',
+    saveErrCreate: '새 저장을 생성하지 못했습니다: 현재 상태가 유효하지 않습니다',
+    saveErrOverwrite: '덮어쓰기 저장 실패: {error}',
+    saveErrStorageWrite: '스토리지 쓰기 오류: 메모리에 쓸 수 없습니다!',
+    historyTitle: '미션 기록',
+    historyEmpty: '기록된 미션 실행 내역이 없습니다.',
+    historyLoading: '기록을 불러오는 중...',
+    historyError: '기록 불러오기 오류',
+    historySaving: '온라인 저장 중...',
+    historySavedOnline: '온라인 저장됨',
+    historySaveFailed: '온라인 저장 실패',
+    historyRetry: '다시 시도',
+    historyViewReport: '보고서 보기'
   },
   fr: {
     infoHtml: 'Simulateur orbital — propulsé par <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a>',
@@ -1675,7 +1781,24 @@ export const CONTROLS_I18N: Record<SupportedLang, ControlTexts> = {
     yawRightTitle: 'Lacet droite (Touche D)',
     rollCcwTitle: 'Roulis antihoraire (Touche Q)',
     rollCwTitle: 'Roulis horaire (Touche E)',
-    sasEngagedMsg: 'Pilote auto SAS : {mode}'
+    sasEngagedMsg: 'Pilote auto SAS : {mode}',
+    saveErrRead: 'Erreur de lecture de la liste des sauvegardes: {error}',
+    saveErrCorrupt: 'Données de sauvegarde corrompues dans le stockage: {error}',
+    saveErrDelete: 'Échec de la suppression de la sauvegarde !',
+    saveErrInvalidState: 'Le fichier de sauvegarde corrompu ne peut pas être chargé: {error}',
+    saveErrInvalidTitle: 'Titre de sauvegarde invalide (ne peut pas être vide)',
+    saveErrCreate: 'Impossible de créer la sauvegarde: État invalide',
+    saveErrOverwrite: 'Échec de l\'écrasement de la sauvegarde: {error}',
+    saveErrStorageWrite: 'Erreur d\'écriture dans le stockage !',
+    historyTitle: 'HISTORIQUE DES MISSIONS',
+    historyEmpty: 'Aucune mission enregistrée pour le moment.',
+    historyLoading: 'Chargement de l\'historique...',
+    historyError: 'Erreur de chargement de l\'historique',
+    historySaving: 'Sauvegarde en ligne...',
+    historySavedOnline: 'Enregistré en ligne',
+    historySaveFailed: 'Échec de l\'enregistrement en ligne',
+    historyRetry: 'Réessayer',
+    historyViewReport: 'Voir le rapport'
   },
   de: {
     infoHtml: 'Orbitsimulator — unterstützt durch <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a>',
@@ -1729,7 +1852,24 @@ export const CONTROLS_I18N: Record<SupportedLang, ControlTexts> = {
     yawRightTitle: 'Gieren rechts (Taste D)',
     rollCcwTitle: 'Rollen gegen Uhrzeigersinn (Taste Q)',
     rollCwTitle: 'Rollen im Uhrzeigersinn (Taste E)',
-    sasEngagedMsg: 'SAS-Autopilot: {mode}'
+    sasEngagedMsg: 'SAS-Autopilot: {mode}',
+    saveErrRead: 'Fehler beim Lesen der Speicherliste: {error}',
+    saveErrCorrupt: 'Beschädigte Speicherdaten im Speicher: {error}',
+    saveErrDelete: 'Fehler beim Löschen des Speicherplatzes!',
+    saveErrInvalidState: 'Beschädigte Speicherdatei kann nicht geladen werden: {error}',
+    saveErrInvalidTitle: 'Ungültiger Speichertitel (darf nicht leer sein)',
+    saveErrCreate: 'Neuer Speicherstand konnte nicht erstellt werden: Ungültiger Status',
+    saveErrOverwrite: 'Fehler beim Überschreiben des Speicherstands: {error}',
+    saveErrStorageWrite: 'Speicherschreibfehler: Daten konnten nicht geschrieben werden!',
+    historyTitle: 'MISSIONSVERLAUF',
+    historyEmpty: 'Noch keine Missionsdurchläufe aufgezeichnet.',
+    historyLoading: 'Verlauf wird geladen...',
+    historyError: 'Fehler beim Laden des Verlaufs',
+    historySaving: 'Online-Speicherung läuft...',
+    historySavedOnline: 'Online gespeichert',
+    historySaveFailed: 'Online-Speichern fehlgeschlagen',
+    historyRetry: 'Wiederholen',
+    historyViewReport: 'Bericht anzeigen'
   },
   it: {
     infoHtml: 'Simulatore orbitale — basato su <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a>',
@@ -1783,7 +1923,24 @@ export const CONTROLS_I18N: Record<SupportedLang, ControlTexts> = {
     yawRightTitle: 'Imbardata a destra (Tasto D)',
     rollCcwTitle: 'Rollio antiorario (Tasto Q)',
     rollCwTitle: 'Rollio orario (Tasto E)',
-    sasEngagedMsg: 'Pilota automatico SAS: {mode}'
+    sasEngagedMsg: 'Pilota automatico SAS: {mode}',
+    saveErrRead: 'Errore durante la lettura dell\'elenco dei salvataggi: {error}',
+    saveErrCorrupt: 'Dati di salvataggio danneggiati nella memoria: {error}',
+    saveErrDelete: 'Impossibile eliminare lo slot di salvataggio!',
+    saveErrInvalidState: 'Impossibile caricare il file di salvataggio danneggiato: {error}',
+    saveErrInvalidTitle: 'Titolo di salvataggio non valido (non può essere vuoto)',
+    saveErrCreate: 'Impossibile creare un nuovo salvataggio: Stato non valido',
+    saveErrOverwrite: 'Impossibile sovrascrivere il salvataggio: {error}',
+    saveErrStorageWrite: 'Errore di scrittura nella memoria!',
+    historyTitle: 'CRONOLOGIA MISSIONI',
+    historyEmpty: 'Nessuna missione registrata finora.',
+    historyLoading: 'Caricamento cronologia...',
+    historyError: 'Errore nel caricamento della cronologia',
+    historySaving: 'Salvataggio online in corso...',
+    historySavedOnline: 'Salvato online',
+    historySaveFailed: 'Salvataggio online non riuscito',
+    historyRetry: 'Riprova',
+    historyViewReport: 'Visualizza report'
   },
   es: {
     infoHtml: 'Simulador orbital — con tecnología <a href="http://threejs.org" target="_blank" rel="noopener">three.js</a>',
@@ -1837,7 +1994,24 @@ export const CONTROLS_I18N: Record<SupportedLang, ControlTexts> = {
     yawRightTitle: 'Guiñada derecha (Tecla D)',
     rollCcwTitle: 'Alabeo antihorario (Tecla Q)',
     rollCwTitle: 'Alabeo horario (Tecla E)',
-    sasEngagedMsg: 'Piloto automático SAS: {mode}'
+    sasEngagedMsg: 'Piloto automático SAS: {mode}',
+    saveErrRead: 'Error al leer la lista de guardados: {error}',
+    saveErrCorrupt: 'Datos de guardado dañados en el almacenamiento: {error}',
+    saveErrDelete: '¡Error al eliminar la ranura de guardado!',
+    saveErrInvalidState: 'No se puede cargar el archivo de guardado dañado: {error}',
+    saveErrInvalidTitle: 'Título de guardado no válido (no puede estar vacío)',
+    saveErrCreate: 'No se pudo crear un nuevo guardado: Estado no válido',
+    saveErrOverwrite: 'Error al sobrescribir el guardado: {error}',
+    saveErrStorageWrite: '¡Error de escritura en el almacenamiento!',
+    historyTitle: 'HISTORIAL DE MISIONES',
+    historyEmpty: 'No hay misiones registradas todavía.',
+    historyLoading: 'Cargando historial...',
+    historyError: 'Error al cargar el historial',
+    historySaving: 'Guardando en línea...',
+    historySavedOnline: 'Guardado en línea',
+    historySaveFailed: 'Error al guardar en línea',
+    historyRetry: 'Reintentar',
+    historyViewReport: 'Ver informe'
   }
 };
 

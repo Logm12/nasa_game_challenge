@@ -1,5 +1,5 @@
 import { MenuControl } from './MenuControl';
-import { getControlTexts, onLangChange } from './i18n';
+import { getControlTexts, onLangChange, formatTpl } from './i18n';
 import {
     sanitizeSaveTitle,
     readRawSaveSlotList,
@@ -37,19 +37,19 @@ export class SaveControl extends MenuControl{
         inputButton.onclick = (event) => {
             const storageRead = safeStorageGet('WebGLOrbiterSavedData');
             if (!storageRead.success) {
-                sendMessage(`Lỗi đọc bộ nhớ lưu trữ: ${storageRead.error}`);
+                sendMessage(formatTpl(getControlTexts().saveErrRead, { error: storageRead.error || '' }));
                 return;
             }
             const slotValidation = readRawSaveSlotList(storageRead.data);
             if (!slotValidation.isValid) {
-                sendMessage(`Không thể ghi đè vì dữ liệu lưu trữ gốc bị hỏng: ${slotValidation.errorMessage}`);
+                sendMessage(formatTpl(getControlTexts().saveErrCorrupt, { error: slotValidation.errorMessage || '' }));
                 return;
             }
 
             const rawState = serializeState();
             const stateValidation = validateGameState(rawState);
             if (!stateValidation.isValid) {
-                sendMessage(`Lỗi lưu: ${stateValidation.errorMessage}`);
+                sendMessage(formatTpl(getControlTexts().saveErrCreate, { error: stateValidation.errorMessage || '' }));
                 return;
             }
 
@@ -60,7 +60,7 @@ export class SaveControl extends MenuControl{
             if (savedOk) {
                 sendMessage(getControlTexts().saveSuccessMsg);
             } else {
-                sendMessage('Lỗi lưu: Bộ nhớ trình duyệt đầy hoặc không thể ghi!');
+                sendMessage(getControlTexts().saveErrStorageWrite);
             }
             this.title.style.display = 'none';
             this.visible = false;
@@ -84,12 +84,12 @@ export class SaveControl extends MenuControl{
             while(0 < saveContainer.children.length) saveContainer.removeChild(saveContainer.children[0]);
             const storageRead = safeStorageGet('WebGLOrbiterSavedData');
             if (!storageRead.success) {
-                sendMessage(`Lỗi đọc danh sách bản lưu: ${storageRead.error}`);
+                sendMessage(formatTpl(getControlTexts().saveErrRead, { error: storageRead.error || '' }));
                 return;
             }
             const slotValidation = readRawSaveSlotList(storageRead.data);
             if (!slotValidation.isValid) {
-                sendMessage(`Danh sách bản lưu trong storage bị lỗi: ${slotValidation.errorMessage}`);
+                sendMessage(formatTpl(getControlTexts().saveErrCorrupt, { error: slotValidation.errorMessage || '' }));
                 return;
             }
             const saveData = slotValidation.data!;
@@ -110,9 +110,9 @@ export class SaveControl extends MenuControl{
                         saveData.splice(idx, 1);
                         const deletedOk = safeStorageSet('WebGLOrbiterSavedData', JSON.stringify(saveData));
                         if (deletedOk) {
-                            sendMessage('Game State Deleted!');
+                            sendMessage(getControlTexts().deleteSuccessMsg);
                         } else {
-                            sendMessage('Lỗi cập nhật danh sách bản lưu!');
+                            sendMessage(getControlTexts().saveErrDelete);
                         }
                         this.title.style.display = 'none';
                         this.visible = false;
@@ -126,15 +126,15 @@ export class SaveControl extends MenuControl{
                         const rawState = serializeState();
                         const stateValidation = validateGameState(rawState);
                         if (!stateValidation.isValid) {
-                            sendMessage(`Lỗi lưu đè: ${stateValidation.errorMessage}`);
+                            sendMessage(formatTpl(getControlTexts().saveErrOverwrite, { error: stateValidation.errorMessage || '' }));
                             return;
                         }
                         save.state = stateValidation.data!;
                         const savedOk = safeStorageSet('WebGLOrbiterSavedData', JSON.stringify(saveData));
                         if (savedOk) {
-                            sendMessage('Game State Saved!');
+                            sendMessage(getControlTexts().saveSuccessMsg);
                         } else {
-                            sendMessage('Lỗi lưu đè: Không thể ghi vào bộ nhớ!');
+                            sendMessage(getControlTexts().saveErrStorageWrite);
                         }
                         this.title.style.display = 'none';
                         this.visible = false;

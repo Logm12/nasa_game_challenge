@@ -145,12 +145,8 @@ export class MissionApiService {
           error: { code: 'INVALID_RUN_ID', message: `Không tìm thấy ván chơi '${command.runId}'.` }
         };
       }
-      // Phục hồi manager
-      const restoredManager = new MissionRunManager(storedRun.config);
-      // Áp dụng trạng thái nếu có
-      if (storedRun.progress.status === 'IN_PROGRESS') {
-        restoredManager.startRun();
-      }
+      const recordedCommands = await this.repository.getRecordedCommandsForRun(command.runId);
+      const restoredManager = MissionRunManager.restoreFromStored(storedRun.config, storedRun.progress, recordedCommands);
       entry = { manager: restoredManager, ownerSessionId: storedRun.ownerSessionId };
       this.activeManagers.set(command.runId, entry);
       configForRun = storedRun.config;
@@ -168,8 +164,8 @@ export class MissionApiService {
       };
     }
 
-    // Snapshot trạng thái manager trước khi thực thi để có thể rollback nếu repository ghi lỗi (FIX-BE03)
-    const prevProgress = entry.manager.getProgress();
+    // Snapshot trạng thái manager trước khi thực thi để có thể rollback nếu repository ghi lỗi (Mục 2)
+    const managerSnapshot = entry.manager.createSnapshot();
 
     const execRes = entry.manager.executeCommand(command);
 
@@ -197,7 +193,7 @@ export class MissionApiService {
       }
     }
 
-    // FIX-BE03: Ghi nguyên tử vào storage. Nếu lưu thất bại -> Báo lỗi 500, không cập nhật client view thành công giả
+    // FIX-BE03: Ghi nguyên tử vào storage. Nếu lưu thất bại -> Rollback Manager và báo lỗi 500
     let updateOk = false;
     try {
       updateOk = await this.repository.atomicUpdateRunAndCommand(
@@ -213,6 +209,8 @@ export class MissionApiService {
     }
 
     if (!updateOk) {
+      // Rollback Manager về trạng thái trước khi thực thi lệnh (không để lệch revision hay dữ liệu)
+      entry.manager.restoreSnapshot(managerSnapshot);
       return {
         statusCode: 500,
         success: false,

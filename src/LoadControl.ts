@@ -1,5 +1,5 @@
 import { MenuControl } from './MenuControl';
-import { getControlTexts, onLangChange } from './i18n';
+import { getControlTexts, onLangChange, formatTpl } from './i18n';
 import {
     readRawSaveSlotList,
     validateGameState,
@@ -29,12 +29,12 @@ export class LoadControl extends MenuControl{
             while(0 < saveContainer.children.length) saveContainer.removeChild(saveContainer.children[0]);
             const storageRead = safeStorageGet('WebGLOrbiterSavedData');
             if (!storageRead.success) {
-                sendMessage(`Lỗi đọc danh sách bản lưu: ${storageRead.error}`);
+                sendMessage(formatTpl(getControlTexts().saveErrRead, { error: storageRead.error || '' }));
                 return;
             }
             const slotValidation = readRawSaveSlotList(storageRead.data);
             if (!slotValidation.isValid) {
-                sendMessage(`Danh sách bản lưu trong storage bị lỗi: ${slotValidation.errorMessage}`);
+                sendMessage(formatTpl(getControlTexts().saveErrCorrupt, { error: slotValidation.errorMessage || '' }));
                 return;
             }
             const saveData = slotValidation.data!;
@@ -57,7 +57,7 @@ export class LoadControl extends MenuControl{
                         if (deletedOk) {
                             sendMessage(getControlTexts().deleteSuccessMsg);
                         } else {
-                            sendMessage('Lỗi xóa bản lưu khỏi bộ nhớ!');
+                            sendMessage(getControlTexts().saveErrDelete);
                         }
                         this.title.style.display = 'none';
                         this.visible = false;
@@ -70,7 +70,7 @@ export class LoadControl extends MenuControl{
                     () => {
                         const stateValidation = validateGameState(save.state);
                         if (!stateValidation.isValid) {
-                            sendMessage(`Bản lưu lỗi không thể tải: ${stateValidation.errorMessage}`);
+                            sendMessage(formatTpl(getControlTexts().saveErrInvalidState, { error: stateValidation.errorMessage || '' }));
                             return;
                         }
                         loadState(save.state);

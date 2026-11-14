@@ -39,6 +39,8 @@ export class FlightDeckControl {
 
     this.buildHTML();
     this.bindEvents();
+    this.applyLanguage();
+    onLangChange(() => this.applyLanguage());
   }
 
   private buildHTML() {
@@ -410,10 +412,11 @@ export class FlightDeckControl {
     });
 
     if (this.sasStatusPill) {
-      if (mode === 'STABILITY') this.sasStatusPill.textContent = 'STAB LOCK';
-      else if (mode === 'PROGRADE') this.sasStatusPill.textContent = 'PROGRADE';
-      else if (mode === 'RETROGRADE') this.sasStatusPill.textContent = 'RETROGRADE';
-      else this.sasStatusPill.textContent = 'MANUAL';
+      const ct = getControlTexts();
+      if (mode === 'STABILITY') this.sasStatusPill.textContent = ct.sasStabPill || ct.sasStabMain;
+      else if (mode === 'PROGRADE') this.sasStatusPill.textContent = ct.sasProgradePill || ct.sasProgradeMain;
+      else if (mode === 'RETROGRADE') this.sasStatusPill.textContent = ct.sasRetrogradePill || ct.sasRetrogradeMain;
+      else this.sasStatusPill.textContent = ct.sasManualPill || ct.sasManualMain;
     }
   }
 

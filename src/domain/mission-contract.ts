@@ -203,3 +203,60 @@ export interface ClientMissionView {
   isReportReady: boolean;
   debriefReport?: RunResult;
 }
+
+/**
+ * Bản ghi History Online lưu bền vững phía Server
+ */
+export interface OnlineMissionRunRecord {
+  runId: string;
+  ownerId: string; // Server xác minh từ Auth Token, không tin body
+  missionId: string;
+  missionType: MissionType;
+  spacecraftName: string;
+  spacecraftPayload?: string;
+  startTimeIso: string;
+  endTimeIso?: string;
+  durationSeconds: number;
+  status: 'SUCCESS' | 'FAILURE' | 'IN_PROGRESS' | 'UNRESOLVED';
+  isThresholdMet: boolean;
+  score?: number;
+  remainingBudget?: number;
+  rulesVersion: string;
+  contentVersion: string;
+  debriefReport?: RunResult;
+  syncedAtIso: string;
+}
+
+export interface OnlineHistoryPaginationQuery {
+  page?: number;
+  pageSize?: number;
+  status?: 'SUCCESS' | 'FAILURE' | 'IN_PROGRESS' | 'UNRESOLVED';
+}
+
+export interface OnlineHistoryPaginationResult {
+  items: OnlineMissionRunRecord[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface OnlineSyncPayload {
+  runId: string;
+  missionId: string;
+  missionType: MissionType;
+  spacecraftName: string;
+  spacecraftPayload?: string;
+  startTimeIso: string;
+  endTimeIso?: string;
+  durationSeconds: number;
+  status: 'SUCCESS' | 'FAILURE' | 'IN_PROGRESS' | 'UNRESOLVED';
+  isThresholdMet: boolean;
+  score?: number;
+  remainingBudget?: number;
+  rulesVersion: string;
+  contentVersion: string;
+  debriefReport?: RunResult;
+}
+
+export type OnlineSyncStatus = 'idle' | 'saving' | 'saved_online' | 'error';
