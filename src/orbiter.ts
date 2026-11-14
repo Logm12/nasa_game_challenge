@@ -328,6 +328,7 @@ function init() {
     nasaDesigner.onReturnToHangar(() => {
         isFlightMode = false;
     });
+    (window as any).nasaDesigner = nasaDesigner;
 
     function spawnDartImpactPlume(impactPos: THREE.Vector3) {
         const qualityCfg = getQualityConfig();
@@ -596,7 +597,26 @@ function render() {
         altitudeControl.setText(0);
 }
 
+function isInteractiveElement(target: EventTarget | null): boolean {
+    if (!target || !(target as HTMLElement).tagName) return false;
+    const el = target as HTMLElement;
+    const tagName = el.tagName.toLowerCase();
+    if (tagName === 'input' || tagName === 'select' || tagName === 'textarea' || tagName === 'button') {
+        return true;
+    }
+    if (el.isContentEditable) {
+        return true;
+    }
+    if (el.closest('#nasa-mission-modal, #nasa-debrief-modal, #flight-manual-modal, #spotlight-tour-overlay, #asset-vault-modal, [role="dialog"], [role="radiogroup"], [role="radio"], [role="group"], [role="checkbox"], .mission-item, .armory-card')) {
+        return true;
+    }
+    return false;
+}
+
 function onKeyDown( event: KeyboardEvent ) {
+    if (!isFlightMode || isInteractiveElement(event.target)) {
+        return;
+    }
     const char = String.fromCharCode(event.which || event.keyCode).toLowerCase();
 
     const select_obj = gameState.getSelectObj();
@@ -623,6 +643,9 @@ function onKeyDown( event: KeyboardEvent ) {
 }
 
 function onKeyUp( event: KeyboardEvent ) {
+    if (!isFlightMode || isInteractiveElement(event.target)) {
+        return;
+    }
     // Annoying browser incompatibilities
     const code = event.which || event.keyCode;
     if(code === 16)

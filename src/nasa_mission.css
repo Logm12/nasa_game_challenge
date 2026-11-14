@@ -3505,3 +3505,94 @@
   box-shadow: 0 0 25px rgba(0, 240, 255, 0.7);
   transform: translateY(-1px);
 }
+
+/* ==========================================================================
+   FE11 & FE14 Accessibility & DART Official Sources Styles
+   ========================================================================== */
+.dart-sources-container {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+}
+
+.dart-sources-heading {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #38bdf8;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dart-sources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dart-source-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.dart-source-link {
+  color: #38bdf8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 500;
+  transition: color 0.15s ease, text-shadow 0.15s ease;
+  word-break: break-word;
+  cursor: pointer;
+}
+
+.dart-source-link:hover {
+  color: #7dd3fc;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.dart-source-link:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.dart-source-meta {
+  font-size: 11px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+/* High-contrast focus outlines for interactive keyboard accessibility (FE11) */
+.mission-item:focus-visible {
+  outline: 2px solid #00f0ff !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+}
+
+.edge-collapse-btn:focus-visible,
+.dock-toggle-btn:focus-visible {
+  outline: 2px solid #00f0ff !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+}
+
+.hud-blade-left [role="radio"]:focus-visible,
+.hud-armory-dock [role="radio"]:focus-visible,
+.hud-armory-dock [role="checkbox"]:focus-visible {
+  outline: 2px solid #00f0ff !important;
+  outline-offset: 2px;
+}
+
