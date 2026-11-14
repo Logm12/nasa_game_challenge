@@ -38,6 +38,7 @@ export interface I18nTexts {
   brandSub: string;
   brandTag: string;
   creditsLabel: string;
+  flightManualBtn: string;
   assetVaultBtn: string;
   assetVaultTitle: string;
   import3dBtn: string;
@@ -194,6 +195,7 @@ export const HANGAR_I18N: Record<SupportedLang, I18nTexts> = {
     brandSub: 'MISSION CONTROL LAB — DESIGN & TEST A SPACE MISSION',
     brandTag: 'DEEP SPACE GNC',
     creditsLabel: 'BUDGET:',
+    flightManualBtn: '📖 FLIGHT MANUAL',
     assetVaultBtn: '🌐 3D ASSET VAULT',
     assetVaultTitle: 'Browse free 3D spacecraft repositories',
     import3dBtn: '📂 IMPORT 3D',
@@ -312,6 +314,7 @@ export const HANGAR_I18N: Record<SupportedLang, I18nTexts> = {
     brandSub: 'PHÒNG THÍ NGHIỆM THIẾT KẾ NHIỆM VỤ KHÔNG GIAN',
     brandTag: 'DẪN ĐƯỜNG KHÔNG GIAN SÂU',
     creditsLabel: 'NGÂN SÁCH:',
+    flightManualBtn: '📖 HƯỚNG DẪN BAY',
     assetVaultBtn: '🌐 KHO MẪU 3D',
     assetVaultTitle: 'Xem nguồn tải mô hình tàu vũ trụ 3D miễn phí',
     import3dBtn: '📂 NHẬP MẪU 3D',
@@ -430,6 +433,7 @@ export const HANGAR_I18N: Record<SupportedLang, I18nTexts> = {
     brandSub: 'MISSION CONTROL LAB — DESIGN & TEST A SPACE MISSION',
     brandTag: 'DEEP SPACE GNC',
     creditsLabel: 'BUDGET:',
+    flightManualBtn: '📖 FLIGHT MANUAL',
     assetVaultBtn: '🌐 3D ASSET VAULT',
     assetVaultTitle: 'Browse free 3D spacecraft repositories',
     import3dBtn: '📂 IMPORT 3D',
@@ -548,6 +552,7 @@ export const HANGAR_I18N: Record<SupportedLang, I18nTexts> = {
     brandSub: '宇宙ミッション設計ラボ — 設計と飛行テスト',
     brandTag: '深宇宙誘導制御',
     creditsLabel: '予算:',
+    flightManualBtn: '📖 フライトマニュアル',
     assetVaultBtn: '🌐 3Dモデル保管庫',
     assetVaultTitle: '無料の3D宇宙船モデル配布サイトを表示',
     import3dBtn: '📂 3D読込',
@@ -666,6 +671,7 @@ export const HANGAR_I18N: Record<SupportedLang, I18nTexts> = {
     brandSub: '우주 임무 설계 연구소 — 설계 및 비행 테스트',
     brandTag: '심우주 유도 제어',
     creditsLabel: '예산:',
+    flightManualBtn: '📖 비행 매뉴얼',
     assetVaultBtn: '🌐 3D 모델 보관소',
     assetVaultTitle: '무료 3D 우주선 모델 저장소 보기',
     import3dBtn: '📂 3D 불러오기',
@@ -784,6 +790,7 @@ export const HANGAR_I18N: Record<SupportedLang, I18nTexts> = {
     brandSub: 'LABORATOIRE DE MISSION SPATIALE — CONCEPTION & ESSAI',
     brandTag: 'GUIDAGE SPATIAL',
     creditsLabel: 'BUDGET :',
+    flightManualBtn: '📖 MANUEL DE VOL',
     assetVaultBtn: '🌐 MODÈLES 3D',
     assetVaultTitle: 'Parcourir les archives gratuites de vaisseaux 3D',
     import3dBtn: '📂 IMPORTER 3D',
@@ -902,6 +909,7 @@ export const HANGAR_I18N: Record<SupportedLang, I18nTexts> = {
     brandSub: 'RAUMFAHRT-MISSIONS-LABOR — ENTWURF & TEST',
     brandTag: 'TIEFRAUM-STEUERUNG',
     creditsLabel: 'BUDGET:',
+    flightManualBtn: '📖 FLUGHANDBUCH',
     assetVaultBtn: '🌐 3D-ARCHIV',
     assetVaultTitle: 'Kostenlose 3D-Raumschiff-Archive ansehen',
     import3dBtn: '📂 3D IMPORTIEREN',
@@ -1020,6 +1028,7 @@ export const HANGAR_I18N: Record<SupportedLang, I18nTexts> = {
     brandSub: 'LABORATORIO MISSIONI SPAZIALI — PROGETTO E TEST',
     brandTag: 'GUIDA SPAZIALE',
     creditsLabel: 'BUDGET:',
+    flightManualBtn: '📖 MANUALE DI VOLO',
     assetVaultBtn: '🌐 ARCHIVIO 3D',
     assetVaultTitle: 'Esplora archivi gratuiti di modelli 3D',
     import3dBtn: '📂 IMPORTA 3D',
@@ -1138,6 +1147,7 @@ export const HANGAR_I18N: Record<SupportedLang, I18nTexts> = {
     brandSub: 'LABORATORIO DE MISIONES ESPACIALES — DISEÑO Y PRUEBA',
     brandTag: 'NAVEGACIÓN ESPACIAL',
     creditsLabel: 'PRESUPUESTO:',
+    flightManualBtn: '📖 MANUAL DE VUELO',
     assetVaultBtn: '🌐 ARCHIVO 3D',
     assetVaultTitle: 'Ver repositorios gratuitos de modelos 3D',
     import3dBtn: '📂 IMPORTAR 3D',
