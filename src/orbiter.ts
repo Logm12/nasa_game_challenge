@@ -8,6 +8,7 @@ import { NasaMissionDesigner } from './NasaMissionDesigner';
 import { getTexts, getControlTexts, onLangChange, formatTpl } from './i18n';
 import { getMissionText } from './i18n-catalog';
 import { SolarSystemExplorer } from './SolarSystemExplorer';
+import { computeEffectiveDpr, onQualityChange } from './QualityManager';
 
 import { CelestialBody, AU, AxisAngleQuaternion } from './CelestialBody';
 import { Settings, SettingsControl } from './SettingsControl';
@@ -49,6 +50,7 @@ let scenarioSelectorControl: ScenarioSelectorControl;
 let saveControl: SaveControl;
 let loadControl: LoadControl;
 let nasaDesigner: NasaMissionDesigner;
+let isFlightMode = false;
 
 let windowHalfX = window.innerWidth / 2;
 let windowHalfY = window.innerHeight / 2;
@@ -152,11 +154,17 @@ function init() {
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor( 0x000000 );
     renderer.setSize( window.innerWidth, window.innerHeight );
-    renderer.setPixelRatio( Math.max(window.devicePixelRatio || 1, 2) );
+    renderer.setPixelRatio( computeEffectiveDpr() );
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.3;
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.autoClear = false;
+
+    onQualityChange((quality) => {
+        if (renderer) {
+            renderer.setPixelRatio( computeEffectiveDpr(quality) );
+        }
+    });
 
     cameraControls = new OrbitControls(camera, renderer.domElement);
     cameraControls.target.set( 0, 0, 0);
@@ -299,6 +307,8 @@ function init() {
     }
 
     nasaDesigner = new NasaMissionDesigner((mission, telemetry) => {
+        isFlightMode = true;
+        gameState.resumeTime();
         if (scenarioSelectorControl) {
             scenarioSelectorControl.loadScenarioByName(mission.scenarioName);
         }
@@ -313,6 +323,10 @@ function init() {
         }
     }, () => {
         equipRocketShip();
+    });
+
+    nasaDesigner.onReturnToHangar(() => {
+        isFlightMode = false;
     });
 
     equipRocketShip();
@@ -384,6 +398,7 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
 
     renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setPixelRatio( computeEffectiveDpr() );
 
 }
 
@@ -391,10 +406,21 @@ function animate() {
 
     requestAnimationFrame( animate );
 
+    // If tab is in background or flight mode is not active (player in Hangar), skip heavy rendering
+    if (document.hidden || !isFlightMode) {
+        return;
+    }
+
     render();
     stats.update();
 
 }
+
+window.addEventListener('visibilitychange', () => {
+    if (!document.hidden && isFlightMode && gameState) {
+        gameState.resumeTime();
+    }
+});
 
 function render() {
     const [time, realDeltaTimeMilliSec, deltaTime] = gameState.updateTime();
@@ -448,6 +474,7 @@ function render() {
     camera.position.set(0,0,0);
     renderer.render( background, camera);
     camera.position.copy(position);
+    if ((window as any).__perf) (window as any).__perf.orbiterRenderCount++;
     renderer.render( scene, camera );
 
     if(select_obj){

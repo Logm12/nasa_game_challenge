@@ -78,9 +78,17 @@ export default class GameState{
         this.startTime = this.simTime;
     }
 
+    resumeTime(): void {
+        this.realTime = new Date();
+    }
+
     updateTime(): [Date, number, number] {
         const now = new Date();
-        const realDeltaTimeMilliSec = now.getTime() - this.realTime.getTime();
+        let realDeltaTimeMilliSec = now.getTime() - this.realTime.getTime();
+        // Guard against massive delta jumps upon resume or tab unpause (max 250ms per frame)
+        if (realDeltaTimeMilliSec > 250) {
+            realDeltaTimeMilliSec = 16.67;
+        }
         const time = new Date(this.simTime.getTime() + realDeltaTimeMilliSec * this.timescale);
         const deltaTime = (time.getTime() - this.simTime.getTime()) * 1e-3;
         this.realTime = now;

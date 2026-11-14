@@ -21,6 +21,14 @@ import {
   formatNum
 } from './i18n';
 import {
+  computeEffectiveDpr,
+  onQualityChange,
+  getStoredQuality,
+  setStoredQuality,
+  GraphicsQuality,
+  getQualityConfig
+} from './QualityManager';
+import {
   getMissionText,
   getSpacecraftText,
   getPowerText,
@@ -372,6 +380,13 @@ export class NasaMissionDesigner {
 
   // 3D GLB Spacecraft & Battleship Fleet Cache
   private loadedGlbCache: Map<string, THREE.Object3D> = new Map();
+  private pendingGlbLoads: Map<string, Promise<THREE.Object3D>> = new Map();
+  private currentLoadRequestId = 0;
+  private maxCachedGlbs = 4;
+  private isHangarVisible = true;
+  private onReturnToHangarCallback?: () => void;
+  private hangarSunLight: THREE.DirectionalLight | null = null;
+  private hangarSpotLight: THREE.SpotLight | null = null;
 
   // 3D Hangar Viewport & Cinematic Sunset Controls
   private hangarScene: THREE.Scene | null = null;
@@ -415,6 +430,10 @@ export class NasaMissionDesigner {
   private missionTimer = 0;
   private isInitialized = false;
 
+  public onReturnToHangar(fn: () => void) {
+    this.onReturnToHangarCallback = fn;
+  }
+
   constructor(
     private onLaunchCallback: (mission: NasaMission, telemetry: any) => void,
     private onShipChangedCallback?: () => void
@@ -423,7 +442,6 @@ export class NasaMissionDesigner {
 
     this.createLobbyDOM();
     this.initAudio();
-    this.preloadGlbFleet();
     this.init3DHangar();
     this.renderMissions();
     this.renderArmoryGrid();
@@ -432,13 +450,31 @@ export class NasaMissionDesigner {
     this.isInitialized = true;
   }
 
-  private preloadGlbFleet() {
-    const loader = new GLTFLoader();
-    SPACECRAFT_FLEET.forEach(craft => {
-      if (!craft.modelUrl) return;
-      loader.load(craft.modelUrl, (gltf) => {
+  private showToast(msg: string, isError = false) {
+    const toast = document.getElementById('import-toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    toast.style.borderColor = isError ? '#ef4444' : '#00f0ff';
+    toast.style.color = isError ? '#ef4444' : '#00f0ff';
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 5000);
+  }
+
+  private requestLoadGlbModel(craft: SpacecraftDefinition, requestId: number): Promise<THREE.Object3D | null> {
+    if (!craft.modelUrl) return Promise.resolve(null);
+    if (this.loadedGlbCache.has(craft.id)) {
+      return Promise.resolve(this.loadedGlbCache.get(craft.id)!);
+    }
+    if (this.pendingGlbLoads.has(craft.id)) {
+      return this.pendingGlbLoads.get(craft.id)!;
+    }
+
+    const p = new Promise<THREE.Object3D>((resolve) => {
+      const loader = new GLTFLoader();
+      loader.load(craft.modelUrl!, (gltf) => {
         const model = gltf.scene;
-        // Normalize size & centering
         const box = new THREE.Box3().setFromObject(model);
         const size = box.getSize(new THREE.Vector3());
         const center = box.getCenter(new THREE.Vector3());
@@ -446,27 +482,54 @@ export class NasaMissionDesigner {
         const targetScale = 3.2 / maxDim;
         model.position.set(-center.x * targetScale, -center.y * targetScale + 0.15, -center.z * targetScale);
         model.scale.set(targetScale, targetScale, targetScale);
-        
+
+        const maxAniso = this.maxAnisotropy || 4;
         model.traverse((child: any) => {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
-            if (child.material && child.material.map) {
-              child.material.map.anisotropy = 16;
+            if (child.geometry) {
+              child.geometry.userData = child.geometry.userData || {};
+              child.geometry.userData.isShared = true;
+            }
+            if (child.material) {
+              if (child.material.map) {
+                child.material.map.anisotropy = maxAniso;
+              }
+              child.material.userData = child.material.userData || {};
+              child.material.userData.isShared = true;
             }
           }
         });
 
+        // Limit cache size
+        if (this.loadedGlbCache.size >= this.maxCachedGlbs) {
+          const keys = Array.from(this.loadedGlbCache.keys());
+          const evictKey = keys.find(k => k !== this.selectedChassisId) || keys[0];
+          if (evictKey) {
+            this.loadedGlbCache.delete(evictKey);
+          }
+        }
+
         this.loadedGlbCache.set(craft.id, model);
-        // If this model is currently selected, rebuild the 3D ship immediately and synchronize flight ship
-        if (this.selectedChassisId === craft.id && !this.isCustomModelLoaded) {
+        this.pendingGlbLoads.delete(craft.id);
+        resolve(model);
+
+        if (requestId === this.currentLoadRequestId && this.selectedChassisId === craft.id && !this.isCustomModelLoaded) {
           this.rebuild3DShipModel();
           this.onShipChangedCallback?.();
         }
       }, undefined, (err) => {
+        this.pendingGlbLoads.delete(craft.id);
         console.warn('Failed to load GLB model for ' + craft.id, err);
+        const t = getTexts(this.currentLanguage);
+        this.showToast(formatTpl(t.toastErrParseGltf, { err: (err as any)?.message || 'Download failed' }), true);
+        resolve(null as any);
       });
     });
+
+    this.pendingGlbLoads.set(craft.id, p);
+    return p;
   }
 
   private initAudio() {
@@ -598,6 +661,14 @@ export class NasaMissionDesigner {
                 <option value="de">🇩🇪 Deutsch</option>
                 <option value="it">🇮🇹 Italiano</option>
                 <option value="es">🇪🇸 Español</option>
+              </select>
+            </div>
+            <div id="quality-selector-wrap" class="lang-selector-wrap" title="${t.qualityTitle}">
+              <span class="lang-icon">⚙️</span>
+              <select id="select-game-quality" class="select-game-language" aria-label="${t.qualityTitle}">
+                <option value="low">${t.qualityLow}</option>
+                <option value="balanced" selected>${t.qualityBalanced}</option>
+                <option value="high">${t.qualityHigh}</option>
               </select>
             </div>
             <button id="btn-start-spotlight-tour" class="btn-spotlight-tour" title="Interactive Step-by-Step Guided Tour / Hướng dẫn tương tác sáng đèn">
@@ -1186,8 +1257,7 @@ export class NasaMissionDesigner {
     });
     this.maxAnisotropy = this.hangarRenderer.capabilities.getMaxAnisotropy() || 16;
 
-    // Super-Sampling 4K: Tối thiểu 2x hoặc tỷ lệ màn hình 4K native
-    const dpr = Math.max(window.devicePixelRatio || 1, 2);
+    const dpr = computeEffectiveDpr();
     this.hangarRenderer.setSize(width, height);
     this.hangarRenderer.setPixelRatio(dpr);
     this.hangarRenderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -1234,6 +1304,10 @@ export class NasaMissionDesigner {
     spotLight.shadow.mapSize.height = 2048;
     spotLight.shadow.bias = -0.0004;
     this.hangarScene.add(spotLight);
+    this.hangarSunLight = sunLight;
+    this.hangarSpotLight = spotLight;
+    this.applyQualityToHangar(getStoredQuality());
+    onQualityChange((q) => this.applyQualityToHangar(q));
 
     // Sàn kim loại Bệ phóng nhận bóng đổ (Shadow Receiving Dock Floor) - 64 segments siêu mượt
     const floorGeo = new THREE.CylinderGeometry(2.3, 2.4, 0.18, 64);
@@ -1336,6 +1410,9 @@ export class NasaMissionDesigner {
     // Vòng lặp render Hangar 4K
     const animateHangar = () => {
       requestAnimationFrame(animateHangar);
+      if (!this.isHangarVisible || document.hidden) {
+        return;
+      }
 
       // Nội suy mượt chuyển động Camera
       this.cameraAzimuth += (this.targetAzimuth - this.cameraAzimuth) * 0.08;
@@ -1394,6 +1471,7 @@ export class NasaMissionDesigner {
       });
 
       if (this.hangarRenderer && this.hangarScene && this.hangarCamera) {
+        if ((window as any).__perf) (window as any).__perf.hangarRenderCount++;
         this.hangarRenderer.render(this.hangarScene, this.hangarCamera);
       }
     };
@@ -1406,7 +1484,32 @@ export class NasaMissionDesigner {
       this.hangarCamera.aspect = w / h;
       this.hangarCamera.updateProjectionMatrix();
       this.hangarRenderer.setSize(w, h);
+      this.hangarRenderer.setPixelRatio(computeEffectiveDpr());
     });
+  }
+
+  private applyQualityToHangar(quality: GraphicsQuality) {
+    if (!this.hangarRenderer) return;
+    const cfg = getQualityConfig(quality);
+    const dpr = computeEffectiveDpr(quality);
+    this.hangarRenderer.setPixelRatio(dpr);
+    this.hangarRenderer.shadowMap.enabled = cfg.shadows;
+
+    if (this.hangarSunLight) {
+      this.hangarSunLight.castShadow = cfg.shadows;
+      if (this.hangarSunLight.shadow) {
+        this.hangarSunLight.shadow.mapSize.width = cfg.shadowMapSize;
+        this.hangarSunLight.shadow.mapSize.height = cfg.shadowMapSize;
+      }
+    }
+    if (this.hangarSpotLight) {
+      this.hangarSpotLight.castShadow = cfg.shadows && cfg.maxDpr > 1.25;
+      if (this.hangarSpotLight.shadow) {
+        this.hangarSpotLight.shadow.mapSize.width = Math.min(1024, cfg.shadowMapSize);
+        this.hangarSpotLight.shadow.mapSize.height = Math.min(1024, cfg.shadowMapSize);
+      }
+    }
+    this.maxAnisotropy = cfg.anisotropy;
   }
 
   /**
@@ -1415,7 +1518,23 @@ export class NasaMissionDesigner {
   private rebuild3DShipModel() {
     if (!this.shipGroup) return;
     while (this.shipGroup.children.length > 0) {
-      this.shipGroup.remove(this.shipGroup.children[0]);
+      const child = this.shipGroup.children[0];
+      this.shipGroup.remove(child);
+      child.traverse((node: any) => {
+        if (node.isMesh) {
+          if (node.geometry && !node.geometry.userData?.isShared) {
+            node.geometry.dispose();
+          }
+          if (node.material) {
+            const mats = Array.isArray(node.material) ? node.material : [node.material];
+            mats.forEach((m: any) => {
+              if (!m.userData?.isShared) {
+                m.dispose();
+              }
+            });
+          }
+        }
+      });
     }
     this.thrusterPlumes = [];
     this.navLights = [];
@@ -1441,6 +1560,9 @@ export class NasaMissionDesigner {
         this.attachEnginePlumes(this.shipGroup, cloned);
         if (this.isInitialized) this.onShipChangedCallback?.();
         return;
+      } else {
+        const reqId = ++this.currentLoadRequestId;
+        this.requestLoadGlbModel(currentCraft, reqId);
       }
     }
 
@@ -3223,6 +3345,18 @@ export class NasaMissionDesigner {
       });
     }
 
+    // Quality Selector
+    const qualitySelect = document.getElementById('select-game-quality') as HTMLSelectElement | null;
+    if (qualitySelect) {
+      qualitySelect.value = getStoredQuality();
+      qualitySelect.addEventListener('change', () => {
+        setStoredQuality(qualitySelect.value as GraphicsQuality);
+      });
+    }
+    onQualityChange((q) => {
+      if (qualitySelect) qualitySelect.value = q;
+    });
+
     // Flight Manual Modal
     const manualModal = document.getElementById('flight-manual-modal');
     const btnManualClose = document.getElementById('manual-btn-close');
@@ -4149,6 +4283,7 @@ export class NasaMissionDesigner {
 
   public setLanguage(lang: string) {
     const resolved = setCurrentLang(lang);
+    const t = getTexts(resolved);
     this.currentLanguage = resolved;
 
     const langSelect = document.getElementById('select-game-language') as HTMLSelectElement | null;
@@ -4156,7 +4291,18 @@ export class NasaMissionDesigner {
       langSelect.value = resolved;
     }
 
-    const t = getTexts(resolved);
+    const qualitySelect = document.getElementById('select-game-quality') as HTMLSelectElement | null;
+    if (qualitySelect) {
+      qualitySelect.title = t.qualityTitle;
+      qualitySelect.setAttribute('aria-label', t.qualityTitle);
+      const val = qualitySelect.value || getStoredQuality();
+      qualitySelect.innerHTML = `
+        <option value="low" ${val === 'low' ? 'selected' : ''}>${t.qualityLow}</option>
+        <option value="balanced" ${val === 'balanced' ? 'selected' : ''}>${t.qualityBalanced}</option>
+        <option value="high" ${val === 'high' ? 'selected' : ''}>${t.qualityHigh}</option>
+      `;
+    }
+
 
     // Topbar
     const brandSub = document.querySelector('.brand-sub');
@@ -4338,6 +4484,7 @@ export class NasaMissionDesigner {
   }
 
   private launchHyperspace() {
+    this.isHangarVisible = false;
     const t = getTexts(this.currentLanguage);
     const missionLoc = getMissionText(this.selectedMission.id, this.currentLanguage);
 
@@ -4396,12 +4543,15 @@ export class NasaMissionDesigner {
 
   private showLobby() {
     this.isMissionActive = false;
+    this.isHangarVisible = true;
+    this.onReturnToHangarCallback?.();
     document.getElementById('nasa-mission-modal')!.style.display = 'flex';
     document.getElementById('nasa-flight-hud')!.style.display = 'none';
   }
 
   private showDebrief() {
     this.isMissionActive = false;
+    this.isHangarVisible = false;
     const debrief = document.getElementById('nasa-debrief-modal');
     if (!debrief) return;
 
