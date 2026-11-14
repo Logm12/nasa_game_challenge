@@ -952,6 +952,7 @@
   justify-content: space-between;
   border-top: 1px solid var(--glass-border);
   padding-top: 10px;
+  padding-right: 48px; /* Safe inset to prevent third-party preview badges (e.g. Netlify badge) from blocking the launch button */
 }
 
 .jarvis-status {

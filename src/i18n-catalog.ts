@@ -495,10 +495,10 @@ export const MISSIONS_I18N: Record<SupportedLang, Record<string, LocalizedMissio
 
 export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItemText>> = {
   en_us: {
-    quinjet: { name: 'Quinjet Mk-VII (Stealth Concept)', badge: '🛡️ STEALTH', desc: 'Fictional stealth VTOL hull with folding delta wings. Balanced mass and 4 instrument bays.' },
-    milano: { name: 'The Milano (Light Scout)', badge: '🪐 SCOUT', desc: 'Lightweight fictional scout hull with low dry mass (120 kg) and 2 instrument bays.' },
-    benatar: { name: 'The Benatar (Heavy Cruiser)', badge: '🚀 CRUISER', desc: 'Medium-heavy fictional deep-space cruiser with 5 instrument bays.' },
-    sanctuary: { name: 'Sanctuary Flagship (Dreadnought)', badge: '👑 HEAVY', desc: 'Massive fictional armored hull supporting up to 6 scientific instruments.' },
+    quinjet: { name: 'NASA X-Plane Stealth Prototype', badge: '🛡️ X-PLANE', desc: 'Advanced aerodynamic lifting-body concept with folding delta wings. 4 instrument bays.' },
+    milano: { name: 'NASA Deep Space Scout Probe', badge: '🪐 SCOUT', desc: 'Lightweight deep-space scout probe platform with low dry mass (120 kg) and 2 instrument bays.' },
+    benatar: { name: 'NASA Interplanetary Cruiser Concept', badge: '🚀 CRUISER', desc: 'Medium-heavy interplanetary survey vessel with 5 instrument bays.' },
+    sanctuary: { name: 'NASA Deep Space Habitat Flagship', badge: '👑 FLAGSHIP', desc: 'Heavy deep-space long-duration architecture supporting up to 6 scientific instruments.' },
     hyperion: { name: 'Hyperion Exploration Flagship', badge: '🌌 FLAGSHIP', desc: 'Heavy deep-space hull with 6 instrument bays and sensor spine.' },
     ghostwing: { name: 'Ghostwing Recon Interceptor', badge: '⚡ RECON', desc: 'Light forward-swept reconnaissance hull with 3 instrument bays.' },
     shuttle: { name: 'NASA Space Shuttle Orbiter (Discovery OV-103)', badge: '🚀 NASA ORBITER', desc: 'Official NASA winged orbiter model with delta wings and thermal tiles (5 bays).' },
@@ -506,10 +506,10 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     voyager: { name: 'NASA Voyager 1 Interstellar Probe', badge: '📡 NASA PROBE', desc: 'Deep-space probe with high-gain parabolic dish and Golden Record (3 bays).' }
   },
   vi: {
-    quinjet: { name: 'Quinjet Mk-VII (Khái niệm tàng hình)', badge: '🛡️ TÀNG HÌNH', desc: 'Thân tàu hư cấu có cánh delta gập. Khối lượng cân bằng, lắp tối đa 4 thiết bị đo.' },
-    milano: { name: 'The Milano (Tàu trinh sát nhẹ)', badge: '🪐 TRINH SÁT', desc: 'Thân tàu hư cấu rất nhẹ (120 kg khô), cơ động cao, lắp tối đa 2 thiết bị đo.' },
-    benatar: { name: 'The Benatar (Tàu tuần dương)', badge: '🚀 TUẦN DƯƠNG', desc: 'Thân tàu hư cấu cỡ lớn đi không gian sâu, lắp tối đa 5 thiết bị đo.' },
-    sanctuary: { name: 'Sanctuary Flagship (Tàu hạng nặng)', badge: '👑 HẠNG NẶNG', desc: 'Thân tàu hư cấu bọc giáp nặng, mang được tối đa 6 thiết bị đo.' },
+    quinjet: { name: 'Tàu thử nghiệm NASA X-Plane', badge: '🛡️ X-PLANE', desc: 'Khái niệm thân nâng siêu thanh với cánh delta gập. Khối lượng cân bằng, lắp tối đa 4 thiết bị đo.' },
+    milano: { name: 'Tàu trinh sát không gian sâu NASA Scout', badge: '🪐 TRINH SÁT', desc: 'Nền tảng thăm dò không gian sâu siêu nhẹ (120 kg khô), cơ động cao, lắp tối đa 2 thiết bị đo.' },
+    benatar: { name: 'Tàu tuần thám liên hành tinh NASA', badge: '🚀 TUẦN DƯƠNG', desc: 'Tàu khảo sát liên hành tinh tầm trung-lớn cho không gian sâu, lắp tối đa 5 thiết bị đo.' },
+    sanctuary: { name: 'Trạm không gian sâu Artemis Flagship', badge: '👑 SOÁI HẠM', desc: 'Kiến trúc tàu không gian sâu dài ngày hạng nặng, mang được tối đa 6 thiết bị đo.' },
     hyperion: { name: 'Soái hạm thám hiểm Hyperion', badge: '🌌 SOÁI HẠM', desc: 'Thân tàu thám hiểm cỡ lớn với 6 khoang lắp thiết bị khoa học.' },
     ghostwing: { name: 'Tàu đánh chặn trinh sát Ghostwing', badge: '⚡ TRINH SÁT', desc: 'Thân tàu trinh sát nhẹ cánh vát ngược, lắp tối đa 3 thiết bị đo.' },
     shuttle: { name: 'Tàu con thoi NASA Discovery (OV-103)', badge: '🚀 TÀU CON THOI NASA', desc: 'Mô hình tàu con thoi chính thức của NASA với cánh delta và gạch chịu nhiệt (5 khoang).' },
@@ -517,10 +517,10 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     voyager: { name: 'Tàu thám hiểm NASA Voyager 1', badge: '📡 TÀU THĂM DÒ NASA', desc: 'Tàu thăm dò không gian sâu với ăng-ten parabol lớn và Đĩa Vàng (3 khoang).' }
   },
   en_uk: {
-    quinjet: { name: 'Quinjet Mk-VII (Stealth Concept)', badge: '🛡️ STEALTH', desc: 'Fictional stealth VTOL hull with folding delta wings. Balanced mass and 4 instrument bays.' },
-    milano: { name: 'The Milano (Light Scout)', badge: '🪐 SCOUT', desc: 'Lightweight fictional scout hull with low dry mass (120 kg) and 2 instrument bays.' },
-    benatar: { name: 'The Benatar (Heavy Cruiser)', badge: '🚀 CRUISER', desc: 'Medium-heavy fictional deep-space cruiser with 5 instrument bays.' },
-    sanctuary: { name: 'Sanctuary Flagship (Dreadnought)', badge: '👑 HEAVY', desc: 'Massive fictional armoured hull supporting up to 6 scientific instruments.' },
+    quinjet: { name: 'NASA X-Plane Stealth Prototype', badge: '🛡️ X-PLANE', desc: 'Advanced aerodynamic lifting-body concept with folding delta wings. 4 instrument bays.' },
+    milano: { name: 'NASA Deep Space Scout Probe', badge: '🪐 SCOUT', desc: 'Lightweight deep-space scout probe platform with low dry mass (120 kg) and 2 instrument bays.' },
+    benatar: { name: 'NASA Interplanetary Cruiser Concept', badge: '🚀 CRUISER', desc: 'Medium-heavy interplanetary survey vessel with 5 instrument bays.' },
+    sanctuary: { name: 'NASA Deep Space Habitat Flagship', badge: '👑 FLAGSHIP', desc: 'Heavy deep-space long-duration architecture supporting up to 6 scientific instruments.' },
     hyperion: { name: 'Hyperion Exploration Flagship', badge: '🌌 FLAGSHIP', desc: 'Heavy deep-space hull with 6 instrument bays and sensor spine.' },
     ghostwing: { name: 'Ghostwing Recon Interceptor', badge: '⚡ RECON', desc: 'Light forward-swept reconnaissance hull with 3 instrument bays.' },
     shuttle: { name: 'NASA Space Shuttle Orbiter (Discovery OV-103)', badge: '🚀 NASA ORBITER', desc: 'Official NASA winged orbiter model with delta wings and thermal tiles (5 bays).' },
@@ -528,10 +528,10 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     voyager: { name: 'NASA Voyager 1 Interstellar Probe', badge: '📡 NASA PROBE', desc: 'Deep-space probe with high-gain parabolic dish and Golden Record (3 bays).' }
   },
   ja: {
-    quinjet: { name: 'Quinjet Mk-VII（ステルス機体）', badge: '🛡️ ステルス', desc: '折りたたみ式デルタ翼を持つ架空のVTOL船体。最大4基の観測機器を搭載可能。' },
-    milano: { name: 'The Milano（軽量偵察機）', badge: '🪐 偵察', desc: '乾燥質量120 kgの軽量な架空偵察船体。最大2基の観測機器を搭載可能。' },
-    benatar: { name: 'The Benatar（大型巡洋船）', badge: '🚀 巡洋船', desc: '深宇宙向けの中大型架空船体。最大5基の観測機器を搭載可能。' },
-    sanctuary: { name: 'Sanctuary Flagship（重装甲艦）', badge: '👑 重型', desc: '最大6基の科学観測機器を搭載できる大型の架空船体。' },
+    quinjet: { name: 'NASA X-Plane ステルス実験機', badge: '🛡️ X-PLANE', desc: '折りたたみデルタ翼を備えた極超音速リフティングボディ実験機。4基の観測機器を搭載可能。' },
+    milano: { name: 'NASA 深宇宙偵察プローブ', badge: '🪐 偵察', desc: '乾燥質量120 kgの超軽量深宇宙探査プラットフォーム。2基の観測機器を搭載可能。' },
+    benatar: { name: 'NASA 惑星間巡航船コンセプト', badge: '🚀 巡航船', desc: '深宇宙探査用の中大型惑星間観測船体。最大5基の観測機器を搭載可能。' },
+    sanctuary: { name: 'NASA 深宇宙居住旗艦プラットフォーム', badge: '👑 旗艦', desc: '長期深宇宙ミッションを支える重装甲プラットフォーム。最大6基の観測機器を搭載可能。' },
     hyperion: { name: 'Hyperion 探査旗艦', badge: '🌌 旗艦', desc: '6基の観測機器スロットを備えた大型深宇宙探査船体。' },
     ghostwing: { name: 'Ghostwing 偵察迎撃機', badge: '⚡ 偵察', desc: '前進翼を備えた軽量の偵察船体。最大3基の観測機器を搭載可能。' },
     shuttle: { name: 'NASA スペースシャトル Discovery (OV-103)', badge: '🚀 NASA シャトル', desc: 'デルタ翼と耐熱タイルを備えたNASA公式オービターモデル（最大5基）。' },
@@ -539,10 +539,10 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     voyager: { name: 'NASA ボイジャー1号 探査機', badge: '📡 NASA 探査機', desc: '大型パラボラアンテナとゴールデンレコードを備えた深宇宙探査機（最大3基）。' }
   },
   ko: {
-    quinjet: { name: 'Quinjet Mk-VII (스텔스 콘셉트)', badge: '🛡️ 스텔스', desc: '접이식 델타 날개를 갖춘 가상 선체. 균형 잡힌 질량과 최대 4개 장비 슬롯.' },
-    milano: { name: 'The Milano (경량 정찰선)', badge: '🪐 정찰', desc: '건조 질량 120 kg의 가벼운 가상 정찰 선체. 최대 2개 장비 장착.' },
-    benatar: { name: 'The Benatar (중형 순양선)', badge: '🚀 순양선', desc: '최대 5개의 관측 장비를 실을 수 있는 심우주용 중형 선체.' },
-    sanctuary: { name: 'Sanctuary Flagship (중장갑 기함)', badge: '👑 대형', desc: '최대 6개의 과학 관측 장비를 지원하는 대형 가상 선체.' },
+    quinjet: { name: 'NASA X-Plane 스텔스 시험선', badge: '🛡️ X-PLANE', desc: '접이식 델타 날개를 갖춘 극초음속 양력동체 시험기. 최대 4개 장비 장착.' },
+    milano: { name: 'NASA 심우주 정찰 프로브', badge: '🪐 정찰', desc: '건조 질량 120 kg의 초경량 심우주 정찰 플랫폼. 최대 2개 장비 장착.' },
+    benatar: { name: 'NASA 행성 간 순항선 콘셉트', badge: '🚀 순양선', desc: '심우주 장거리 관측을 위한 중대형 행성 간 선체 (최대 5개 장비).' },
+    sanctuary: { name: 'NASA 심우주 거주 기함 플랫폼', badge: '👑 기함', desc: '최대 6개의 과학 관측 장비를 지원하는 심우주 장기 탐사용 대형 선체.' },
     hyperion: { name: 'Hyperion 탐사 기함', badge: '🌌 기함', desc: '6개 장비 슬롯을 갖춘 대형 심우주 탐사 선체.' },
     ghostwing: { name: 'Ghostwing 정찰 요격선', badge: '⚡ 정찰', desc: '최대 3개의 장비를 탑재하는 경량 정찰 선체.' },
     shuttle: { name: 'NASA 우주왕복선 Discovery (OV-103)', badge: '🚀 NASA 왕복선', desc: '델타 날개와 내열 타일을 갖춘 공식 NASA 우주왕복선 모델 (최대 5슬롯).' },
@@ -550,10 +550,10 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     voyager: { name: 'NASA 보이저 1호 성간 탐사선', badge: '📡 NASA 탐사선', desc: '대형 파라볼라 안테나와 골든 레코드를 탑재한 심우주 탐사선 (최대 3슬롯).' }
   },
   fr: {
-    quinjet: { name: 'Quinjet Mk-VII (Concept furtif)', badge: '🛡️ FURTIF', desc: 'Coque fictive à ailes delta repliables. Masse équilibrée et 4 baies d’instruments.' },
-    milano: { name: 'The Milano (Éclaireur léger)', badge: '🪐 ÉCLAIREUR', desc: 'Coque fictive très légère (120 kg à sec) avec 2 baies d’instruments.' },
-    benatar: { name: 'The Benatar (Croiseur lourd)', badge: '🚀 CROISEUR', desc: 'Croiseur fictif pour l’espace profond doté de 5 baies d’instruments.' },
-    sanctuary: { name: 'Sanctuary Flagship (Cuirassé)', badge: '👑 LOURD', desc: 'Immense coque fictive blindée pouvant accueillir jusqu’à 6 instruments.' },
+    quinjet: { name: 'Prototype furtif NASA X-Plane', badge: '🛡️ X-PLANE', desc: 'Concept à fuselage portant hypersonique et ailes delta repliables. 4 baies d’instruments.' },
+    milano: { name: 'Sonde de reconnaissance NASA Scout', badge: '🪐 ÉCLAIREUR', desc: 'Plateforme de sonde ultralégère pour l’espace lointain (120 kg à sec) avec 2 baies d’instruments.' },
+    benatar: { name: 'Concept de croiseur interplanétaire NASA', badge: '🚀 CROISEUR', desc: 'Vaisseau de surveillance interplanétaire lourd pour l’espace lointain (5 baies).' },
+    sanctuary: { name: 'Plateforme amirale d’habitat lointain NASA', badge: '👑 AMIRAL', desc: 'Architecture lourde de longue durée pour l’espace lointain accueillant jusqu’à 6 instruments.' },
     hyperion: { name: 'Vaisseau amiral d’exploration Hyperion', badge: '🌌 AMIRAL', desc: 'Coque d’exploration lourde dotée de 6 emplacements scientifiques.' },
     ghostwing: { name: 'Intercepteur de reconnaissance Ghostwing', badge: '⚡ RECON', desc: 'Coque légère de reconnaissance à 3 baies d’instruments.' },
     shuttle: { name: 'Navette spatiale NASA Discovery (OV-103)', badge: '🚀 NAVETTE NASA', desc: 'Modèle officiel de navette NASA avec ailes delta et tuiles thermiques (5 baies).' },
@@ -561,10 +561,10 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     voyager: { name: 'Sonde interstellaire NASA Voyager 1', badge: '📡 SONDE NASA', desc: 'Sonde lointaine avec antenne parabolique et Disque d’or (3 baies).' }
   },
   de: {
-    quinjet: { name: 'Quinjet Mk-VII (Tarnkappen-Konzept)', badge: '🛡️ STEALTH', desc: 'Fiktiver Rumpf mit klappbaren Deltaflügeln. Ausgewogene Masse und 4 Geräteplätze.' },
-    milano: { name: 'The Milano (Leichter Aufklärer)', badge: '🪐 SPÄHER', desc: 'Sehr leichter fiktiver Rumpf (120 kg trocken) mit 2 Geräteplätzen.' },
-    benatar: { name: 'The Benatar (Schwerer Kreuzer)', badge: '🚀 KREUZER', desc: 'Schwerer fiktiver Tiefraumkreuzer mit 5 Geräteplätzen.' },
-    sanctuary: { name: 'Sanctuary Flagship (Großschiff)', badge: '👑 SCHWER', desc: 'Massiver fiktiver Rumpf für bis zu 6 wissenschaftliche Instrumente.' },
+    quinjet: { name: 'NASA X-Plane Stealth-Prototyp', badge: '🛡️ X-PLANE', desc: 'Hyperschall-Auftriebskörper-Konzept mit klappbaren Deltaflügeln. 4 Geräteplätze.' },
+    milano: { name: 'NASA Tiefraum-Spähsonde', badge: '🪐 SPÄHER', desc: 'Sehr leichte Tiefraum-Sondenplattform (120 kg trocken) mit 2 Geräteplätzen.' },
+    benatar: { name: 'NASA Interplanetares Kreuzerkonzept', badge: '🚀 KREUZER', desc: 'Mittelschweres interplanetares Forschungsschiff mit 5 Geräteplätzen.' },
+    sanctuary: { name: 'NASA Tiefraum-Habitat-Flaggschiff', badge: '👑 FLAGGSCHIFF', desc: 'Schwere Langzeit-Tiefraumplattform für bis zu 6 wissenschaftliche Instrumente.' },
     hyperion: { name: 'Hyperion Forschungs-Flaggschiff', badge: '🌌 FLAGGSCHIFF', desc: 'Schweres Tiefraumschiff mit 6 Plätzen für Messgeräte.' },
     ghostwing: { name: 'Ghostwing Aufklärungs-Abfangjäger', badge: '⚡ AUFKLÄRUNG', desc: 'Leichter Aufklärer mit 3 Geräteplätzen.' },
     shuttle: { name: 'NASA Space Shuttle Discovery (OV-103)', badge: '🚀 NASA SHUTTLE', desc: 'Offizielles NASA-Orbiter-Modell mit Deltaflügeln und Hitzeschutzkacheln (5 Plätze).' },
@@ -572,10 +572,10 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     voyager: { name: 'NASA Voyager 1 Raumsonde', badge: '📡 NASA SONDE', desc: 'Tiefraumsonde mit Parabolantenne und Golden Record (3 Plätze).' }
   },
   it: {
-    quinjet: { name: 'Quinjet Mk-VII (Concetto stealth)', badge: '🛡️ STEALTH', desc: 'Scafo fittizio con ali a delta pieghevoli. Massa bilanciata e 4 vani strumenti.' },
-    milano: { name: 'The Milano (Ricognitore leggero)', badge: '🪐 RICOGNITORE', desc: 'Scafo leggero (120 kg a secco) con 2 vani strumenti.' },
-    benatar: { name: 'The Benatar (Incrociatore pesante)', badge: '🚀 INCROCIATORE', desc: 'Incrociatore fittizio per spazio profondo con 5 vani strumenti.' },
-    sanctuary: { name: 'Nave ammiraglia Sanctuary (Corazzata)', badge: '👑 PESANTE', desc: 'Grande scafo fittizio corazzato con supporto fino a 6 strumenti.' },
+    quinjet: { name: 'Prototipo stealth NASA X-Plane', badge: '🛡️ X-PLANE', desc: 'Concetto a corpo portante ipersonico con ali a delta pieghevoli. 4 vani strumenti.' },
+    milano: { name: 'Sonda da ricognizione profonda NASA', badge: '🪐 RICOGNITORE', desc: 'Piattaforma di sonda ultraleggera (120 kg a secco) con 2 vani strumenti.' },
+    benatar: { name: 'Incrociatore interplanetario NASA', badge: '🚀 INCROCIATORE', desc: 'Nave per rilievi interplanetari nello spazio profondo con 5 vani strumenti.' },
+    sanctuary: { name: 'Piattaforma ammiraglia habitat profondo NASA', badge: '👑 AMMIRAGLIA', desc: 'Grande architettura per missioni di lunga durata nello spazio profondo con 6 vani.' },
     hyperion: { name: 'Nave ammiraglia da esplorazione Hyperion', badge: '🌌 AMMIRAGLIA', desc: 'Scafo da esplorazione pesante con 6 vani per sensori.' },
     ghostwing: { name: 'Intercettore di ricognizione Ghostwing', badge: '⚡ RICOGNIZIONE', desc: 'Scafo leggero da ricognizione con 3 vani strumenti.' },
     shuttle: { name: 'Navetta Spaziale NASA Discovery (OV-103)', badge: '🚀 NAVETTA NASA', desc: 'Modello ufficiale NASA con ali a delta e piastrelle termiche (5 vani).' },
@@ -583,10 +583,10 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     voyager: { name: 'Sonda interstellare NASA Voyager 1', badge: '📡 SONDA NASA', desc: 'Sonda per lo spazio profondo con antenna parabolica e Golden Record (3 vani).' }
   },
   es: {
-    quinjet: { name: 'Quinjet Mk-VII (Diseño furtivo)', badge: '🛡️ FURTIVO', desc: 'Casco ficticio con alas delta plegables. Masa equilibrada y 4 bahías de instrumentos.' },
-    milano: { name: 'The Milano (Explorador ligero)', badge: '🪐 EXPLORADOR', desc: 'Casco ligero (120 kg en seco) con 2 bahías de instrumentos.' },
-    benatar: { name: 'The Benatar (Crucero pesado)', badge: '🚀 CRUCERO', desc: 'Crucero ficticio de espacio profundo con 5 bahías de instrumentos.' },
-    sanctuary: { name: 'Sanctuary Flagship (Acorazado)', badge: '👑 PESADO', desc: 'Enorme casco ficticio blindado con capacidad para 6 instrumentos.' },
+    quinjet: { name: 'Prototipo furtivo NASA X-Plane', badge: '🛡️ X-PLANE', desc: 'Concepto hipersónico de fuselaje sustentador con alas delta plegables. 4 bahías de instrumentos.' },
+    milano: { name: 'Sonda exploradora profunda NASA', badge: '🪐 EXPLORADOR', desc: 'Plataforma de sonda ultraligera de espacio profundo (120 kg en seco) con 2 bahías de instrumentos.' },
+    benatar: { name: 'Concepto de crucero interplanetario NASA', badge: '🚀 CRUCERO', desc: 'Buque de reconocimiento interplanetario de espacio profundo con 5 bahías de instrumentos.' },
+    sanctuary: { name: 'Plataforma insignia de hábitat profundo NASA', badge: '👑 INSIGNIA', desc: 'Arquitectura pesada de larga duración para espacio profundo con capacidad para 6 instrumentos.' },
     hyperion: { name: 'Buque insignia de exploración Hyperion', badge: '🌌 INSIGNIA', desc: 'Casco pesado de exploración con 6 bahías científicas.' },
     ghostwing: { name: 'Interceptor de reconocimiento Ghostwing', badge: '⚡ RECON', desc: 'Nave ligera de reconocimiento con 3 bahías de instrumentos.' },
     shuttle: { name: 'Transbordador Espacial NASA Discovery (OV-103)', badge: '🚀 TRANSBORDADOR NASA', desc: 'Modelo oficial de la NASA con alas delta y losetas térmicas (5 bahías).' },
@@ -598,119 +598,119 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
 export const POWER_CORES_I18N: Record<SupportedLang, Record<string, LocalizedItemText>> = {
   en_us: {
     solar_wings: { name: 'UltraFlex Solar Arrays', desc: 'Solar panels generating 1,500 W at 1 AU. Output drops with distance squared (1/r²).' },
-    arc_reactor: { name: 'Compact Fusion Core (Fictional)', desc: 'Fictional compact reactor delivering a constant 2,200 W at any distance.' },
-    vibranium_core: { name: 'Kinetic Matrix Core (Fictional)', desc: 'Fictional radiation-absorbing power unit providing a steady 1,900 W.' },
-    tesseract_core: { name: 'High-Output Quantum Core (Fictional)', desc: 'Fictional high-power source generating 4,500 W for heavy instrument loads.' }
+    arc_reactor: { name: 'NASA MMRTG Nuclear Generator', desc: 'Multi-Mission Radioisotope Thermoelectric Generator producing steady 2,200 W via Pu-238 decay.' },
+    vibranium_core: { name: 'Kilopower Space Fission Reactor', desc: 'Compact nuclear fission reactor (KRUSTY) delivering 1,900 W continuous electrical output.' },
+    tesseract_core: { name: 'Direct Fusion Drive Core (NIAC)', desc: 'Advanced DFD fusion reactor delivering 4,500 W high-power electrical output for heavy flagship payloads.' }
   },
   vi: {
     solar_wings: { name: 'Cánh pin Mặt Trời UltraFlex', desc: 'Tạo công suất 1.500 W ở 1 AU (khoảng cách Trái Đất–Mặt Trời). Công suất giảm nhanh khi bay xa (theo tỉ lệ 1/r²).' },
-    arc_reactor: { name: 'Lò phản ứng thu nhỏ (Hư cấu)', desc: 'Nguồn điện hạt nhân hư cấu phát ổn định 2.200 W ở mọi khoảng cách.' },
-    vibranium_core: { name: 'Lõi ma trận năng lượng (Hư cấu)', desc: 'Nguồn điện hư cấu phát ổn định 1.900 W, không phụ thuộc ánh sáng Mặt Trời.' },
-    tesseract_core: { name: 'Lõi lượng tử công suất lớn (Hư cấu)', desc: 'Nguồn điện hư cấu phát tới 4.500 W để cấp cho nhiều thiết bị đo nặng.' }
+    arc_reactor: { name: 'Máy phát điện hạt nhân MMRTG (NASA)', desc: 'Hệ máy phát điện đồng vị phóng xạ đa nhiệm MMRTG cung cấp 2.200 W ổn định nhờ phân rã Pu-238 ở mọi cự ly.' },
+    vibranium_core: { name: 'Lò phân hạch không gian Kilopower', desc: 'Lò phản ứng phân hạch hạt nhân nhỏ gọn (KRUSTY) cung cấp liên tục 1.900 W điện cho thám hiểm không gian sâu.' },
+    tesseract_core: { name: 'Lõi nhiệt hạch trực tiếp DFD (NIAC)', desc: 'Lõi động lực nhiệt hạch trực tiếp thế hệ mới (NASA NIAC) cung cấp công suất 4.500 W cho tàu thám hiểm hạng nặng.' }
   },
   en_uk: {
     solar_wings: { name: 'UltraFlex Solar Arrays', desc: 'Solar panels generating 1,500 W at 1 AU. Output drops with distance squared (1/r²).' },
-    arc_reactor: { name: 'Compact Fusion Core (Fictional)', desc: 'Fictional compact reactor delivering a constant 2,200 W at any distance.' },
-    vibranium_core: { name: 'Kinetic Matrix Core (Fictional)', desc: 'Fictional radiation-absorbing power unit providing a steady 1,900 W.' },
-    tesseract_core: { name: 'High-Output Quantum Core (Fictional)', desc: 'Fictional high-power source generating 4,500 W for heavy instrument loads.' }
+    arc_reactor: { name: 'NASA MMRTG Nuclear Generator', desc: 'Multi-Mission Radioisotope Thermoelectric Generator producing steady 2,200 W via Pu-238 decay.' },
+    vibranium_core: { name: 'Kilopower Space Fission Reactor', desc: 'Compact nuclear fission reactor (KRUSTY) delivering 1,900 W continuous electrical output.' },
+    tesseract_core: { name: 'Direct Fusion Drive Core (NIAC)', desc: 'Advanced DFD fusion reactor delivering 4,500 W high-power electrical output for heavy flagship payloads.' }
   },
   ja: {
     solar_wings: { name: 'UltraFlex 太陽電池パドル', desc: '1 AU（太陽-地球間距離）で1,500 Wを発電。遠くへ行くほど出力が急減します（1/r²則）。' },
-    arc_reactor: { name: '小型核融合コア（架空）', desc: '太陽からの距離に関係なく常時2,200 Wを供給する架空の電源装置。' },
-    vibranium_core: { name: '高安定マトリクス電源（架空）', desc: '遠宇宙でも安定して1,900 Wを供給する架空の電源モジュール。' },
-    tesseract_core: { name: '高出力量子コア（架空）', desc: '多数の観測機器を同時に動かせる4,500 Wの架空高出力電源。' }
+    arc_reactor: { name: 'NASA MMRTG 放射性同位体熱電気転換器', desc: 'プルトニウム238の崩壊熱を利用し、距離に関係なく常時2,200 Wを安定供給する原子力電源。' },
+    vibranium_core: { name: 'Kilopower 宇宙用小型核分裂炉', desc: '深宇宙探査向けに設計された小型核分裂炉（KRUSTY）。連続して1,900 Wの電力を供給。' },
+    tesseract_core: { name: 'ダイレクト・フュージョン・ドライブ（NIAC）', desc: 'NASA NIAC研究に基づく先進的核融合コア。大型観測機向けに4,500 Wの高出力を発生。' }
   },
   ko: {
     solar_wings: { name: 'UltraFlex 태양 전지판', desc: '1 AU(지구-태양 거리)에서 1,500 W를 발전합니다. 태양에서 멀어질수록 출력이 급감합니다(1/r²).' },
-    arc_reactor: { name: '소형 핵융합 코어 (가상)', desc: '거리와 무관하게 2,200 W를 일정하게 공급하는 가상 전원 장치입니다.' },
-    vibranium_core: { name: '고안정 매트릭스 코어 (가상)', desc: '안정적으로 1,900 W를 공급하는 가상 방사선 에너지 전원입니다.' },
-    tesseract_core: { name: '고출력 양자 코어 (가상)', desc: '고전력 장비를 위해 4,500 W를 공급하는 가상 전원 장치입니다.' }
+    arc_reactor: { name: 'NASA MMRTG 원자력 발전기', desc: 'Pu-238 붕괴열을 이용해 태양 거리와 무관하게 2,200 W를 안정적으로 생산하는 방사성동위원소 열전발전기.' },
+    vibranium_core: { name: 'Kilopower 우주용 소형 핵분열로', desc: '심우주 탐사를 위해 개발된 소형 핵분열로(KRUSTY)로 1,900 W의 전력을 안정적으로 공급합니다.' },
+    tesseract_core: { name: '직접 핵융합 구동 코어 DFD (NIAC)', desc: 'NASA NIAC 프로젝트 기반의 첨단 DFD 핵융합 전원 코어로 대형 탑재체를 위해 4,500 W를 공급합니다.' }
   },
   fr: {
     solar_wings: { name: 'Panneaux solaires UltraFlex', desc: 'Produit 1 500 W à 1 UA (distance Terre-Soleil). La puissance chute selon 1/r².' },
-    arc_reactor: { name: 'Réacteur compact (Fictif)', desc: 'Source nucléaire fictive fournissant 2 200 W constants à toute distance.' },
-    vibranium_core: { name: 'Matrice énergétique (Fictive)', desc: 'Unité fictive stable produisant 1 900 W indépendamment du Soleil.' },
-    tesseract_core: { name: 'Cœur quantique haute puissance (Fictif)', desc: 'Source fictive de 4 500 W adaptée aux charges scientifiques lourdes.' }
+    arc_reactor: { name: 'Générateur thermoélectrique MMRTG (NASA)', desc: 'Générateur radioisotopique fournissant 2 200 W constants par désintégration du Pu-238 à toute distance.' },
+    vibranium_core: { name: 'Réacteur à fission spatiale Kilopower', desc: 'Réacteur à fission nucléaire compact (KRUSTY) fournissant 1 900 W d’électricité en continu.' },
+    tesseract_core: { name: 'Cœur de fusion directe DFD (NIAC)', desc: 'Réacteur à fusion avancé basé sur les études NASA NIAC, fournissant 4 500 W pour charges lourdes.' }
   },
   de: {
     solar_wings: { name: 'UltraFlex-Solarmodule', desc: 'Liefert 1.500 W bei 1 AE (Abstand Erde–Sonne). Leistung sinkt mit 1/r².' },
-    arc_reactor: { name: 'Kompakt-Fusionskern (Fiktiv)', desc: 'Fiktiver Reaktor mit konstanten 2.200 W in jeder Entfernung.' },
-    vibranium_core: { name: 'Matrix-Energiekern (Fiktiv)', desc: 'Fiktive Energiequelle mit stabilen 1.900 W unabhängig von Sonnenlicht.' },
-    tesseract_core: { name: 'Hochleistungs-Quantenkern (Fiktiv)', desc: 'Fiktive Quelle mit 4.500 W für viele Messinstrumente.' }
+    arc_reactor: { name: 'NASA MMRTG-Nukleargenerator', desc: 'Radionuklid-Thermoelektrischer Generator mit konstanten 2.200 W durch Pu-238-Zerfallswärme.' },
+    vibranium_core: { name: 'Kilopower-Weltraumspaltungsreaktor', desc: 'Kompakter Kernspaltungsreaktor (KRUSTY) mit kontinuierlich 1.900 W elektrischer Leistung.' },
+    tesseract_core: { name: 'Direkter Fusionsantriebskern DFD (NIAC)', desc: 'Fortschrittlicher DFD-Fusionskern (NASA NIAC) mit 4.500 W hoher Leistung für schwere Nutzlasten.' }
   },
   it: {
     solar_wings: { name: 'Pannelli solari UltraFlex', desc: 'Genera 1.500 W a 1 UA (distanza Terra-Sole). La potenza cala con 1/r².' },
-    arc_reactor: { name: 'Reattore compatto (Fittizio)', desc: 'Generatore fittizio da 2.200 W costanti a qualsiasi distanza.' },
-    vibranium_core: { name: 'Nucleo a matrice (Fittizio)', desc: 'Unità fittizia stabile da 1.900 W indipendente dalla luce solare.' },
-    tesseract_core: { name: 'Nucleo quantistico (Fittizio)', desc: 'Fonte fittizia ad alta potenza da 4.500 W per carichi pesanti.' }
+    arc_reactor: { name: 'Generatore nucleare MMRTG (NASA)', desc: 'Generatore termoelettrico a radioisotopi da 2.200 W costanti tramite decadimento di Pu-238 a qualsiasi distanza.' },
+    vibranium_core: { name: 'Reattore a fissione spaziale Kilopower', desc: 'Reattore a fissione compatto (KRUSTY) che eroga 1.900 W continui per l’esplorazione profonda.' },
+    tesseract_core: { name: 'Nucleo a fusione diretta DFD (NIAC)', desc: 'Reattore a fusione avanzato da 4.500 W ad alta potenza per carichi scientifici complessi.' }
   },
   es: {
     solar_wings: { name: 'Paneles solares UltraFlex', desc: 'Genera 1.500 W a 1 UA (distancia Tierra-Sol). La potencia cae según 1/r².' },
-    arc_reactor: { name: 'Reactor compacto (Ficticio)', desc: 'Fuente ficticia que entrega 2.200 W constantes a cualquier distancia.' },
-    vibranium_core: { name: 'Núcleo matricial (Ficticio)', desc: 'Unidad ficticia estable de 1.900 W independiente de la luz solar.' },
-    tesseract_core: { name: 'Núcleo cuántico (Ficticio)', desc: 'Fuente ficticia de 4.500 W para alimentar múltiples instrumentos.' }
+    arc_reactor: { name: 'Generador nuclear MMRTG (NASA)', desc: 'Generador termoeléctrico de radioisótopos con 2.200 W continuos mediante desintegración de Pu-238 a cualquier distancia.' },
+    vibranium_core: { name: 'Reactor de fisión espacial Kilopower', desc: 'Reactor compacto de fisión nuclear (KRUSTY) que produce 1.900 W continuos para misiones lejanas.' },
+    tesseract_core: { name: 'Núcleo de fusión directa DFD (NIAC)', desc: 'Reactor avanzado de fusión directa (NASA NIAC) que genera 4.500 W para cargas pesadas.' }
   }
 };
 
 export const TECH_MODULES_I18N: Record<SupportedLang, Record<string, LocalizedItemText>> = {
   en_us: {
-    cerebro: { name: 'Bio-Signature Scanner', desc: 'Detects organic molecules and potential biosignatures.' },
+    cerebro: { name: 'High-Gain X-Band Deep Space Antenna', desc: 'High-gain dish antenna for deep-space X-band uplink and science telemetry downlink.' },
     dark_matter: { name: 'Particle & Dust Spectrometer', desc: 'Measures cosmic dust and high-energy particle flux.' },
     sonic_radar: { name: 'Ice-Penetrating Radar', desc: 'Maps subsurface ice layers and rocky terrain.' },
     pym_bay: { name: 'Automated Sample Compression Bay', desc: 'Stores and analyzes collected planetary samples (+130 pts).' },
     kree_array: { name: 'High-Gain Telemetry Antenna', desc: 'Improves deep-space data downlink reliability.' }
   },
   vi: {
-    cerebro: { name: 'Máy quét dấu hiệu sinh học', desc: 'Phát hiện phân tử hữu cơ và dấu hiệu môi trường sống.' },
+    cerebro: { name: 'Ăng-ten thông tin vũ trụ sâu High-Gain X-Band', desc: 'Ăng-ten viễn thông độ lợi cao băng tần X truyền nhận dữ liệu khoa học cự ly sâu.' },
     dark_matter: { name: 'Phổ kế hạt & bụi vũ trụ', desc: 'Đo mật độ bụi liên hành tinh và dòng hạt năng lượng cao.' },
     sonic_radar: { name: 'Radar xuyên băng bề mặt', desc: 'Lập bản đồ lớp băng dưới bề mặt và địa hình đá.' },
     pym_bay: { name: 'Khoang nén & lưu mẫu tự động', desc: 'Lưu trữ và phân tích mẫu vật thu thập được (+130 điểm).' },
     kree_array: { name: 'Ăng-ten truyền dữ liệu độ lợi cao', desc: 'Tăng khả năng gửi dữ liệu từ khoảng cách xa về Trái Đất.' }
   },
   en_uk: {
-    cerebro: { name: 'Bio-Signature Scanner', desc: 'Detects organic molecules and potential biosignatures.' },
+    cerebro: { name: 'High-Gain X-Band Deep Space Antenna', desc: 'High-gain dish antenna for deep-space X-band uplink and science telemetry downlink.' },
     dark_matter: { name: 'Particle & Dust Spectrometer', desc: 'Measures cosmic dust and high-energy particle flux.' },
     sonic_radar: { name: 'Ice-Penetrating Radar', desc: 'Maps subsurface ice layers and rocky terrain.' },
     pym_bay: { name: 'Automated Sample Compression Bay', desc: 'Stores and analyses collected planetary samples (+130 pts).' },
     kree_array: { name: 'High-Gain Telemetry Antenna', desc: 'Improves deep-space data downlink reliability.' }
   },
   ja: {
-    cerebro: { name: '生体分子スキャナー', desc: '有機分子や生命活動の痕跡を探索します。' },
+    cerebro: { name: '深宇宙用Xバンド高利得アンテナ', desc: '深宇宙からの高解像度データ通信と遠隔コマンド受信を行う高利得パラボラアンテナ。' },
     dark_matter: { name: '粒子・宇宙塵分光計', desc: '惑星間塵や高エネルギー粒子を計測します。' },
     sonic_radar: { name: '氷床透過レーダー', desc: '表面下の氷層や岩石地形をマッピングします。' },
     pym_bay: { name: '自動サンプル圧縮保管室', desc: '採取した試料を保管・分析します（+130 pts）。' },
     kree_array: { name: '高利得テレメトリーアンテナ', desc: '深宇宙からのデータ通信性能を向上させます。' }
   },
   ko: {
-    cerebro: { name: '생체 신호 스캐너', desc: '유기 분자와 생명체 흔적을 탐지합니다.' },
+    cerebro: { name: '심우주용 X-밴드 고이득 안테나', desc: '심우주 장거리 과학 데이터 송수신을 위한 고이득 X-밴드 파라볼라 안테나.' },
     dark_matter: { name: '입자·우주먼지 분광기', desc: '우주 먼지와 고에너지 입자 흐름을 측정합니다.' },
     sonic_radar: { name: '얼음 투과 레이더', desc: '표면 아래 얼음층과 암석 지형을 탐사합니다.' },
     pym_bay: { name: '자동 시료 압축 보관함', desc: '채취한 시료를 저장하고 분석합니다 (+130 pts).' },
     kree_array: { name: '고이득 원격 통신 안테나', desc: '심우주 데이터 송신 성능을 높입니다.' }
   },
   fr: {
-    cerebro: { name: 'Scanner de biosignatures', desc: 'Détecte les molécules organiques et indices biologiques.' },
+    cerebro: { name: 'Antenne haut gain bande X pour l’espace lointain', desc: 'Antenne parabolique haut gain pour télémesure scientifique et liaison sol en bande X.' },
     dark_matter: { name: 'Spectromètre à particules', desc: 'Mesure la poussière cosmique et le flux de particules.' },
     sonic_radar: { name: 'Radar pénétrant la glace', desc: 'Cartographie les couches de glace souterraines.' },
     pym_bay: { name: 'Baie de stockage d’échantillons', desc: 'Conserve et analyse les échantillons collectés (+130 pts).' },
     kree_array: { name: 'Antenne de télémétrie haut gain', desc: 'Améliore la transmission des données vers la Terre.' }
   },
   de: {
-    cerebro: { name: 'Biosignatur-Scanner', desc: 'Erkennt organische Moleküle und Lebensspuren.' },
+    cerebro: { name: 'Tiefraum-Hochgewinn-X-Band-Antenne', desc: 'Hochleistungs-Parabolantenne für Telemetrie- und Wissenschaftsdaten-Downlink im X-Band.' },
     dark_matter: { name: 'Partikel- & Staubspektrometer', desc: 'Misst kosmischen Staub und hochenergetische Teilchen.' },
     sonic_radar: { name: 'Eis-Durchdringungsradar', desc: 'Kartiert unterirdische Eisschichten und Gesteinsstrukturen.' },
     pym_bay: { name: 'Proben-Speicherkammer', desc: 'Lagert und analysiert gesammelte Bodenproben (+130 Pkt.).' },
     kree_array: { name: 'Hochleistungs-Telemetrieantenne', desc: 'Verbessert die Datenübertragung aus dem Tiefraum.' }
   },
   it: {
-    cerebro: { name: 'Scanner di biofirme', desc: 'Rileva molecole organiche e possibili tracce biologiche.' },
+    cerebro: { name: 'Antenna ad alto guadagno in banda X per lo spazio profondo', desc: 'Antenna parabolica ad alto guadagno per telemetria scientifica e comunicazioni profonde.' },
     dark_matter: { name: 'Spettrometro di particelle', desc: 'Misura polvere cosmica e flusso di particelle energetiche.' },
     sonic_radar: { name: 'Radar penetra-ghiaccio', desc: 'Mappa gli strati di ghiaccio nel sottosuolo.' },
     pym_bay: { name: 'Camera di raccolta campioni', desc: 'Conserva e analizza i campioni raccolti (+130 pt).' },
     kree_array: { name: 'Antenna telemetrica ad alto guadagno', desc: 'Migliora la trasmissione dati dallo spazio profondo.' }
   },
   es: {
-    cerebro: { name: 'Escáner de biofirmas', desc: 'Detecta moléculas orgánicas y posibles señales de vida.' },
+    cerebro: { name: 'Antena de alta ganancia en banda X para espacio profundo', desc: 'Antena parabólica de alta ganancia para enlace descendente de telemetría científica en banda X.' },
     dark_matter: { name: 'Espectrómetro de partículas', desc: 'Mide el polvo cósmico y el flujo de partículas.' },
     sonic_radar: { name: 'Radar penetrador de hielo', desc: 'Cartografía capas de hielo subterráneas y terreno rocoso.' },
     pym_bay: { name: 'Bahía de muestras automatizada', desc: 'Almacena y analiza muestras planetarias (+130 pts).' },
@@ -720,49 +720,49 @@ export const TECH_MODULES_I18N: Record<SupportedLang, Record<string, LocalizedIt
 
 export const ENGINES_I18N: Record<SupportedLang, Record<string, LocalizedItemText>> = {
   en_us: {
-    repulsor: { name: 'Compact Repulsor Thruster', desc: 'Low-cost light thruster (Isp 260 s) for short-range orbits.' },
-    tesseract_drive: { name: 'High-Thrust Pulse Engine', desc: 'Balanced interplanetary engine (Isp 345 s, 2,400 kg propellant).' },
-    nova_warp: { name: 'High-Isp Ion / Graviton Drive', desc: 'Ultra-efficient engine (Isp 4,400 s) giving high Δv with little propellant.' }
+    repulsor: { name: 'Aerojet Hydrazine Thrusters (MR-106)', desc: 'Low-cost monopropellant hydrazine thruster array (Isp 260 s) for orbit maintenance and attitude control.' },
+    tesseract_drive: { name: 'NASA NEXT-C Ion Thruster', desc: 'NASA Evolutionary Xenon Thruster Commercial (Isp 345 s with chemical cruise or high efficiency) for deep-space exploration.' },
+    nova_warp: { name: 'VASIMR Variable Plasma Rocket', desc: 'Variable Specific Impulse Magnetoplasma Rocket (Isp 4,400 s) delivering extreme propellant economy for deep-space trajectories.' }
   },
   vi: {
-    repulsor: { name: 'Động cơ đẩy nhẹ Repulsor', desc: 'Động cơ gọn nhẹ, chi phí thấp (xung riêng Isp 260 s) cho quỹ đạo gần.' },
-    tesseract_drive: { name: 'Động cơ xung lực đẩy mạnh', desc: 'Động cơ liên hành tinh cân bằng (Isp 345 s, mang 2.400 kg chất đẩy).' },
-    nova_warp: { name: 'Động cơ ion xung riêng siêu cao', desc: 'Hiệu quả sử dụng chất đẩy cực cao (Isp 4.400 s), tạo Δv lớn chỉ với ít chất đẩy.' }
+    repulsor: { name: 'Cụm động cơ Hydrazine Aerojet (MR-106)', desc: 'Cụm động cơ một thành phần Hydrazine gọn nhẹ (Isp 260 s), chi phí thấp cho hiệu chỉnh quỹ đạo gần.' },
+    tesseract_drive: { name: 'Động cơ đẩy ion trường tĩnh điện NEXT-C', desc: 'Động cơ đẩy ion xenon thương mại thế hệ mới của NASA (mang 2.400 kg chất đẩy) tối ưu cho du hành liên hành tinh.' },
+    nova_warp: { name: 'Tên lửa plasma biến thiên VASIMR', desc: 'Động cơ plasma từ trường xung riêng biến thiên (Isp 4.400 s), tạo Δv khổng lồ chỉ với lượng nhỏ chất đẩy.' }
   },
   en_uk: {
-    repulsor: { name: 'Compact Repulsor Thruster', desc: 'Low-cost light thruster (Isp 260 s) for short-range orbits.' },
-    tesseract_drive: { name: 'High-Thrust Pulse Engine', desc: 'Balanced interplanetary engine (Isp 345 s, 2,400 kg propellant).' },
-    nova_warp: { name: 'High-Isp Ion / Graviton Drive', desc: 'Ultra-efficient engine (Isp 4,400 s) giving high Δv with little propellant.' }
+    repulsor: { name: 'Aerojet Hydrazine Thrusters (MR-106)', desc: 'Low-cost monopropellant hydrazine thruster array (Isp 260 s) for orbit maintenance and attitude control.' },
+    tesseract_drive: { name: 'NASA NEXT-C Ion Thruster', desc: 'NASA Evolutionary Xenon Thruster Commercial (Isp 345 s with chemical cruise or high efficiency) for deep-space exploration.' },
+    nova_warp: { name: 'VASIMR Variable Plasma Rocket', desc: 'Variable Specific Impulse Magnetoplasma Rocket (Isp 4,400 s) delivering extreme propellant economy for deep-space trajectories.' }
   },
   ja: {
-    repulsor: { name: '小型リパルサースラスター', desc: '近距離軌道向けの低コスト・軽量エンジン（比推力 Isp 260 s）。' },
-    tesseract_drive: { name: '高推力パルスエンジン', desc: 'バランスの良い惑星間エンジン（Isp 345 s、推進剤 2,400 kg）。' },
-    nova_warp: { name: '高比推力イオン駆動エンジン', desc: '少ない推進剤で大きなΔvを生み出す超高効率エンジン（Isp 4,400 s）。' }
+    repulsor: { name: 'Aerojet ヒドラジンスラスター（MR-106）', desc: '近距離軌道制御向けの低コスト・軽量な一液式ヒドラジンスラスター（比推力 Isp 260 s）。' },
+    tesseract_drive: { name: 'NASA NEXT-C イオン推進エンジン', desc: 'NASAの次世代キセノンイオン推進システム。2,400 kgの推進剤を効率的に使い惑星間を飛行。' },
+    nova_warp: { name: 'VASIMR 可変比推力プラズマロケット', desc: '超高比推力（Isp 4,400 s）を誇る磁気プラズマロケット。極小の推進剤消費で長距離航行を実現。' }
   },
   ko: {
-    repulsor: { name: '소형 리펄서 추력기', desc: '근거리 궤도용 저비용 경량 엔진 (비추력 Isp 260 s).' },
-    tesseract_drive: { name: '고추력 펄스 엔진', desc: '균형 잡힌 행성 간 엔진 (Isp 345 s, 추진제 2,400 kg).' },
-    nova_warp: { name: '고비추력 이온 추진 엔진', desc: '적은 추진제로 높은 Δv를 내는 초고효율 엔진 (Isp 4,400 s).' }
+    repulsor: { name: '에어로젯 하이드라진 추력기 (MR-106)', desc: '근거리 궤도 제어 및 자세 제어를 위한 단일추진제 하이드라진 추력기 (Isp 260 s).' },
+    tesseract_drive: { name: 'NASA NEXT-C 이온 추력기', desc: 'NASA 차세대 제논 이온 추진 시스템으로 행성 간 장거리 비행에 최적화된 엔진 (추진제 2,400 kg).' },
+    nova_warp: { name: 'VASIMR 가변 비추력 플라스마 로켓', desc: '가변 비추력 자기플라스마 로켓(Isp 4,400 s)으로 적은 양의 추진제로 극한의 Δv를 제공합니다.' }
   },
   fr: {
-    repulsor: { name: 'Propulseur léger Repulsor', desc: 'Moteur économique (Isp 260 s) adapté aux orbites proches.' },
-    tesseract_drive: { name: 'Moteur à impulsions', desc: 'Moteur interplanétaire équilibré (Isp 345 s, 2 400 kg d’ergols).' },
-    nova_warp: { name: 'Propulseur ionique haute efficacité', desc: 'Très grande efficacité (Isp 4 400 s) offrant un Δv élevé avec peu d’ergols.' }
+    repulsor: { name: 'Propulseurs à hydrazine Aerojet (MR-106)', desc: 'Système de propulsion économique au monergol hydrazine (Isp 260 s) pour manœuvres orbitales.' },
+    tesseract_drive: { name: 'Propulseur ionique NASA NEXT-C', desc: 'Moteur ionique au xénon haute performance développé par la NASA pour missions interplanétaires.' },
+    nova_warp: { name: 'Moteur plasma à impulsion variable VASIMR', desc: 'Fusée magnétoplasmique à impulsion spécifique variable (Isp 4 400 s) pour un rendement d’ergols extrême.' }
   },
   de: {
-    repulsor: { name: 'Leichtes Repulsor-Triebwerk', desc: 'Kostengünstiges Triebwerk (Isp 260 s) für nahe Umlaufbahnen.' },
-    tesseract_drive: { name: 'Schubstarkes Pulstriebwerk', desc: 'Ausgewogenes Interplanetar-Triebwerk (Isp 345 s, 2.400 kg Treibstoff).' },
-    nova_warp: { name: 'Hocheffizienter Ionenantrieb', desc: 'Extrem sparsamer Antrieb (Isp 4.400 s) für hohes Δv bei wenig Treibstoff.' }
+    repulsor: { name: 'Aerojet-Hydrazintriebwerke (MR-106)', desc: 'Wirtschaftliches Einstoff-Hydrazinsystem (Isp 260 s) für Bahn- und Lageregelung.' },
+    tesseract_drive: { name: 'NASA NEXT-C Ionentriebwerk', desc: 'NASA Xenon-Ionenantrieb der nächsten Generation für ausdauernde interplanetare Missionen.' },
+    nova_warp: { name: 'VASIMR-Plasma-Raketentriebwerk', desc: 'Magnetoplasmatriebwerk mit variablem spezifischem Impuls (Isp 4.400 s) für extreme Treibstoffökonomie.' }
   },
   it: {
-    repulsor: { name: 'Propulsore leggero Repulsor', desc: 'Motore economico (Isp 260 s) adatto a orbite ravvicinate.' },
-    tesseract_drive: { name: 'Motore a impulsi ad alta spinta', desc: 'Motore interplanetario bilanciato (Isp 345 s, 2.400 kg di propellente).' },
-    nova_warp: { name: 'Propulsore ionico ad alto Isp', desc: 'Motore ultra-efficiente (Isp 4.400 s) per ottenere un Δv elevato.' }
+    repulsor: { name: 'Propulsori a idrazina Aerojet (MR-106)', desc: 'Gruppo propulsivo monopropellente a idrazina (Isp 260 s) per correzioni d’orbita e assetto.' },
+    tesseract_drive: { name: 'Propulsore ionico NASA NEXT-C', desc: 'Sistema di propulsione ionica allo xeno della NASA ad alte prestazioni per missioni interplanetarie.' },
+    nova_warp: { name: 'Motore al plasma a impulso variabile VASIMR', desc: 'Razzo a magnetoplasma a impulso specifico variabile (Isp 4.400 s) ad altissima efficienza propulsiva.' }
   },
   es: {
-    repulsor: { name: 'Propulsor ligero Repulsor', desc: 'Motor económico (Isp 260 s) para órbitas cercanas.' },
-    tesseract_drive: { name: 'Motor de pulso de alto empuje', desc: 'Motor interplanetario equilibrado (Isp 345 s, 2.400 kg de propelente).' },
-    nova_warp: { name: 'Motor iónico de alto Isp', desc: 'Motor ultraeficiente (Isp 4.400 s) que logra gran Δv con poco propelente.' }
+    repulsor: { name: 'Propulsores de hidracina Aerojet (MR-106)', desc: 'Sistema monopropelente de hidracina económico (Isp 260 s) para maniobras y control orbital.' },
+    tesseract_drive: { name: 'Propulsor iónico NASA NEXT-C', desc: 'Sistema iónico de xenón avanzado desarrollado por la NASA para vuelos interplanetarios prolongados.' },
+    nova_warp: { name: 'Cohete de plasma de impulso variable VASIMR', desc: 'Propulsor magnetoplasmático de impulso específico variable (Isp 4.400 s) con máxima economía de propelente.' }
   }
 };
 

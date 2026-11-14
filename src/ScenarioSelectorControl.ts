@@ -63,6 +63,12 @@ export class ScenarioSelectorControl extends MenuControl{
                 eccentricity: 0.05
             },
             {
+                title: "NASA DART: Dimorphos Kinetic Impact",
+                parent: "65803 Didymos",
+                semimajor_axis: 200 / AU,
+                eccentricity: 0.02
+            },
+            {
                 title: "NASA OSIRIS-REx: 101955 Bennu Rendezvous",
                 parent: "101955 Bennu",
                 semimajor_axis: 350 / AU,
@@ -73,6 +79,34 @@ export class ScenarioSelectorControl extends MenuControl{
                 parent: "99942 Apophis",
                 semimajor_axis: 400 / AU,
                 eccentricity: 0.04
+            },
+            {
+                title: "NASA Voyager 1: Interstellar Boundary",
+                parent: "sun",
+                semimajor_axis: 158.0,
+                eccentricity: 0.02,
+                inclination: 35.5 * Math.PI / 180
+            },
+            {
+                title: "NASA New Horizons: Kuiper Belt Survey",
+                parent: "sun",
+                semimajor_axis: 39.5,
+                eccentricity: 0.24,
+                inclination: 17.1 * Math.PI / 180
+            },
+            {
+                title: "NASA Juno: Jupiter Polar Magnetosphere",
+                parent: "jupiter",
+                semimajor_axis: 180000 / AU,
+                eccentricity: 0.94,
+                inclination: 90 * Math.PI / 180
+            },
+            {
+                title: "NASA JWST: Sun-Earth L2 Halo Orbit",
+                parent: "earth",
+                semimajor_axis: 1500000 / AU,
+                eccentricity: 0.02,
+                inclination: 5.1 * Math.PI / 180
             },
             {
                 title: "NASA 1950 DA: Deep Space Intercept",

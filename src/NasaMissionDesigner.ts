@@ -64,47 +64,47 @@ export const SPACECRAFT_FLEET: SpacecraftDefinition[] = [
   // 1. Những con tàu ban đầu của người dùng (Initial Core Fleet)
   {
     id: 'quinjet',
-    name: 'Quinjet Mk-VII (Stealth Concept)',
-    category: 'marvel',
+    name: 'NASA X-Plane Stealth Prototype',
+    category: 'nasa',
     mass: 520,
     cost: 85,
     cap: 4,
     rarity: 'legendary',
-    badge: '🛡️ STEALTH',
-    desc: 'Fictional stealth VTOL hull with folding delta wings. Balanced mass and 4 instrument bays.'
+    badge: '🛡️ X-PLANE',
+    desc: 'Advanced aerodynamic lifting-body concept with folding delta wings. 4 instrument bays.'
   },
   {
     id: 'milano',
-    name: 'The Milano (Light Scout)',
-    category: 'marvel',
+    name: 'NASA Deep Space Scout Probe',
+    category: 'nasa',
     mass: 120,
     cost: 25,
     cap: 2,
     rarity: 'epic',
     badge: '🪐 SCOUT',
-    desc: 'Lightweight fictional scout hull with low dry mass (120 kg) and 2 instrument bays.'
+    desc: 'Lightweight deep-space scout probe platform with low dry mass (120 kg) and 2 instrument bays.'
   },
   {
     id: 'benatar',
-    name: 'The Benatar (Heavy Cruiser)',
-    category: 'marvel',
+    name: 'NASA Interplanetary Cruiser Concept',
+    category: 'nasa',
     mass: 1950,
     cost: 260,
     cap: 5,
     rarity: 'legendary',
     badge: '🚀 CRUISER',
-    desc: 'Medium-heavy fictional deep-space cruiser with 5 instrument bays.'
+    desc: 'Medium-heavy interplanetary survey vessel with 5 instrument bays.'
   },
   {
     id: 'sanctuary',
-    name: 'Sanctuary Flagship (Dreadnought)',
-    category: 'marvel',
+    name: 'NASA Deep Space Habitat Flagship',
+    category: 'nasa',
     mass: 6500,
     cost: 600,
     cap: 6,
     rarity: 'mythic',
-    badge: '👑 HEAVY',
-    desc: 'Massive fictional armored hull supporting up to 6 scientific instruments.'
+    badge: '👑 FLAGSHIP',
+    desc: 'Heavy deep-space long-duration architecture supporting up to 6 scientific instruments.'
   },
 
   // 2. Tàu tự thiết kế độc quyền (Custom High-End Flagships)
@@ -186,14 +186,14 @@ export interface NasaMission {
 export const NASA_MISSIONS: NasaMission[] = [
   {
     id: 'nasa_dart',
-    title: 'NASA DART: Kinetic Impactor',
-    destination: '65803 Didymos (Planetary Defense)',
-    scenarioName: 'NASA DART: 65803 Didymos Intercept',
+    title: 'NASA DART: Dimorphos Kinetic Impact',
+    destination: 'Dimorphos (Binary Asteroid 65803 Didymos)',
+    scenarioName: 'NASA DART: Dimorphos Kinetic Impact',
     distanceAU: 1.64,
     budgetCredits: 1450,
     reqDeltaV: 5200,
     minSciencePoints: 320,
-    description: 'NASA Double Asteroid Redirection Test (DART): High-speed kinetic impactor to alter the orbital trajectory of hazardous binary asteroid Didymos.',
+    description: 'NASA Double Asteroid Redirection Test (DART): High-speed kinetic impactor to alter the orbital period of asteroid moonlet Dimorphos around Didymos.',
     badge: '🎯 NASA DART'
   },
   {
@@ -236,7 +236,7 @@ export const NASA_MISSIONS: NasaMission[] = [
     id: 'voyager_heliopause',
     title: 'NASA Voyager 1: Interstellar Boundary',
     destination: 'Heliopause / Interstellar Medium',
-    scenarioName: 'Moon orbit',
+    scenarioName: 'NASA Voyager 1: Interstellar Boundary',
     distanceAU: 158.0,
     budgetCredits: 480,
     reqDeltaV: 3900,
@@ -248,7 +248,7 @@ export const NASA_MISSIONS: NasaMission[] = [
     id: 'new_horizons_kuiper',
     title: 'NASA New Horizons: Kuiper Belt Survey',
     destination: 'Pluto & Arrokoth (Kuiper Belt)',
-    scenarioName: 'Mars orbit',
+    scenarioName: 'NASA New Horizons: Kuiper Belt Survey',
     distanceAU: 39.5,
     budgetCredits: 980,
     reqDeltaV: 4500,
@@ -260,7 +260,7 @@ export const NASA_MISSIONS: NasaMission[] = [
     id: 'juno_jupiter_polar',
     title: 'NASA Juno: Jupiter Polar Magnetosphere',
     destination: 'Jupiter Polar Orbit & Great Red Spot',
-    scenarioName: 'Jupiter orbit',
+    scenarioName: 'NASA Juno: Jupiter Polar Magnetosphere',
     distanceAU: 5.20,
     budgetCredits: 1950,
     reqDeltaV: 6800,
@@ -272,7 +272,7 @@ export const NASA_MISSIONS: NasaMission[] = [
     id: 'jwst_deep_cosmos',
     title: 'NASA JWST: Deep Cosmos Observatory',
     destination: 'Sun-Earth L2 Lagrange Halo Orbit',
-    scenarioName: 'Earth orbit',
+    scenarioName: 'NASA JWST: Sun-Earth L2 Halo Orbit',
     distanceAU: 1.01,
     budgetCredits: 2500,
     reqDeltaV: 3400,
@@ -427,6 +427,8 @@ export class NasaMissionDesigner {
   // Simulation run state
   private isMissionActive = false;
   private currentScienceCollected = 0;
+  private flightDesignedScience = 0;
+  private flightPowerBalance = 0;
   private missionTimer = 0;
   private isInitialized = false;
 
@@ -3139,6 +3141,10 @@ export class NasaMissionDesigner {
     const totalPowerConsumed = techPower + engine.powerReq + 80;
     const powerBalance = powerGenerated - totalPowerConsumed;
 
+    // Cache preflight baseline for causality-driven in-flight telemetry
+    this.flightDesignedScience = totalScience;
+    this.flightPowerBalance = powerBalance;
+
     // Tsiolkovsky rocket equation
     const deltaV = Math.round(engine.isp * 9.80665 * Math.log(totalMass / dryMass));
 
@@ -4267,17 +4273,35 @@ export class NasaMissionDesigner {
 
     const missionLoc = getMissionText(this.selectedMission.id, this.currentLanguage);
     const destination = missionLoc ? missionLoc.destination : this.selectedMission.destination;
-    const isSuccess = this.currentScienceCollected >= this.selectedMission.minSciencePoints;
+    const isBrownout = this.flightPowerBalance < 0;
+    const isSuccess = !isBrownout && this.currentScienceCollected >= this.selectedMission.minSciencePoints;
     const rankEl = document.getElementById('debrief-rank');
     const summaryEl = document.getElementById('debrief-summary');
-    if (rankEl) rankEl.textContent = isSuccess ? t.debriefRankSuccess : t.debriefRankPartial;
+    if (rankEl) {
+      if (isBrownout) {
+        rankEl.textContent = this.currentLanguage === 'vi' ? 'SỰ CỐ MẤT NGUỒN ĐIỆN' : 'ELECTRICAL BROWNOUT FAILURE';
+        rankEl.style.color = '#ef4444';
+      } else {
+        rankEl.textContent = isSuccess ? t.debriefRankSuccess : t.debriefRankPartial;
+        rankEl.style.color = isSuccess ? '#00f0ff' : '#f59e0b';
+      }
+    }
     if (summaryEl) {
-      const tpl = isSuccess ? t.debriefSummarySuccess : t.debriefSummaryPartial;
-      summaryEl.innerHTML = formatTpl(tpl, {
-        actual: formatNum(this.currentScienceCollected, this.currentLanguage),
-        target: formatNum(this.selectedMission.minSciencePoints, this.currentLanguage),
-        destination
-      });
+      if (isBrownout) {
+        summaryEl.innerHTML = this.currentLanguage === 'vi'
+          ? `<strong>MẤT ĐIỆN HOÀN TOÀN:</strong><br>Hệ thống điện âm (${formatNum(this.flightPowerBalance, this.currentLanguage)} W). Toàn bộ cảm biến khoa học bị ngắt để bảo vệ pin, không thu thập được dữ liệu. Hãy quay lại Hangar để trang bị thêm tấm pin quang năng hoặc lò phát điện hạt nhân MMRTG.`
+          : `<strong>CRITICAL POWER BROWNOUT:</strong><br>Spacecraft had a negative power balance (${formatNum(this.flightPowerBalance, this.currentLanguage)} W). Instruments shut down automatically to protect batteries. Return to Hangar to equip higher-output solar panels or an MMRTG nuclear generator.`;
+      } else if (isSuccess) {
+        summaryEl.innerHTML = formatTpl(t.debriefSummarySuccess, {
+          actual: formatNum(this.currentScienceCollected, this.currentLanguage),
+          target: formatNum(this.selectedMission.minSciencePoints, this.currentLanguage),
+          destination
+        });
+      } else {
+        summaryEl.innerHTML = this.currentLanguage === 'vi'
+          ? `<strong>CHƯA ĐẠT CHỈ TIÊU KHOA HỌC:</strong><br>Tàu đã truyền về toàn bộ ${formatNum(this.currentScienceCollected, this.currentLanguage)} / ${formatNum(this.selectedMission.minSciencePoints, this.currentLanguage)} điểm từ các cảm biến hiện có cho <em>${destination}</em>. Cần quay về Hangar trang bị thêm các thiết bị khoa học để đạt đủ mục tiêu.`
+          : `<strong>INSUFFICIENT SCIENTIFIC PAYLOAD:</strong><br>Transmitted all ${formatNum(this.currentScienceCollected, this.currentLanguage)} of ${formatNum(this.selectedMission.minSciencePoints, this.currentLanguage)} science pts for <em>${destination}</em>. Revisit the Hangar and equip additional sensors to meet the target threshold.`;
+      }
     }
   }
 
@@ -4517,26 +4541,78 @@ export class NasaMissionDesigner {
       scenarioName: this.selectedMission.scenarioName
     });
 
-    // Background intel data collection
+    // Background causality-driven science data collection & telemetry downlink
     this.missionTickerId = setInterval(() => {
       if (!this.isMissionActive) {
         if (this.missionTickerId) { clearInterval(this.missionTickerId); this.missionTickerId = null; }
         return;
       }
       this.missionTimer += 1;
-      this.currentScienceCollected += Math.floor(Math.random() * 5) + 3;
 
       const liveScore = document.getElementById('hud-science-live');
-      if (liveScore) {
-        liveScore.textContent = `${formatNum(this.currentScienceCollected, this.currentLanguage)} pts`;
+      const st = document.getElementById('hud-status-text');
+      const targetPts = this.selectedMission.minSciencePoints;
+      const capPts = this.flightDesignedScience;
+      const isVi = this.currentLanguage === 'vi';
+
+      // 1. ELECTRICAL BROWNOUT CHECK (Causality Engine Q01)
+      if (this.flightPowerBalance < 0) {
+        this.currentScienceCollected = 0;
+        if (liveScore) {
+          liveScore.textContent = `0 pts (${isVi ? 'MẤT ĐIỆN' : 'BROWNOUT'})`;
+          liveScore.style.color = '#ef4444';
+        }
+        if (st) {
+          st.textContent = isVi 
+            ? '⚠️ SỰ CỐ: MẤT NGUỒN ĐIỆN — TOÀN BỘ CẢM BIẾN ĐÃ TẮT'
+            : '⚠️ CRITICAL: POWER BROWNOUT — ALL INSTRUMENTS OFFLINE';
+          st.style.color = '#ef4444';
+        }
+        return;
       }
 
-      if (this.missionTimer === 12) {
-        this.isTrajectoryLocked = true;
-        const st = document.getElementById('hud-status-text');
+      // 2. NOMINAL POWER FLIGHT: Stream telemetry up to designed science cap
+      const streamRate = Math.max(5, Math.ceil(capPts / 12));
+
+      if (this.missionTimer < 4) {
+        // Orbital insertion burn & instrument calibration
         if (st) {
-          st.textContent = getTexts(this.currentLanguage).hudStatusLocked;
+          st.textContent = isVi
+            ? 'ĐANG HIỆU CHỈNH QUỸ ĐẠO & KHỞI ĐỘNG CẢM BIẾN...'
+            : 'ORBITAL INSERTION BURN & SENSOR CALIBRATION...';
+          st.style.color = '#f6b800';
         }
+        this.currentScienceCollected = Math.min(capPts, this.currentScienceCollected + Math.ceil(streamRate / 2));
+      } else {
+        // Stable Keplerian orbit reached
+        this.isTrajectoryLocked = true;
+        this.currentScienceCollected = Math.min(capPts, this.currentScienceCollected + streamRate);
+
+        if (this.currentScienceCollected >= capPts) {
+          if (st) {
+            if (capPts >= targetPts) {
+              st.textContent = isVi
+                ? '✅ 100% DỮ LIỆU KHOA HỌC THIẾT KẾ ĐÃ TRUYỀN VỀ TRÁI ĐẤT'
+                : '✅ 100% SCIENTIFIC SURVEY DATA TRANSMITTED';
+              st.style.color = '#00f0ff';
+            } else {
+              st.textContent = isVi
+                ? '⚠️ HẾT CÔNG SUẤT CẢM BIẾN (THIẾU ĐIỂM DO CHƯA TRANG BỊ ĐỦ)'
+                : '⚠️ SENSOR CEILING REACHED (INSUFFICIENT INSTRUMENTS EQUIPPED)';
+              st.style.color = '#f59e0b';
+            }
+          }
+        } else {
+          if (st) {
+            st.textContent = getTexts(this.currentLanguage).hudStatusLocked;
+            st.style.color = '#00f0ff';
+          }
+        }
+      }
+
+      if (liveScore) {
+        liveScore.textContent = `${formatNum(this.currentScienceCollected, this.currentLanguage)} / ${formatNum(capPts, this.currentLanguage)} pts`;
+        liveScore.style.color = this.currentScienceCollected >= targetPts ? '#00f0ff' : '#f6b800';
       }
     }, 1000);
   }
