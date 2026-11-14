@@ -13,7 +13,7 @@ export interface PlanetDossier {
   id: string;
   name: string;
   subtitle: string;
-  type: 'star' | 'planet' | 'moon' | 'asteroid' | 'comet' | 'blackhole';
+  type: 'star' | 'planet' | 'moon' | 'asteroid' | 'comet' | 'blackhole' | 'nebula' | 'pulsar';
   icon: string;
   color: string;
   diameterKm: string;
@@ -514,12 +514,13 @@ export class SolarSystemExplorer {
           <span class="dock-chevron" id="dock-chevron-arrow">▾</span>
         </div>
 
-        <div class="solar-dock-category-tabs">
+        <div class="solar-dock-category-tabs" id="solar-dock-category-tabs">
           <button class="dock-cat-btn active" data-cat="solar">☀️ SOLAR SYSTEM</button>
           <button class="dock-cat-btn" data-cat="extrasolar">🌌 EXTRASOLAR STARS</button>
           <button class="dock-cat-btn" data-cat="deep_cosmos">🌀 DEEP COSMOS</button>
         </div>
 
+        <button class="track-scroll-arrow left" id="track-scroll-left" title="Scroll Left">‹</button>
         <div class="solar-planets-track" id="solar-planets-track">
           <!-- Solar System Targets -->
           <div class="planet-cat-group active" data-cat-group="solar">
@@ -599,6 +600,7 @@ export class SolarSystemExplorer {
             </button>
           </div>
         </div>
+        <button class="track-scroll-arrow right" id="track-scroll-right" title="Scroll Right">›</button>
       </div>
     `;
     document.body.appendChild(dock);
@@ -653,12 +655,34 @@ export class SolarSystemExplorer {
     // Dock collapse / expand
     const btnToggle = document.getElementById('solar-dock-toggle');
     const track = document.getElementById('solar-planets-track');
+    const tabs = document.getElementById('solar-dock-category-tabs');
+    const btnLeft = document.getElementById('track-scroll-left');
+    const btnRight = document.getElementById('track-scroll-right');
     const arrow = document.getElementById('dock-chevron-arrow');
+
     btnToggle?.addEventListener('click', () => {
       this.isDockCollapsed = !this.isDockCollapsed;
-      if (track) track.style.display = this.isDockCollapsed ? 'none' : 'flex';
+      const displayVal = this.isDockCollapsed ? 'none' : 'flex';
+      if (track) track.style.display = displayVal;
+      if (tabs) tabs.style.display = displayVal;
+      if (btnLeft) btnLeft.style.display = displayVal;
+      if (btnRight) btnRight.style.display = displayVal;
       if (arrow) arrow.textContent = this.isDockCollapsed ? '▴' : '▾';
     });
+
+    // Smooth horizontal scrolling via buttons & mouse wheel
+    btnLeft?.addEventListener('click', () => {
+      if (track) track.scrollBy({ left: -220, behavior: 'smooth' });
+    });
+    btnRight?.addEventListener('click', () => {
+      if (track) track.scrollBy({ left: 220, behavior: 'smooth' });
+    });
+    track?.addEventListener('wheel', (e) => {
+      if (e.deltaY !== 0) {
+        track.scrollLeft += e.deltaY * 0.9;
+        e.preventDefault();
+      }
+    }, { passive: false });
 
     // Cosmic Orrery Category Switcher Tabs
     const catBtns = document.querySelectorAll('.dock-cat-btn');

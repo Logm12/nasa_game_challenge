@@ -10,8 +10,8 @@ import { SolarSystemExplorer } from './SolarSystemExplorer';
 import { CelestialBody, AU, AxisAngleQuaternion } from './CelestialBody';
 import { Settings, SettingsControl } from './SettingsControl';
 import { TimeScaleControl } from './TimeScaleControl';
-import { ThrottleControl } from './ThrottleControl';
-import { navballRadius, RotationControl, RotationButtons } from './RotationControl';
+import { FlightDeckControl } from './FlightDeckControl';
+import { navballRadius, RotationButtons } from './RotationControl';
 import { OrbitalElementsControl } from './OrbitalElementsControl';
 import { zerofill, StatsControl } from './StatsControl';
 import { BodiesControl } from './BodiesControl';
@@ -33,8 +33,8 @@ let renderer: THREE.WebGLRenderer;
 let background: THREE.Scene;
 let overlay: Overlay;
 let timescaleControl: TimeScaleControl;
-let throttleControl: ThrottleControl;
-let speedControl: any;
+let flightDeck: FlightDeckControl;
+let throttleControl: FlightDeckControl;
 let orbitalElementsControl: OrbitalElementsControl;
 let statsControl: StatsControl;
 let bodiesControl: BodiesControl;
@@ -66,6 +66,7 @@ function init() {
 
     const headerTitle = document.createElement('div');
     headerTitle.id = 'info';
+    headerTitle.style.display = 'none';
     headerTitle.innerHTML = 'Orbital rocket simulation demo - powered by <a href="http://threejs.org" target="_blank">three.js</a>';
     document.body.appendChild(headerTitle);
 
@@ -173,53 +174,9 @@ function init() {
     timescaleControl = new TimeScaleControl(function(scale){ return gameState.setTimeScale(scale); });
     container.appendChild( timescaleControl.domElement );
 
-    throttleControl = new ThrottleControl(windowHalfX, function(pos){ return gameState.allowThrottle(pos); },
-        function(){ return gameState.getSelectObj(); });
-    container.appendChild( throttleControl.domElement );
-
-    const rotationControl = new RotationControl(buttons, () => gameState.getSelectObj());
-    container.appendChild( rotationControl.domElement );
-
-    class SpeedControl{
-        protected element: HTMLDivElement;
-        get domElement(){ return this.element; }
-        protected valueElement: HTMLDivElement;
-        constructor(){
-            function setSize(){
-                element.style.top = (window.innerHeight - 2 * navballRadius - 32) + 'px';
-                element.style.left = (window.innerWidth / 2 - element.getBoundingClientRect().width / 2) + 'px';
-            }
-            const buttonHeight = 32;
-            const buttonWidth = 32;
-            this.element = document.createElement('div');
-            const element = this.element;
-            element.style.position = 'absolute';
-            setSize();
-            element.style.zIndex = '7';
-            element.style.background = 'rgba(0, 0, 0, 0.5)';
-            window.addEventListener('resize', setSize);
-            const title = document.createElement('div');
-            title.innerHTML = 'Orbit';
-            element.appendChild(title);
-            this.valueElement = document.createElement('div');
-            element.appendChild(this.valueElement);
-        }
-
-        setSpeed(){
-            if(gameState.select_obj){
-                const value = gameState.select_obj.velocity.length() * AU;
-                if(value < 1)
-                    this.valueElement.innerHTML = (value * 1000).toFixed(4) + 'm/s';
-                else
-                    this.valueElement.innerHTML = value.toFixed(4) + 'km/s';
-            }
-            else
-                this.valueElement.innerHTML = '';
-            this.element.style.left = (window.innerWidth / 2 - this.element.getBoundingClientRect().width / 2) + 'px';
-        }
-    }
-    speedControl = new SpeedControl();
-    container.appendChild( speedControl.domElement );
+    flightDeck = new FlightDeckControl(gameState, buttons, (thr) => gameState.allowThrottle(thr));
+    throttleControl = flightDeck;
+    container.appendChild( flightDeck.domElement );
 
     orbitalElementsControl = new OrbitalElementsControl();
     container.appendChild( orbitalElementsControl.domElement );
@@ -243,16 +200,25 @@ function init() {
         get domElement(){ return this.element; }
         protected valueElement: HTMLDivElement;
         constructor(){
-            const buttonHeight = 32;
-            const buttonWidth = 32;
             this.element = document.createElement('div');
             const element = this.element;
-            element.style.position = 'absolute';
-            element.style.top = '2em';
+            element.style.position = 'fixed';
+            element.style.top = '66px';
             element.style.left = '50%';
-            element.style.background = 'rgba(0,0,0,0.5)';
-            element.style.zIndex = '8';
-            const visible = false;
+            element.style.transform = 'translateX(-50%)';
+            element.style.background = 'rgba(10, 16, 28, 0.85)';
+            element.style.border = '1px solid rgba(0, 240, 255, 0.28)';
+            element.style.borderRadius = '14px';
+            element.style.padding = '3px 14px';
+            element.style.color = '#38bdf8';
+            element.style.fontFamily = 'monospace';
+            element.style.fontSize = '12px';
+            element.style.fontWeight = 'bold';
+            element.style.letterSpacing = '1px';
+            element.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.6)';
+            (element.style as any).backdropFilter = 'blur(10px)';
+            element.style.zIndex = '40';
+            element.style.pointerEvents = 'none';
 
             // Register event handlers
             element.ondragstart = function(event){
@@ -263,13 +229,12 @@ function init() {
         setText(value: number){
             let text;
             if(value < 1e5)
-                text = value.toFixed(4) + 'km';
+                text = value.toFixed(4) + ' km';
             else if(value < 1e8)
-                text = (value / 1000).toFixed(4) + 'Mm';
+                text = (value / 1000).toFixed(4) + ' Mm';
             else
-                text = (value / AU).toFixed(4) + 'AU';
-            this.element.innerHTML = text;
-            this.element.style.marginLeft = -this.element.getBoundingClientRect().width / 2 + 'px';
+                text = (value / AU).toFixed(4) + ' AU';
+            this.element.innerHTML = '<span style="color:#64748b;font-size:10px;margin-right:6px;">ALT</span>' + text;
         }
     }
     altitudeControl = new AltitudeControl();
@@ -424,7 +389,7 @@ function render() {
     const [time, realDeltaTimeMilliSec, deltaTime] = gameState.updateTime();
     timescaleControl.setDate(time.getFullYear() + '/' + zerofill(time.getMonth() + 1) + '/' + zerofill(time.getDate())
         + ' ' + zerofill(time.getHours()) + ':' + zerofill(time.getMinutes()) + ':' + zerofill(time.getSeconds()));
-    speedControl.setSpeed();
+    flightDeck.update();
     statsControl.setText(gameState.getMissionTime());
     settingsControl.setText();
     messageControl.timeStep(realDeltaTimeMilliSec * 1e-3);

@@ -1890,6 +1890,159 @@ export class NasaMissionDesigner {
    * Thân giáp đa giác titan hạng nặng, pháo ray từ trường khổng lồ chạy dọc sống lưng,
    * tháp chỉ huy bọc thép, 4 ụ pháo kép hai bên sườn, khoang phóng tiêm kích và cụm 4 động cơ ion khổng lồ
    */
+  private buildHyperionChassis(ship: THREE.Group, mats: any) {
+    // 1. Thân chính bọc giáp titan đa giác vát góc (Heavy polygonal armored hull)
+    const hullGeo = new THREE.BoxGeometry(1.48, 0.45, 2.6);
+    const hull = new THREE.Mesh(hullGeo, mats.hullArmorMat);
+    hull.position.set(0, 0.08, 0.1);
+    hull.castShadow = true;
+    hull.receiveShadow = true;
+    ship.add(hull);
+
+    // Mũi tàu Chisel Prow vát dốc nhọn về trước
+    const prowGeo = new THREE.CylinderGeometry(0.12, 0.72, 1.2, 4);
+    prowGeo.rotateX(Math.PI / 2);
+    prowGeo.rotateZ(Math.PI / 4);
+    const prow = new THREE.Mesh(prowGeo, mats.carbonDarkMat);
+    prow.scale.set(1.4, 0.6, 1);
+    prow.position.set(0, 0.08, 1.7);
+    prow.castShadow = true;
+    prow.receiveShadow = true;
+    ship.add(prow);
+
+    // 2. Hai vè giáp mạn sườn (Armor Sponsons)
+    [-1, 1].forEach(side => {
+      const sponsonGeo = new THREE.BoxGeometry(0.35, 0.32, 1.8);
+      const sponson = new THREE.Mesh(sponsonGeo, mats.carbonDarkMat);
+      sponson.position.set(side * 0.82, 0.08, 0.2);
+      sponson.castShadow = true;
+      sponson.receiveShadow = true;
+      ship.add(sponson);
+
+      // Ụ pháo kép hai bên sườn (Dual heavy turret batteries)
+      [-0.4, 0.5].forEach(tz => {
+        const turretBase = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.08, 16), mats.starkGoldMat);
+        turretBase.position.set(side * 0.85, 0.28, tz);
+        const barrel1 = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.025, 0.45, 12), mats.titaniumTrimMat);
+        barrel1.rotateX(Math.PI / 2);
+        barrel1.position.set(side * 0.85 - 0.04, 0.32, tz + 0.18);
+        const barrel2 = barrel1.clone();
+        barrel2.position.x = side * 0.85 + 0.04;
+        turretBase.castShadow = true;
+        barrel1.castShadow = true;
+        barrel2.castShadow = true;
+        ship.add(turretBase, barrel1, barrel2);
+      });
+    });
+
+    // 3. Tháp chỉ huy bọc thép (Bridge Citadel Tower)
+    const citadelGeo = new THREE.BoxGeometry(0.52, 0.42, 0.95);
+    const citadel = new THREE.Mesh(citadelGeo, mats.hullArmorMat);
+    citadel.position.set(0, 0.42, -0.4);
+    citadel.castShadow = true;
+    citadel.receiveShadow = true;
+    ship.add(citadel);
+
+    // Kính quan sát đài chỉ huy toàn cảnh (Bridge Viewport Strip)
+    const bridgeGlass = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.08, 0.22), mats.glassCanopyMat);
+    bridgeGlass.position.set(0, 0.52, -0.15);
+    ship.add(bridgeGlass);
+
+    // Tháp ăng-ten mảng pha cảm biến siêu trường
+    const sensorTower = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.65, 8), mats.starkGoldMat);
+    sensorTower.position.set(0, 0.85, -0.65);
+    sensorTower.castShadow = true;
+    ship.add(sensorTower);
+
+    // 4. Pháo ray từ trường khổng lồ chạy dọc sống lưng (Spinal Railgun Accelerator)
+    const railgunSpine = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.16, 2.2), mats.titaniumTrimMat);
+    railgunSpine.position.set(0, 0.34, 0.5);
+    railgunSpine.castShadow = true;
+    ship.add(railgunSpine);
+
+    const railBore = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 2.25), mats.glowCyanMat);
+    railBore.position.set(0, 0.35, 0.5);
+    ship.add(railBore);
+
+    // Đèn hoa tiêu hạm đội
+    mats.addNavBeacon(new THREE.Vector3(-1.0, 0.08, 0.2), 0xef4444);
+    mats.addNavBeacon(new THREE.Vector3(1.0, 0.08, 0.2), 0x22c55e);
+    mats.addNavBeacon(new THREE.Vector3(0, 1.15, -0.65), 0x00f0ff);
+  }
+
+  /**
+   * Dựng Siêu Tiêm Kích Trinh Sát Đánh Chặn GHOSTWING ORBITAL RECON INTERCEPTOR
+   * Thân tàng hình cánh ngược (Forward-swept wings), mũi kim siêu thanh, đuôi V-Tail kép
+   */
+  private buildGhostwingChassis(ship: THREE.Group, mats: any) {
+    // 1. Thân khí động học tàng hình vuốt dẹt (Stealth Lifting Body)
+    const bodyGeo = new THREE.BoxGeometry(0.55, 0.16, 1.8);
+    const body = new THREE.Mesh(bodyGeo, mats.carbonDarkMat);
+    body.position.set(0, 0.02, 0.0);
+    body.castShadow = true;
+    body.receiveShadow = true;
+    ship.add(body);
+
+    // Mũi kim tàng hình siêu thanh (Stealth needle nose)
+    const noseGeo = new THREE.ConeGeometry(0.25, 1.1, 16);
+    noseGeo.rotateX(Math.PI / 2);
+    const nose = new THREE.Mesh(noseGeo, mats.hullArmorMat);
+    nose.scale.set(1.1, 0.35, 1);
+    nose.position.set(0, 0.02, 1.25);
+    nose.castShadow = true;
+    ship.add(nose);
+
+    // 2. Buồng lái giọt nước phản quang 4K (Teardrop Cockpit)
+    const canopy = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 20), mats.glassCanopyMat);
+    canopy.scale.set(0.68, 0.48, 1.6);
+    canopy.position.set(0, 0.13, 0.38);
+    ship.add(canopy);
+
+    // 3. Cánh quét ngược đặc trưng (Forward-swept Delta Wings)
+    [-1, 1].forEach(side => {
+      const wingGeo = new THREE.BoxGeometry(1.05, 0.03, 0.75);
+      const wing = new THREE.Mesh(wingGeo, mats.hullArmorMat);
+      wing.position.set(side * 0.95, 0.02, 0.2);
+      wing.rotation.y = side * 0.42;
+      wing.rotation.z = side * -0.06;
+      wing.castShadow = true;
+      wing.receiveShadow = true;
+      ship.add(wing);
+
+      // Cánh phụ đầu cánh (Wingtip canards)
+      const tipGeo = new THREE.BoxGeometry(0.3, 0.02, 0.4);
+      const tip = new THREE.Mesh(tipGeo, mats.starkGoldMat);
+      tip.position.set(side * 1.5, 0.04, 0.45);
+      tip.rotation.y = side * 0.55;
+      tip.castShadow = true;
+      ship.add(tip);
+
+      // Đèn tín hiệu
+      mats.addNavBeacon(new THREE.Vector3(side * 1.62, 0.04, 0.52), side > 0 ? 0x22c55e : 0xef4444);
+    });
+
+    // 4. Cặp cánh đuôi chữ V nghiêng vát thể thao (Canted V-Tail)
+    [-1, 1].forEach(side => {
+      const finGeo = new THREE.BoxGeometry(0.03, 0.48, 0.52);
+      const fin = new THREE.Mesh(finGeo, mats.carbonDarkMat);
+      fin.position.set(side * 0.35, 0.28, -0.65);
+      fin.rotation.x = -0.32;
+      fin.rotation.z = side * -0.55;
+      fin.castShadow = true;
+      fin.receiveShadow = true;
+      ship.add(fin);
+    });
+
+    // 5. Cảm biến laser quang tử trinh sát dưới bụng
+    const reconPod = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 0.6, 16), mats.titaniumTrimMat);
+    reconPod.rotateX(Math.PI / 2);
+    reconPod.position.set(0, -0.09, 0.35);
+    reconPod.castShadow = true;
+    const lens = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 16), mats.glowCyanMat);
+    lens.position.set(0, -0.09, 0.65);
+    ship.add(reconPod, lens);
+  }
+
   /**
    * Dựng thân chiến hạm QUINJET MK-VII (Avengers Stealth Interceptor)
    * Mũi vuốt nhọn về phía trước (+Z), buồng lái giọt nước, cánh swept-delta có fan VTOL, đuôi kép vát góc

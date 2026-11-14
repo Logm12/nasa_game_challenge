@@ -1179,13 +1179,14 @@
    ========================================================================== */
 .solar-dock {
   position: fixed;
-  bottom: 20px;
+  top: 14px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 9999;
+  z-index: 100;
   max-width: 96vw;
   pointer-events: auto;
   font-family: var(--font-display);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .solar-dock-inner {
@@ -1293,18 +1294,41 @@
   align-items: center;
   gap: 6px;
   overflow-x: auto;
+  overflow-y: hidden;
   padding: 2px 4px;
-  max-width: 78vw;
-  scrollbar-width: thin;
+  max-width: 58vw;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .solar-planets-track::-webkit-scrollbar {
-  height: 4px;
+  display: none;
+  width: 0;
+  height: 0;
 }
 
-.solar-planets-track::-webkit-scrollbar-thumb {
-  background: rgba(0, 240, 255, 0.2);
-  border-radius: 4px;
+.track-scroll-arrow {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  color: #00f0ff;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.track-scroll-arrow:hover {
+  background: rgba(0, 240, 255, 0.3);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  transform: scale(1.12);
 }
 
 .planet-btn {
@@ -1620,4 +1644,485 @@
 .select-game-language:focus-visible {
   outline: 2px solid var(--accent-cyan);
   outline-offset: 2px;
+}
+
+/* ==========================================================================
+   8. MODERN UNIFIED AEROSPACE FLIGHT DECK & SAS AUTOPILOT
+   ========================================================================== */
+.flight-deck-root {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  pointer-events: auto;
+  font-family: var(--font-display);
+  user-select: none;
+}
+
+/* Collapsed Mini Pill */
+.flight-deck-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(10, 16, 28, 0.9);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), 0 0 10px rgba(0, 240, 255, 0.2);
+  backdrop-filter: blur(16px);
+  transition: all 0.2s;
+}
+
+.flight-deck-pill:hover {
+  background: rgba(0, 240, 255, 0.2);
+  border-color: #00f0ff;
+  transform: translateY(-2px);
+}
+
+.pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: radar-pulse 1.5s infinite;
+}
+
+.pill-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.pill-chevron {
+  font-size: 0.85rem;
+  color: #38bdf8;
+}
+
+/* Main Flight Console */
+.flight-deck-console {
+  display: flex;
+  align-items: flex-end;
+  background: rgba(10, 15, 29, 0.88);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 240, 255, 0.15);
+  border-radius: 24px;
+  padding: 8px 16px 10px 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  gap: 16px;
+  position: relative;
+  transition: all 0.25s var(--ease-out-expo);
+}
+
+.deck-collapse-toggle {
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  color: #00f0ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.deck-collapse-toggle:hover {
+  background: rgba(0, 240, 255, 0.25);
+  transform: scale(1.15);
+}
+
+/* Wings Common */
+.deck-wing {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 8px 10px;
+}
+
+.deck-wing-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 4px;
+}
+
+.wing-icon {
+  font-size: 0.95rem;
+}
+
+.wing-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #cbd5e1;
+}
+
+/* Left Wing: Throttle Console */
+.deck-throttle-wing {
+  width: 155px;
+}
+
+.throttle-val-badge {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--accent-amber);
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.deck-throttle-body {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  height: 96px;
+}
+
+.deck-throttle-track-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 4px;
+}
+
+.deck-throttle-track {
+  position: relative;
+  width: 12px;
+  height: 90px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  cursor: pointer;
+  overflow: visible;
+}
+
+.deck-throttle-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(to top, #38bdf8, #f59e0b, #ef4444);
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+  transition: height 0.05s linear;
+}
+
+.deck-throttle-thumb {
+  position: absolute;
+  left: -5px;
+  bottom: -6px;
+  width: 22px;
+  height: 12px;
+  background: #ffffff;
+  border: 1px solid #f59e0b;
+  border-radius: 3px;
+  box-shadow: 0 0 8px #f59e0b, 0 2px 6px rgba(0,0,0,0.6);
+  cursor: grab;
+  transition: bottom 0.05s linear;
+}
+
+.deck-throttle-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.deck-btn-preset {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: #cbd5e1;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.deck-btn-preset .btn-kbd {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  opacity: 0.6;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0 4px;
+  border-radius: 3px;
+}
+
+.deck-btn-preset:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.deck-btn-preset.full:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  color: #fff;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+.deck-btn-preset.half:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  color: #fff;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+}
+
+.deck-btn-preset.cut:hover {
+  background: rgba(148, 163, 184, 0.25);
+  border-color: #94a3b8;
+  color: #fff;
+}
+
+.deck-throttle-nudges {
+  display: flex;
+  gap: 4px;
+}
+
+.deck-btn-nudge {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: #94a3b8;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 0;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.deck-btn-nudge:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+  color: #fff;
+}
+
+/* Center Housing: 3D Navball & Directional Control */
+.deck-center-housing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 170px;
+}
+
+.deck-telemetry-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 8px;
+  padding: 3px 12px;
+  margin-bottom: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.telemetry-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #64748b;
+}
+
+.telemetry-val {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #00f0ff;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+}
+
+.deck-navball-ring {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 240, 255, 0.35);
+  box-shadow: inset 0 0 16px rgba(0, 240, 255, 0.12), 0 0 20px rgba(0, 240, 255, 0.2);
+  pointer-events: none;
+}
+
+/* Directional Buttons on Bezel Ring */
+.flight-dir-btn {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(10, 16, 28, 0.88);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  color: #38bdf8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.15s var(--ease-out-expo);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.flight-dir-btn .arrow-glyph {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.flight-dir-btn .k-hint {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.flight-dir-btn:hover {
+  background: rgba(0, 240, 255, 0.25);
+  border-color: #00f0ff;
+  color: #fff;
+  box-shadow: 0 0 12px #00f0ff;
+  transform: scale(1.12);
+}
+
+.flight-dir-btn.active {
+  background: #00f0ff !important;
+  color: #050811 !important;
+  box-shadow: 0 0 16px #00f0ff !important;
+  transform: scale(1.15);
+}
+
+.flight-dir-btn.pitch-up {
+  top: -6px;
+  left: calc(50% - 15px);
+}
+
+.flight-dir-btn.pitch-down {
+  bottom: -6px;
+  left: calc(50% - 15px);
+}
+
+.flight-dir-btn.yaw-left {
+  left: -8px;
+  top: calc(50% - 15px);
+}
+
+.flight-dir-btn.yaw-right {
+  right: -8px;
+  top: calc(50% - 15px);
+}
+
+.flight-dir-btn.roll-ccw {
+  left: 6px;
+  top: 6px;
+}
+
+.flight-dir-btn.roll-cw {
+  right: 6px;
+  top: 6px;
+}
+
+/* Right Wing: SAS Autopilot Console */
+.deck-sas-wing {
+  width: 190px;
+}
+
+.sas-active-pill {
+  margin-left: auto;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.deck-sas-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.deck-sas-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  padding: 4px 8px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out-expo);
+  text-align: left;
+}
+
+.deck-sas-btn .sas-btn-icon {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+}
+
+.deck-sas-btn .sas-btn-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.deck-sas-btn .sas-btn-main {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #e2e8f0;
+}
+
+.deck-sas-btn .sas-btn-sub {
+  font-size: 0.62rem;
+  color: #64748b;
+}
+
+.deck-sas-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.deck-sas-btn.active {
+  background: rgba(0, 240, 255, 0.16);
+  border-color: #00f0ff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
+}
+
+.deck-sas-btn.active .sas-btn-main {
+  color: #00f0ff;
+}
+
+.deck-sas-btn.active .sas-btn-sub {
+  color: #7dd3fc;
 }

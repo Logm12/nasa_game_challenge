@@ -73,6 +73,7 @@ export class CelestialBody{
 
     controllable: boolean;
     throttle: number;
+    sasMode: string = 'STABILITY';
     totalDeltaV: number;
     ignitionCount: number;
     name: string;
@@ -93,6 +94,7 @@ export class CelestialBody{
         this.throttle = 0.;
         this.totalDeltaV = 0.;
         this.ignitionCount = 0;
+        this.sasMode = 'STABILITY';
         this.name = name;
         this.orbitalElements = orbitalElements || {
             semimajor_axis: 0,
@@ -421,24 +423,60 @@ export class CelestialBody{
             const a = children[i];
             const sl = a.position.lengthSq();
             if(sl !== 0){
-                const angleAcceleration = 1e-0;
+                const angleAcceleration = 1.6e-0;
                 const accel = a.position.clone().negate().normalize().multiplyScalar(deltaTime / div * a.parent.GM / sl);
                 if(select_obj === a && select_obj.controllable && timescale <= 1){
-                    if(buttons.up) select_obj.angularVelocity.add(new THREE.Vector3(0, 0, 1).applyQuaternion(select_obj.quaternion).multiplyScalar(angleAcceleration * deltaTime / div));
-                    if(buttons.down) select_obj.angularVelocity.add(new THREE.Vector3(0, 0, -1).applyQuaternion(select_obj.quaternion).multiplyScalar(angleAcceleration * deltaTime / div));
-                    if(buttons.left) select_obj.angularVelocity.add(new THREE.Vector3(0, 1, 0).applyQuaternion(select_obj.quaternion).multiplyScalar(angleAcceleration * deltaTime / div));
-                    if(buttons.right) select_obj.angularVelocity.add(new THREE.Vector3(0, -1, 0).applyQuaternion(select_obj.quaternion).multiplyScalar(angleAcceleration * deltaTime / div));
-                    if(buttons.counterclockwise) select_obj.angularVelocity.add(new THREE.Vector3(1, 0, 0).applyQuaternion(select_obj.quaternion).multiplyScalar(angleAcceleration * deltaTime / div));
-                    if(buttons.clockwise) select_obj.angularVelocity.add(new THREE.Vector3(-1, 0, 0).applyQuaternion(select_obj.quaternion).multiplyScalar(angleAcceleration * deltaTime / div));
-                    if(!buttons.up && !buttons.down && !buttons.left && !buttons.right && !buttons.counterclockwise && !buttons.clockwise){
-                        // Immediately stop micro-rotation if the body is controlled.
-                        // This is done to make it still in larger timescale, since micro-rotation cannot be canceled
-                        // by product of angularVelocity and quaternion which underflows by square.
-                        // Think that the vehicle has a momentum wheels that cancels micro-rotation continuously working.
-                        if(1e-6 < select_obj.angularVelocity.lengthSq())
-                            select_obj.angularVelocity.add(select_obj.angularVelocity.clone().normalize().multiplyScalar(-angleAcceleration * deltaTime / div));
-                        else
-                            select_obj.angularVelocity.set(0, 0, 0);
+                    const hasManualInput = buttons.up || buttons.down || buttons.left || buttons.right || buttons.counterclockwise || buttons.clockwise;
+                    if(hasManualInput){
+                        if(select_obj.sasMode === 'PROGRADE' || select_obj.sasMode === 'RETROGRADE'){
+                            select_obj.sasMode = 'STABILITY';
+                        }
+                        if(buttons.up) select_obj.angularVelocity.add(new THREE.Vector3(0, 0, 1).applyQuaternion(select_obj.quaternion).multiplyScalar(angleAcceleration * deltaTime / div));
+                        if(buttons.down) select_obj.angularVelocity.add(new THREE.Vector3(0, 0, -1).applyQuaternion(select_obj.quaternion).multiplyScalar(angleAcceleration * deltaTime / div));
+                        if(buttons.left) select_obj.angularVelocity.add(new THREE.Vector3(0, 1, 0).applyQuaternion(select_obj.quaternion).multiplyScalar(angleAcceleration * deltaTime / div));
+                        if(buttons.right) select_obj.angularVelocity.add(new THREE.Vector3(0, -1, 0).applyQuaternion(select_obj.quaternion).multiplyScalar(angleAcceleration * deltaTime / div));
+                        if(buttons.counterclockwise) select_obj.angularVelocity.add(new THREE.Vector3(1, 0, 0).applyQuaternion(select_obj.quaternion).multiplyScalar(angleAcceleration * deltaTime / div));
+                        if(buttons.clockwise) select_obj.angularVelocity.add(new THREE.Vector3(-1, 0, 0).applyQuaternion(select_obj.quaternion).multiplyScalar(angleAcceleration * deltaTime / div));
+                    } else {
+                        // SAS Autopilot & Gyroscope Reaction Wheels Stabilization
+                        if(select_obj.sasMode === 'PROGRADE' && select_obj.velocity.lengthSq() > 1e-12){
+                            const targetDir = select_obj.velocity.clone().normalize();
+                            const currentDir = new THREE.Vector3(1, 0, 0).applyQuaternion(select_obj.quaternion);
+                            const torqueAxis = currentDir.clone().cross(targetDir);
+                            const angle = currentDir.angleTo(targetDir);
+                            if(angle > 0.005){
+                                const rotSpeed = Math.min(2.5, angle * 3.8);
+                                const targetAngVel = torqueAxis.normalize().multiplyScalar(rotSpeed);
+                                select_obj.angularVelocity.lerp(targetAngVel, Math.min(1.0, 16.0 * deltaTime / div));
+                            } else {
+                                select_obj.angularVelocity.set(0, 0, 0);
+                            }
+                        } else if(select_obj.sasMode === 'RETROGRADE' && select_obj.velocity.lengthSq() > 1e-12){
+                            const targetDir = select_obj.velocity.clone().negate().normalize();
+                            const currentDir = new THREE.Vector3(1, 0, 0).applyQuaternion(select_obj.quaternion);
+                            const torqueAxis = currentDir.clone().cross(targetDir);
+                            const angle = currentDir.angleTo(targetDir);
+                            if(angle > 0.005){
+                                const rotSpeed = Math.min(2.5, angle * 3.8);
+                                const targetAngVel = torqueAxis.normalize().multiplyScalar(rotSpeed);
+                                select_obj.angularVelocity.lerp(targetAngVel, Math.min(1.0, 16.0 * deltaTime / div));
+                            } else {
+                                select_obj.angularVelocity.set(0, 0, 0);
+                            }
+                        } else if(select_obj.sasMode === 'STABILITY' || !select_obj.sasMode){
+                            // Active reaction wheel damping: stop tumbling immediately
+                            if(select_obj.angularVelocity.lengthSq() > 1e-6){
+                                select_obj.angularVelocity.multiplyScalar(Math.max(0, 1.0 - 16.0 * (deltaTime / div)));
+                            } else {
+                                select_obj.angularVelocity.set(0, 0, 0);
+                            }
+                        } else {
+                            // Manual micro-damping
+                            if(1e-6 < select_obj.angularVelocity.lengthSq())
+                                select_obj.angularVelocity.add(select_obj.angularVelocity.clone().normalize().multiplyScalar(-angleAcceleration * deltaTime / div));
+                            else
+                                select_obj.angularVelocity.set(0, 0, 0);
+                        }
                     }
                     if(0 < select_obj.throttle){
                         const deltaV = acceleration * select_obj.throttle * deltaTime / div;

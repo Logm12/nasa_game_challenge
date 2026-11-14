@@ -92,7 +92,8 @@ export default class Overlay{
             .multiply(qball)
             .multiply(AxisAngleQuaternion(1, 0, 0, Math.PI / 2))
             );
-        this.navballMesh.position.y = -window.innerHeight / 2 + navballRadius;
+        const navballCenterY = 92;
+        this.navballMesh.position.y = -window.innerHeight / 2 + navballCenterY;
         let grade;
         let factor;
         if(new THREE.Vector3(1, 0, 0).applyQuaternion(select_obj.quaternion).dot(select_obj.velocity) < 0){
@@ -106,7 +107,7 @@ export default class Overlay{
             factor = 1.;
         }
         grade.visible = true;
-        grade.position.y = -window.innerHeight / 2 + navballRadius + factor * new THREE.Vector3(0, 1, 0).applyQuaternion(select_obj.quaternion).dot(select_obj.velocity) / select_obj.velocity.length() * navballRadius;
+        grade.position.y = -window.innerHeight / 2 + navballCenterY + factor * new THREE.Vector3(0, 1, 0).applyQuaternion(select_obj.quaternion).dot(select_obj.velocity) / select_obj.velocity.length() * navballRadius;
         grade.position.x = factor * new THREE.Vector3(0, 0, 1).applyQuaternion(select_obj.quaternion).dot(select_obj.velocity) / select_obj.velocity.length() * navballRadius;
     }
 
