@@ -207,6 +207,68 @@ export interface I18nTexts {
   dartBtnReturnHangar: string;
   dartCraftName: string;
   dartCraftDesc: string;
+
+  // Spotlight Guided Tour (FE07)
+  tourStepCounter: string;
+  tourBtnPrev: string;
+  tourBtnNext: string;
+  tourBtnFinish: string;
+  tourBtnSkip: string;
+  tourBtnCloseAria: string;
+  tourStepAria: string;
+  tourStep1Title: string;
+  tourStep1Desc: string;
+  tourStep1Hint: string;
+  tourStep2Title: string;
+  tourStep2Desc: string;
+  tourStep2Hint: string;
+  tourStep3Title: string;
+  tourStep3Desc: string;
+  tourStep3Hint: string;
+  tourStep4Title: string;
+  tourStep4Desc: string;
+  tourStep4Hint: string;
+  tourStep5Title: string;
+  tourStep5Desc: string;
+  tourStep5Hint: string;
+  tourStep6Title: string;
+  tourStep6Desc: string;
+  tourStep6Hint: string;
+
+  // Dock & Blade Panels (FE07)
+  dockCollapse: string;
+  dockExpand: string;
+  dockToggleAria: string;
+  bladeMissionsCollapseAria: string;
+  bladeMissionsExpandAria: string;
+  bladeAvionicsCollapseAria: string;
+  bladeAvionicsExpandAria: string;
+  missionsListAria: string;
+  armoryGridAria: string;
+
+  // DART Reasons & Tips (FE07)
+  dartReasonApproaching: string;
+  dartTipGeneral: string;
+  dartReasonSuccess: string;
+  dartTipSuccess: string;
+  dartReasonInsufficient: string;
+  dartTipInsufficient: string;
+  dartReasonHitDidymos: string;
+  dartTipAimDimorphos: string;
+  dartReasonMissed: string;
+  dartTipEnableGuidance: string;
+  dartReasonInvalid: string;
+  dartTipCheckConfig: string;
+
+  // DART Official Sources (FE14)
+  dartSourceHeading: string;
+  dartSourceOverview: string;
+  dartSourceResults2022: string;
+  dartSourceStudy2024: string;
+  navMissions: string;
+  navOutfit: string;
+  navTelemetry: string;
+  navView3d: string;
 }
 
 export interface ControlTexts {
@@ -441,7 +503,65 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartBtnRetry: '↺ RETRY DART APPROACH',
     dartBtnReturnHangar: '↺ RETURN TO HANGAR',
     dartCraftName: 'NASA DART Kinetic Impactor',
-    dartCraftDesc: 'Authentic DART planetary defense spacecraft (~570 kg) equipped with DRACO imaging navigation and ROSA solar arrays.'
+    dartCraftDesc: 'Authentic DART planetary defense spacecraft (~570 kg) equipped with DRACO imaging navigation and ROSA solar arrays.',
+
+    tourStepCounter: 'STEP {current} / {total}',
+    tourBtnPrev: '◀ PREV',
+    tourBtnNext: 'NEXT ▶',
+    tourBtnFinish: 'FINISH 🚀',
+    tourBtnSkip: 'SKIP TOUR ✕',
+    tourBtnCloseAria: 'Close guided tour',
+    tourStepAria: 'Step {current} of {total}: {title}',
+    tourStep1Title: '01 // SELECT MISSION TARGET',
+    tourStep1Desc: 'Browse NASA mission profiles on the left panel: Artemis Lunar Transfer, JWST, DART kinetic impact, OSIRIS-REx... Each profile defines target destinations, science data requirements, and budget credits.',
+    tourStep1Hint: '💡 Click or use arrow keys to inspect science targets and requirements.',
+    tourStep2Title: '02 // SPACECRAFT HANGAR & OUTFITTING',
+    tourStep2Desc: 'Equip your spacecraft in the bottom dock: Choose authentic 4K hulls, national insignia, solar arrays or RTGs, science sensor payloads, propulsion engines, and launch boosters.',
+    tourStep2Hint: '💡 Browse tabs to balance mass, electrical power, and budget surplus.',
+    tourStep3Title: '03 // PRE-FLIGHT AVIONICS & TELEMETRY',
+    tourStep3Desc: 'Verify telemetry before launch: Ensure Calculated Delta-V ≥ Required Delta-V (Tsiolkovsky equation), Payload Mass ≤ Booster Capacity, and Power Balance ≥ 0 W.',
+    tourStep3Hint: '💡 Green telemetry bars indicate full flight readiness.',
+    tourStep4Title: '04 // AUTHORIZE FLIGHT LAUNCH',
+    tourStep4Desc: 'When all avionics checks pass, click here to ignite the booster engines and transition to the 3D space flight simulation!',
+    tourStep4Hint: '💡 If locked in red, inspect the right diagnostics panel for corrective advice.',
+    tourStep5Title: '05 // COLLAPSIBLE LOBBY PANELS',
+    tourStep5Desc: 'Click the collapse tab here or the arrow tabs on the edges to minimize panels, giving you an unobstructed view to admire your 3D spacecraft.',
+    tourStep5Hint: '💡 Click any tab again at any time to reopen the panels.',
+    tourStep6Title: '06 // INTERACTIVE 3D HANGAR NAVIGATION',
+    tourStep6Desc: 'Click and drag anywhere on the hangar floor to orbit 360° around your spacecraft. Use the scroll wheel to zoom in and examine hull details!',
+    tourStep6Hint: '💡 You are now flight-certified! Click [FINISH] to start configuring your mission.',
+
+    dockCollapse: '▼ HIDE DOCK',
+    dockExpand: '▲ SHOW DOCK',
+    dockToggleAria: 'Collapse or expand armory dock',
+    bladeMissionsCollapseAria: 'Collapse missions panel',
+    bladeMissionsExpandAria: 'Expand missions panel',
+    bladeAvionicsCollapseAria: 'Collapse avionics panel',
+    bladeAvionicsExpandAria: 'Expand avionics panel',
+    missionsListAria: 'NASA Missions Selection',
+    armoryGridAria: 'Spacecraft Outfitting Components',
+
+    dartReasonApproaching: 'Spacecraft is on final terminal approach to the Didymos-Dimorphos binary asteroid system.',
+    dartTipGeneral: 'Maintain course alignment and monitor relative closing speed.',
+    dartReasonSuccess: 'Direct head-on retrograde kinetic impact transferred momentum, reducing orbital velocity and shortening the orbital period of Dimorphos around Didymos well beyond NASA\'s 73-second threshold.',
+    dartTipSuccess: 'Excellent reconstruction! You can retry with SMART Nav disabled to test manual piloting.',
+    dartReasonInsufficient: 'Spacecraft impacted Dimorphos, but the approach angle or impulse direction failed to shorten the orbit by the required 73-second threshold.',
+    dartTipInsufficient: 'Tip: Align approach head-on (retrograde) against orbital motion to maximize speed reduction.',
+    dartReasonHitDidymos: 'The spacecraft impacted the primary asteroid Didymos instead of the moonlet Dimorphos. Deflection objective not met.',
+    dartTipAimDimorphos: 'Tip: Focus tracking on the smaller orbiting moonlet Dimorphos and keep SMART Nav enabled.',
+    dartReasonMissed: 'Spacecraft missed both Didymos and Dimorphos without impact. No kinetic momentum transfer occurred.',
+    dartTipEnableGuidance: 'Tip: Enable SMART Nav guidance assist and keep target centered in the approach corridor.',
+    dartReasonInvalid: 'Invalid simulation physics parameters or configuration.',
+    dartTipCheckConfig: 'Check spacecraft wet mass and velocity vectors.',
+
+    dartSourceHeading: 'Official NASA Documentation & Sources:',
+    dartSourceOverview: 'DART Mission Overview (NASA Science)',
+    dartSourceResults2022: 'NASA Impact Confirmation & Orbital Change (Oct 2022)',
+    dartSourceStudy2024: 'Updated Orbit Dynamics & Asteroid Shape Study (Mar 2024)',
+    navMissions: 'MISSIONS',
+    navOutfit: 'OUTFIT',
+    navTelemetry: 'AVIONICS',
+    navView3d: '3D VIEW'
   },
 
   vi: {
@@ -608,7 +728,65 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartBtnRetry: '↺ THỬ LẠI LƯỢT TIẾP CẬN DART',
     dartBtnReturnHangar: '↺ QUAY VỀ HANGAR',
     dartCraftName: 'Tàu va chạm động năng NASA DART',
-    dartCraftDesc: 'Cấu hình lịch sử chuẩn của DART (~570 kg) trang bị camera trinh sát DRACO và mảng pin mặt trời màng cuộn ROSA.'
+    dartCraftDesc: 'Cấu hình lịch sử chuẩn của DART (~570 kg) trang bị camera trinh sát DRACO và mảng pin mặt trời màng cuộn ROSA.',
+
+    tourStepCounter: 'BƯỚC {current} / {total}',
+    tourBtnPrev: '◀ QUAY LẠI',
+    tourBtnNext: 'TIẾP TỤC ▶',
+    tourBtnFinish: 'HOÀN TẤT 🚀',
+    tourBtnSkip: 'BỎ QUA TOUR ✕',
+    tourBtnCloseAria: 'Đóng hướng dẫn',
+    tourStepAria: 'Bước {current} / {total}: {title}',
+    tourStep1Title: '01 // CHỌN NHIỆM VỤ THỬ NGHIỆM',
+    tourStep1Desc: 'Bảng bên trái hiển thị danh sách nhiệm vụ NASA: Artemis bay tới Mặt Trăng, James Webb, DART va chạm Dimorphos, OSIRIS-REx... Chọn một nhiệm vụ để nạp mục tiêu dữ liệu và ngân sách.',
+    tourStep1Hint: '💡 Nhấp hoặc dùng phím mũi tên để xem mục tiêu & thông số yêu cầu.',
+    tourStep2Title: '02 // THIẾT KẾ & TRANG BỊ TÀU (HANGAR ARMORY)',
+    tourStep2Desc: 'Khay trang bị dưới chân cho phép bạn chọn vỏ tàu 4K, cờ Tổ quốc, tấm pin quang năng hoặc lò RTG, thiết bị đo khoa học, động cơ đẩy và tên lửa mang phóng.',
+    tourStep2Hint: '💡 Duyệt qua các tab để cân đối khối lượng, điện năng và ngân sách dư.',
+    tourStep3Title: '03 // KIỂM TRA ĐIỀU KIỆN BAY (PRE-FLIGHT AVIONICS)',
+    tourStep3Desc: 'Kiểm tra trước khi phóng: Đảm bảo Delta-V tính toán ≥ Delta-V yêu cầu, Tải trọng ≤ Sức nâng tên lửa, và Cân bằng năng lượng ≥ 0 W.',
+    tourStep3Hint: '💡 Các thanh thông số màu xanh lục biểu thị hệ thống đã sẵn sàng.',
+    tourStep4Title: '04 // PHÊ DUYỆT PHÓNG TÀU (AUTHORIZE LAUNCH)',
+    tourStep4Desc: 'Khi mọi thông số khí động và năng lượng đạt chuẩn, nút này sẽ rực sáng cho phép phóng tàu vào không gian thực tế!',
+    tourStep4Hint: '💡 Nếu nút bị khóa màu đỏ, hãy kiểm tra bảng chẩn đoán bên phải để sửa lỗi.',
+    tourStep5Title: '05 // THU GỌN GIAO DIỆN ĐỂ NGẮM TÀU 3D',
+    tourStep5Desc: 'Nhấp vào thanh thu gọn ở đây hoặc các mũi tên ở hai mép màn hình để thu gọn các bảng menu, chiêm ngưỡng tàu vũ trụ 4K không góc chết!',
+    tourStep5Hint: '💡 Nhấp lại vào các thanh bất kỳ lúc nào để mở lại bảng menu.',
+    tourStep6Title: '06 // XOAY VÀ PHÓNG TO TÀU VŨ TRỤ 360°',
+    tourStep6Desc: 'Kéo chuột trái hoặc vuốt trên màn hình để xoay quanh tàu vũ trụ 360°. Cuộn chuột để phóng to thu nhỏ chiêm ngưỡng từng chi tiết động cơ.',
+    tourStep6Hint: '💡 Chúc mừng bạn đã nắm vững cách vận hành! Nhấn [HOÀN TẤT] để bắt đầu chế tạo tàu.',
+
+    dockCollapse: '▼ THU GỌN BẢNG',
+    dockExpand: '▲ MỞ RỘNG BẢNG TRANG BỊ',
+    dockToggleAria: 'Thu gọn hoặc mở rộng sảnh trang bị',
+    bladeMissionsCollapseAria: 'Thu gọn bảng nhiệm vụ',
+    bladeMissionsExpandAria: 'Mở rộng bảng nhiệm vụ',
+    bladeAvionicsCollapseAria: 'Thu gọn bảng chẩn đoán',
+    bladeAvionicsExpandAria: 'Mở rộng bảng chẩn đoán',
+    missionsListAria: 'Danh sách lựa chọn nhiệm vụ NASA',
+    armoryGridAria: 'Linh kiện trang bị tàu vũ trụ',
+
+    dartReasonApproaching: 'Tàu vũ trụ đang trong pha tiếp cận cuối cùng hướng tới hệ tiểu hành tinh đôi Didymos-Dimorphos.',
+    dartTipGeneral: 'Duy trì hiệu chỉnh đường bay và theo dõi vận tốc tiếp cận tương đối.',
+    dartReasonSuccess: 'Va chạm động năng trực tiếp đối đầu đã truyền xung lực làm giảm vận tốc quỹ đạo của Dimorphos quanh Didymos, rút ngắn chu kỳ quỹ đạo thành công vượt ngưỡng 73 giây của NASA.',
+    dartTipSuccess: 'Tái hiện xuất sắc! Bạn có thể thử nghiệm tắt SMART Nav để tự tay điều khiển lái tàu thủ công.',
+    dartReasonInsufficient: 'Tàu đã va chạm Dimorphos nhưng góc tiếp cận hoặc hướng truyền xung không làm giảm chu kỳ đủ ngưỡng 73 giây yêu cầu.',
+    dartTipInsufficient: 'Gợi ý: Căn chỉnh hướng tiếp cận trực diện đối đầu (retrograde) để triệt tiêu vận tốc quỹ đạo hiệu quả nhất.',
+    dartReasonHitDidymos: 'Tàu đã va chạm vào tiểu hành tinh chính Didymos thay vì vệ tinh nhỏ Dimorphos. Mục tiêu thử nghiệm làm đổi quỹ đạo không đạt được.',
+    dartTipAimDimorphos: 'Gợi ý: Hãy nhắm kỹ vào mục tiêu nhỏ Dimorphos quay quanh Didymos và bật hỗ trợ SMART Nav.',
+    dartReasonMissed: 'Tàu bay trượt qua cả Didymos và Dimorphos mà không xảy ra va chạm. Không có động năng nào được truyền.',
+    dartTipEnableGuidance: 'Gợi ý: Bật chế độ hỗ trợ dẫn đường SMART Nav và giữ hướng ngắm trung tâm mục tiêu.',
+    dartReasonInvalid: 'Thông số vật lý hoặc cấu hình mô phỏng không hợp lệ.',
+    dartTipCheckConfig: 'Kiểm tra lại khối lượng phóng và vector vận tốc của tàu.',
+
+    dartSourceHeading: 'Tài liệu & Nguồn kiểm chứng chính thức từ NASA:',
+    dartSourceOverview: 'Tổng quan nhiệm vụ DART (NASA Science)',
+    dartSourceResults2022: 'Xác nhận va chạm & Thay đổi quỹ đạo ban đầu (Tháng 10/2022)',
+    dartSourceStudy2024: 'Nghiên cứu cập nhật động lực học quỹ đạo & Hình dạng (Tháng 3/2024)',
+    navMissions: 'SỨ MỆNH',
+    navOutfit: 'TRANG BỊ',
+    navTelemetry: 'THÔNG SỐ',
+    navView3d: 'XEM 3D'
   },
 
   en_uk: {
@@ -776,7 +954,65 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartBtnRetry: '↺ RETRY DART APPROACH',
     dartBtnReturnHangar: '↺ RETURN TO HANGAR',
     dartCraftName: 'NASA DART Kinetic Impactor',
-    dartCraftDesc: 'Authentic DART planetary defence spacecraft (~570 kg) equipped with DRACO imaging navigation and ROSA solar arrays.'
+    dartCraftDesc: 'Authentic DART planetary defence spacecraft (~570 kg) equipped with DRACO imaging navigation and ROSA solar arrays.',
+
+    tourStepCounter: 'STEP {current} / {total}',
+    tourBtnPrev: '◀ PREV',
+    tourBtnNext: 'NEXT ▶',
+    tourBtnFinish: 'FINISH 🚀',
+    tourBtnSkip: 'SKIP TOUR ✕',
+    tourBtnCloseAria: 'Close guided tour',
+    tourStepAria: 'Step {current} of {total}: {title}',
+    tourStep1Title: '01 // SELECT MISSION TARGET',
+    tourStep1Desc: 'Browse NASA mission profiles on the left panel: Artemis Lunar Transfer, JWST, DART kinetic impact, OSIRIS-REx... Each profile defines target destinations, science data requirements, and budget credits.',
+    tourStep1Hint: '💡 Click or use arrow keys to inspect science targets and requirements.',
+    tourStep2Title: '02 // SPACECRAFT HANGAR & OUTFITTING',
+    tourStep2Desc: 'Equip your spacecraft in the bottom dock: Choose authentic 4K hulls, national insignia, solar arrays or RTGs, science sensor payloads, propulsion engines, and launch boosters.',
+    tourStep2Hint: '💡 Browse tabs to balance mass, electrical power, and budget surplus.',
+    tourStep3Title: '03 // PRE-FLIGHT AVIONICS & TELEMETRY',
+    tourStep3Desc: 'Verify telemetry before launch: Ensure Calculated Delta-V ≥ Required Delta-V (Tsiolkovsky equation), Payload Mass ≤ Booster Capacity, and Power Balance ≥ 0 W.',
+    tourStep3Hint: '💡 Green telemetry bars indicate full flight readiness.',
+    tourStep4Title: '04 // AUTHORIZE FLIGHT LAUNCH',
+    tourStep4Desc: 'When all avionics checks pass, click here to ignite the booster engines and transition to the 3D space flight simulation!',
+    tourStep4Hint: '💡 If locked in red, inspect the right diagnostics panel for corrective advice.',
+    tourStep5Title: '05 // COLLAPSIBLE LOBBY PANELS',
+    tourStep5Desc: 'Click the collapse tab here or the arrow tabs on the edges to minimise panels, giving you an unobstructed view to admire your 3D spacecraft.',
+    tourStep5Hint: '💡 Click any tab again at any time to reopen the panels.',
+    tourStep6Title: '06 // INTERACTIVE 3D HANGAR NAVIGATION',
+    tourStep6Desc: 'Click and drag anywhere on the hangar floor to orbit 360° around your spacecraft. Use the scroll wheel to zoom in and examine hull details!',
+    tourStep6Hint: '💡 You are now flight-certified! Click [FINISH] to start configuring your mission.',
+
+    dockCollapse: '▼ HIDE DOCK',
+    dockExpand: '▲ SHOW DOCK',
+    dockToggleAria: 'Collapse or expand armory dock',
+    bladeMissionsCollapseAria: 'Collapse missions panel',
+    bladeMissionsExpandAria: 'Expand missions panel',
+    bladeAvionicsCollapseAria: 'Collapse avionics panel',
+    bladeAvionicsExpandAria: 'Expand avionics panel',
+    missionsListAria: 'NASA Missions Selection',
+    armoryGridAria: 'Spacecraft Outfitting Components',
+
+    dartReasonApproaching: 'Spacecraft is on final terminal approach to the Didymos-Dimorphos binary asteroid system.',
+    dartTipGeneral: 'Maintain course alignment and monitor relative closing speed.',
+    dartReasonSuccess: 'Direct head-on retrograde kinetic impact transferred momentum, reducing orbital velocity and shortening the orbital period of Dimorphos around Didymos well beyond NASA\'s 73-second threshold.',
+    dartTipSuccess: 'Excellent reconstruction! You can retry with SMART Nav disabled to test manual piloting.',
+    dartReasonInsufficient: 'Spacecraft impacted Dimorphos, but the approach angle or impulse direction failed to shorten the orbit by the required 73-second threshold.',
+    dartTipInsufficient: 'Tip: Align approach head-on (retrograde) against orbital motion to maximize speed reduction.',
+    dartReasonHitDidymos: 'The spacecraft impacted the primary asteroid Didymos instead of the moonlet Dimorphos. Deflection objective not met.',
+    dartTipAimDimorphos: 'Tip: Focus tracking on the smaller orbiting moonlet Dimorphos and keep SMART Nav enabled.',
+    dartReasonMissed: 'Spacecraft missed both Didymos and Dimorphos without impact. No kinetic momentum transfer occurred.',
+    dartTipEnableGuidance: 'Tip: Enable SMART Nav guidance assist and keep target centered in the approach corridor.',
+    dartReasonInvalid: 'Invalid simulation physics parameters or configuration.',
+    dartTipCheckConfig: 'Check spacecraft wet mass and velocity vectors.',
+
+    dartSourceHeading: 'Official NASA Documentation & Sources:',
+    dartSourceOverview: 'DART Mission Overview (NASA Science)',
+    dartSourceResults2022: 'NASA Impact Confirmation & Orbital Change (Oct 2022)',
+    dartSourceStudy2024: 'Updated Orbit Dynamics & Asteroid Shape Study (Mar 2024)',
+    navMissions: 'MISSIONS',
+    navOutfit: 'OUTFIT',
+    navTelemetry: 'AVIONICS',
+    navView3d: '3D VIEW'
   },
 
   ja: {
@@ -943,7 +1179,65 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartBtnRetry: '↺ DART接近飛行をやり直す',
     dartBtnReturnHangar: '↺ ハンガーに戻る',
     dartCraftName: 'NASA DART 運動衝突探査機',
-    dartCraftDesc: 'DRACO光学航法カメラとROSA太陽電池パネルを備えたDART実機仕様（約570kg）。'
+    dartCraftDesc: 'DRACO光学航法カメラとROSA太陽電池パネルを備えたDART実機仕様（約570kg）。',
+
+    tourStepCounter: 'ステップ {current} / {total}',
+    tourBtnPrev: '◀ 前へ',
+    tourBtnNext: '次へ ▶',
+    tourBtnFinish: '完了 🚀',
+    tourBtnSkip: 'ツアーをスキップ ✕',
+    tourBtnCloseAria: 'ガイドツアーを閉じる',
+    tourStepAria: 'ステップ {current}/{total}：{title}',
+    tourStep1Title: '01 // ミッションターゲットの選択',
+    tourStep1Desc: '左パネルでNASAミッションを選択します：アルテミス月遷移、JWST、DART衝突実験、OSIRIS-RExなど。各ミッションで目標目的地、データ要件、予算枠が設定されます。',
+    tourStep1Hint: '💡 クリックまたは矢印キーで要件とデータ目標を確認できます。',
+    tourStep2Title: '02 // 宇宙船ハンガーと装備換装',
+    tourStep2Desc: '下部ドックで宇宙船を艤装します：4K船体、国籍マーク、太陽電池やRTG、科学センサー、推進エンジン、ロケットを選択できます。',
+    tourStep2Hint: '💡 タブを切り替えて質量、電力、予算のバランスを調整しましょう。',
+    tourStep3Title: '03 // 飛行前アビオニクスと診断',
+    tourStep3Desc: '打上げ前の検証：ツィオルコフスキーの式による計算Delta-V ≥ 必要値、積載質量 ≤ ロケット能力、電力収支 ≥ 0 Wを確認します。',
+    tourStep3Hint: '💡 すべてのインジケーターが緑になれば飛行承認が得られます。',
+    tourStep4Title: '04 // 打上げ承認',
+    tourStep4Desc: 'すべての検査に合格するとボタンが点灯し、ブースター点火とともに3D宇宙飛行シミュレーションへ遷移できます！',
+    tourStep4Hint: '💡 赤くロックされている場合は、右パネルのエラー警告を確認して修正してください。',
+    tourStep5Title: '05 // パネル折りたたみ機能',
+    tourStep5Desc: 'ここの折りたたみタブや画面端の矢印をクリックすると、UIを最小化して宇宙船の3Dグラフィックスを鑑賞できます。',
+    tourStep5Hint: '💡 いつでもタブを再クリックすればメニューを復元できます。',
+    tourStep6Title: '06 // 360度インタラクティブ3D操作',
+    tourStep6Desc: 'ハンガー内の何もない場所をドラッグして360度回転、ホイールでズームして船体ディテールを隅々まで確認できます。',
+    tourStep6Hint: '💡 操作手順をマスターしました！[完了] を押してミッション設計を始めましょう。',
+
+    dockCollapse: '▼ ドックを折りたたむ',
+    dockExpand: '▲ ドックを展開',
+    dockToggleAria: '装備ドックの折りたたみ・展開',
+    bladeMissionsCollapseAria: 'ミッションパネルを閉じる',
+    bladeMissionsExpandAria: 'ミッションパネルを開く',
+    bladeAvionicsCollapseAria: 'アビオニクスパネルを閉じる',
+    bladeAvionicsExpandAria: 'アビオニクスパネルを開く',
+    missionsListAria: 'NASAミッション選択リスト',
+    armoryGridAria: '宇宙船換装コンポーネント',
+
+    dartReasonApproaching: '宇宙船はディディモス・ディモルフォス連小惑星系への最終進入段階にあります。',
+    dartTipGeneral: '進入進路を維持し、相対接近速度を監視してください。',
+    dartReasonSuccess: '正面からの逆行運動エネルギー衝突により運動量が伝達され、ディディモスを周回するディモルフォスの軌道速度が低下、NASAの成功基準である73秒を大幅に上回る軌道周期短縮を達成しました。',
+    dartTipSuccess: '完璧な再現です！SMART Navをオフにして手動操縦による衝突テストにも挑戦できます。',
+    dartReasonInsufficient: '探査機はディモルフォスに衝突しましたが、進入角度またはインパルス方向の不一致により、軌道短縮幅が73秒の基準に届きませんでした。',
+    dartTipInsufficient: 'ヒント：公転運動と逆向き（レトログレード）に正面から衝突すると、減速効果を最大化できます。',
+    dartReasonHitDidymos: '探査機は小型衛星ディモルフォスではなく主小惑星ディディモスに衝突しました。軌道変更目標は未達成です。',
+    dartTipAimDimorphos: 'ヒント：ディディモスの周りを回る小型のディモルフォスを追跡し、SMART Nav支援を有効に保ちましょう。',
+    dartReasonMissed: '探査機はディディモスとディモルフォスの両方を通過し衝突しませんでした。運動エネルギーの伝達は生じていません。',
+    dartTipEnableGuidance: 'ヒント：SMART Nav誘導アシストを有効化し、ターゲットを中心軸に捉え続けてください。',
+    dartReasonInvalid: 'シミュレーションの物理パラメータまたは設定が無効です。',
+    dartTipCheckConfig: '宇宙船の総質量および速度ベクトルを確認してください。',
+
+    dartSourceHeading: 'NASA公式資料・検証ソース：',
+    dartSourceOverview: 'DARTミッション概要（NASA Science）',
+    dartSourceResults2022: '衝突確認と初期軌道変化（2022年10月）',
+    dartSourceStudy2024: '軌道力学と小惑星形状の最新研究（2024年3月）',
+    navMissions: 'ミッション',
+    navOutfit: '装備',
+    navTelemetry: 'アビオニクス',
+    navView3d: '3D表示'
   },
 
   ko: {
@@ -1110,7 +1404,65 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartBtnRetry: '↺ DART 접근 비행 재시도',
     dartBtnReturnHangar: '↺ 격납고로 돌아가기',
     dartCraftName: 'NASA DART 운동 충돌체',
-    dartCraftDesc: 'DRACO 광학 유도 카메라와 ROSA 태양광 패널을 장착한 공식 DART 구성 (약 570kg).'
+    dartCraftDesc: 'DRACO 광학 유도 카메라와 ROSA 태양광 패널을 장착한 공식 DART 구성 (약 570kg).',
+
+    tourStepCounter: '단계 {current} / {total}',
+    tourBtnPrev: '◀ 이전',
+    tourBtnNext: '다음 ▶',
+    tourBtnFinish: '완료 🚀',
+    tourBtnSkip: '투어 건너뛰기 ✕',
+    tourBtnCloseAria: '가이드 투어 닫기',
+    tourStepAria: '{total}단계 중 {current}단계: {title}',
+    tourStep1Title: '01 // 미션 목표 선택',
+    tourStep1Desc: '왼쪽 패널에서 NASA 임무를 선택하세요: 아르테미스 달 전이, 제임스 웹, DART 소행성 충돌 등. 각 임무마다 목표 천체, 데이터 수집 요구치, 예산이 지정됩니다.',
+    tourStep1Hint: '💡 클릭하거나 방향키를 사용해 데이터 목표와 요구 조건을 확인하세요.',
+    tourStep2Title: '02 // 우주선 격납고 및 부품 장착',
+    tourStep2Desc: '하단 도크에서 우주선을 조립하세요: 4K 정밀 선체, 국가 마크, 태양광 패널 또는 RTG, 과학 센서, 추진 엔진, 발사체를 선택할 수 있습니다.',
+    tourStep2Hint: '💡 탭을 전환하며 질량, 전력 균형, 잔여 예산을 조율하세요.',
+    tourStep3Title: '03 // 비행 전 전자장비 및 원격측정 진단',
+    tourStep3Desc: '발사 전 필수 점검: 치올콥스키 로켓 방정식에 따른 계산 Delta-V ≥ 필요치, 탑재 질량 ≤ 발사체 역량, 전력 균형 ≥ 0 W를 확인하세요.',
+    tourStep3Hint: '💡 모든 표시줄이 초록색으로 켜지면 비행 준비가 완료된 상태입니다.',
+    tourStep4Title: '04 // 비행 발사 승인',
+    tourStep4Desc: '모든 검사가 통과되면 버튼이 활성화되어 부스터를 점화하고 3D 우주 비행 시뮬레이션으로 진입할 수 있습니다!',
+    tourStep4Hint: '💡 빨간색으로 잠겨 있다면 오른쪽 진단 패널의 오류 안내를 확인하세요.',
+    tourStep5Title: '05 // 패널 접기 및 3D 감상',
+    tourStep5Desc: '하단 접기 탭이나 화면 가장자리의 화살표를 클릭하여 메뉴를 접고 우주선 3D 모델을 방해 없이 감상하세요.',
+    tourStep5Hint: '💡 언제든지 탭을 다시 누르면 메뉴가 다시 열립니다.',
+    tourStep6Title: '06 // 360° 3D 뷰어 조작',
+    tourStep6Desc: '격납고 바닥을 드래그하여 360° 자유 회전하고, 마우스 휠로 확대하여 선체와 엔진 세부 사항을 살펴보세요.',
+    tourStep6Hint: '💡 기본 조작법을 모두 익혔습니다! [완료]를 눌러 나만의 우주선 제작을 시작하세요.',
+
+    dockCollapse: '▼ 도크 접기',
+    dockExpand: '▲ 도크 펼치기',
+    dockToggleAria: '장비 도크 접기 또는 펼치기',
+    bladeMissionsCollapseAria: '임무 패널 접기',
+    bladeMissionsExpandAria: '임무 패널 펼치기',
+    bladeAvionicsCollapseAria: '진단 패널 접기',
+    bladeAvionicsExpandAria: '진단 패널 펼치기',
+    missionsListAria: 'NASA 임무 선택 목록',
+    armoryGridAria: '우주선 장착 부품 목록',
+
+    dartReasonApproaching: '우주선이 디디모스-디모르포스 쌍소행성계를 향한 최종 접근 단계에 있습니다.',
+    dartTipGeneral: '접근 궤적을 유지하고 상대 속도를 점검하세요.',
+    dartReasonSuccess: '정면 역행 운동 에너지 충돌로 운동량이 전달되어 디모르포스의 궤도 속도가 감속되었으며, NASA의 성공 기준인 73초를 크게 초과하여 궤도 주기를 단축했습니다.',
+    dartTipSuccess: '완벽한 재현입니다! SMART Nav 유도를 끄고 수동 조종으로 충돌 테스트에 도전해 볼 수 있습니다.',
+    dartReasonInsufficient: '우주선이 디모르포스에 충돌했으나, 진입 각도나 충격량 전달 방향이 부족하여 궤도 주기를 73초 이상 단축하지 못했습니다.',
+    dartTipInsufficient: '힌트: 공전 방향의 정반대(역행)로 정면 충돌하여 감속 효과를 극대화하세요.',
+    dartReasonHitDidymos: '우주선이 위성 디모르포스 대신 주 소행성 디디모스에 충돌했습니다. 궤도 변경 목표를 달성하지 못했습니다.',
+    dartTipAimDimorphos: '힌트: 디디모스 주위를 공전하는 작은 천체 디모르포스를 조준하고 SMART Nav 유도를 켜두세요.',
+    dartReasonMissed: '우주선이 디디모스와 디모르포스를 모두 빗겨 지나갔습니다. 운동량 전달이 발생하지 않았습니다.',
+    dartTipEnableGuidance: '힌트: SMART Nav 자동 유도를 켜고 목표 천체를 비행 회랑 중앙에 유지하세요.',
+    dartReasonInvalid: '시뮬레이션 물리 매개변수 또는 설정이 올바르지 않습니다.',
+    dartTipCheckConfig: '우주선 발사 총질량과 속도 벡터를 점검하세요.',
+
+    dartSourceHeading: 'NASA 공식 문서 및 출처:',
+    dartSourceOverview: 'DART 임무 개요 (NASA Science)',
+    dartSourceResults2022: '충돌 확인 및 초기 궤도 변화 발표 (2022년 10월)',
+    dartSourceStudy2024: '궤도 역학 및 소행성 형상 최신 연구 (2024년 3월)',
+    navMissions: '임무',
+    navOutfit: '장비',
+    navTelemetry: '전자장비',
+    navView3d: '3D 보기'
   },
 
   fr: {
@@ -1277,7 +1629,65 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartBtnRetry: '↺ RÉESSAYER L’APPROCHE DART',
     dartBtnReturnHangar: '↺ RETOUR AU HANGAR',
     dartCraftName: 'Impacteur cinétique NASA DART',
-    dartCraftDesc: 'Configuration historique authentique de DART (~570 kg) dotée de la caméra de navigation DRACO et de panneaux solaires déployables ROSA.'
+    dartCraftDesc: 'Configuration historique authentique de DART (~570 kg) dotée de la caméra de navigation DRACO et de panneaux solaires déployables ROSA.',
+
+    tourStepCounter: 'ÉTAPE {current} / {total}',
+    tourBtnPrev: '◀ PRÉCÉDENT',
+    tourBtnNext: 'SUIVANT ▶',
+    tourBtnFinish: 'TERMINER 🚀',
+    tourBtnSkip: 'IGNORER LE TOUR ✕',
+    tourBtnCloseAria: 'Fermer la visite guidée',
+    tourStepAria: 'Étape {current} sur {total} : {title}',
+    tourStep1Title: '01 // SÉLECTIONNER LA MISSION',
+    tourStep1Desc: 'Parcourez les profils de mission NASA à gauche : Artemis vers la Lune, JWST, impact cinétique DART, OSIRIS-REx... Chaque profil définit la cible, les données requises et le budget.',
+    tourStep1Hint: '💡 Cliquez ou utilisez les flèches pour inspecter les objectifs et critères.',
+    tourStep2Title: '02 // HANGAR ET ÉQUIPEMENT DU VAISSEAU',
+    tourStep2Desc: 'Équipez votre vaisseau dans le dock inférieur : choisissez la coque 4K, l’emblème, les panneaux solaires ou RTG, les capteurs scientifiques, moteurs et lanceurs.',
+    tourStep2Hint: '💡 Parcourez les onglets pour équilibrer masse, électricité et budget.',
+    tourStep3Title: '03 // AVIONIQUE PRÉ-VOL ET TÉLÉMÉTRIE',
+    tourStep3Desc: 'Vérifiez la télémétrie avant lancement : Delta-V calculé ≥ Delta-V requis, Masse charge utile ≤ Capacité lanceur, et Bilan électrique ≥ 0 W.',
+    tourStep3Hint: '💡 Des barres vertes indiquent que les systèmes sont parés au vol.',
+    tourStep4Title: '04 // AUTORISER LE LANCEMENT',
+    tourStep4Desc: 'Quand tous les voyants sont au vert, cliquez ici pour allumer les moteurs et passer en simulation spatiale 3D !',
+    tourStep4Hint: '💡 Si le bouton reste rouge, consultez le panneau de droite pour corriger les erreurs.',
+    tourStep5Title: '05 // PANNEAUX REPLIABLES',
+    tourStep5Desc: 'Cliquez sur l’onglet ici ou sur les flèches latérales pour replier les menus et admirer votre vaisseau 3D sans obstacle.',
+    tourStep5Hint: '💡 Cliquez à nouveau sur un onglet pour rouvrir les panneaux.',
+    tourStep6Title: '06 // NAVIGATION 3D INTERACTIVE DU HANGAR',
+    tourStep6Desc: 'Cliquez et glissez sur le sol du hangar pour pivoter à 360° autour du vaisseau. Molette de souris pour zoomer sur les détails.',
+    tourStep6Hint: '💡 Vous êtes paré au vol ! Cliquez sur [TERMINER] pour concevoir votre vaisseau.',
+
+    dockCollapse: '▼ MASQUER LE DOCK',
+    dockExpand: '▲ AFFICHER LE DOCK',
+    dockToggleAria: 'Replier ou afficher le dock d’équipement',
+    bladeMissionsCollapseAria: 'Replier le panneau de missions',
+    bladeMissionsExpandAria: 'Déplier le panneau de missions',
+    bladeAvionicsCollapseAria: 'Replier le panneau d’avionique',
+    bladeAvionicsExpandAria: 'Déplier le panneau d’avionique',
+    missionsListAria: 'Sélection des missions NASA',
+    armoryGridAria: 'Composants d’équipement du vaisseau',
+
+    dartReasonApproaching: 'Le vaisseau est en approche terminale vers le système astéroïdal binaire Didymos-Dimorphos.',
+    dartTipGeneral: 'Maintenez l’alignement et surveillez la vitesse relative.',
+    dartReasonSuccess: 'L’impact cinétique rétrograde frontal a transféré sa quantité de mouvement, réduisant la vitesse orbitale et raccourcissant la période de Dimorphos bien au-delà du seuil de 73 secondes fixé par la NASA.',
+    dartTipSuccess: 'Excellente reconstitution ! Vous pouvez réessayer avec SMART Nav désactivé pour tester le pilotage manuel.',
+    dartReasonInsufficient: 'Le vaisseau a percuté Dimorphos, mais l’angle d’impact ou l’impulsion n’a pas permis de réduire la période d’au moins 73 secondes.',
+    dartTipInsufficient: 'Conseil : Alignez l’approche de face contre le mouvement orbital pour maximiser le freinage.',
+    dartReasonHitDidymos: 'Le vaisseau s’est écrasé sur l’astéroïde principal Didymos au lieu du satellite Dimorphos. Objectif de déflexion non atteint.',
+    dartTipAimDimorphos: 'Conseil : Ciblez le petit satellite Dimorphos en orbite et gardez l’assistance SMART Nav activée.',
+    dartReasonMissed: 'Le vaisseau a manqué Didymos et Dimorphos sans aucun impact. Aucun transfert d’impulsion n’a eu lieu.',
+    dartTipEnableGuidance: 'Conseil : Activez l’assistance SMART Nav et maintenez la cible au centre du couloir d’approche.',
+    dartReasonInvalid: 'Paramètres physiques ou configuration de simulation non valides.',
+    dartTipCheckConfig: 'Vérifiez la masse totale et les vecteurs vitesse du vaisseau.',
+
+    dartSourceHeading: 'Documentation officielle et sources de la NASA :',
+    dartSourceOverview: 'Vue d’ensemble de la mission DART (NASA Science)',
+    dartSourceResults2022: 'Confirmation de l’impact et changement d’orbite (octobre 2022)',
+    dartSourceStudy2024: 'Étude mise à jour sur la dynamique orbitale et la forme (mars 2024)',
+    navMissions: 'MISSIONS',
+    navOutfit: 'ÉQUIPEMENT',
+    navTelemetry: 'AVIONIQUE',
+    navView3d: 'VUE 3D'
   },
 
   de: {
@@ -1444,7 +1854,65 @@ spotlightTourBtn: '✨ GUIDED TOUR',
     dartBtnRetry: '↺ DART-ANNÄHERUNG WIEDERHOLEN',
     dartBtnReturnHangar: '↺ ZURÜCK ZUM HANGAR',
     dartCraftName: 'Kinetischer Impaktor NASA DART',
-    dartCraftDesc: 'Historische DART-Konfiguration (~570 kg) mit DRACO-Navigationskamera und entfaltbaren ROSA-Solarmodulen.'
+    dartCraftDesc: 'Historische DART-Konfiguration (~570 kg) mit DRACO-Navigationskamera und entfaltbaren ROSA-Solarmodulen.',
+
+    tourStepCounter: 'SCHRITT {current} / {total}',
+    tourBtnPrev: '◀ ZURÜCK',
+    tourBtnNext: 'WEITER ▶',
+    tourBtnFinish: 'FERTIG 🚀',
+    tourBtnSkip: 'TOUR ÜBERSPRINGEN ✕',
+    tourBtnCloseAria: 'Tour schließen',
+    tourStepAria: 'Schritt {current} von {total}: {title}',
+    tourStep1Title: '01 // MISSIONSZIEL WÄHLEN',
+    tourStep1Desc: 'Wählen Sie links ein NASA-Missionsprofil: Artemis-Mondtransfer, JWST, DART-Impakt, OSIRIS-REx... Jedes Profil legt Ziel, Datenbedarf und Budget fest.',
+    tourStep1Hint: '💡 Klicken oder Pfeiltasten nutzen, um Ziele und Kriterien zu prüfen.',
+    tourStep2Title: '02 // RAUMSCHIFF-HANGAR & AUSRÜSTUNG',
+    tourStep2Desc: 'Rüsten Sie Ihr Raumschiff im unteren Dock aus: 4K-Rümpfe, Flaggen, Solarmodule oder RTGs, Sensoren, Triebwerke und Trägerraketen wählen.',
+    tourStep2Hint: '💡 Wechseln Sie die Tabs, um Masse, Strom und Budget auszugleichen.',
+    tourStep3Title: '03 // VORFLUG-AVIONIK & TELEMETRIE',
+    tourStep3Desc: 'Vor dem Start prüfen: Berechnetes Delta-V ≥ Erforderliches Delta-V (Ziolkowski-Gleichung), Nutzlast ≤ Trägerkapazität, Energiebilanz ≥ 0 W.',
+    tourStep3Hint: '💡 Grüne Balken signalisieren volle Startbereitschaft.',
+    tourStep4Title: '04 // START FREIGEBEN',
+    tourStep4Desc: 'Sind alle Prüfungen bestanden, zünden Sie hier die Triebwerke für den Übergang in die 3D-Flugsimulation!',
+    tourStep4Hint: '💡 Ist der Knopf rot gesperrt, beachten Sie die Hinweise im rechten Diagnosefeld.',
+    tourStep5Title: '05 // EINKLAPPBARE MENÜS',
+    tourStep5Desc: 'Klicken Sie auf diese Leiste oder die Pfeile am Bildschirmrand, um die Menüs einzuklappen und das Raumschiff frei zu bewundern.',
+    tourStep5Hint: '💡 Klicken Sie jederzeit wieder auf einen Reiter, um die Menüs zu öffnen.',
+    tourStep6Title: '06 // INTERAKTIVE 3D-HANGAR-STEUERUNG',
+    tourStep6Desc: 'Klicken und ziehen Sie im Hangar, um sich um 360° um das Schiff zu drehen. Zoomen Sie mit dem Mausrad für Detailansichten.',
+    tourStep6Hint: '💡 Sie sind startklar! Klicken Sie auf [FERTIG], um Ihr Raumschiff zu bauen.',
+
+    dockCollapse: '▼ DOCK EINKLAPPEN',
+    dockExpand: '▲ DOCK AUSKLAPPEN',
+    dockToggleAria: 'Ausrüstungsdock ein- oder ausklappen',
+    bladeMissionsCollapseAria: 'Missionsmenü einklappen',
+    bladeMissionsExpandAria: 'Missionsmenü ausklappen',
+    bladeAvionicsCollapseAria: 'Diagnosemenü einklappen',
+    bladeAvionicsExpandAria: 'Diagnosemenü ausklappen',
+    missionsListAria: 'NASA-Missionsauswahl',
+    armoryGridAria: 'Raumschiff-Ausrüstungskomponenten',
+
+    dartReasonApproaching: 'Das Raumschiff befindet sich im Endanflug auf das Doppelasteroidensystem Didymos-Dimorphos.',
+    dartTipGeneral: 'Kurs beibehalten und Annäherungsgeschwindigkeit überwachen.',
+    dartReasonSuccess: 'Der frontale retrograde kinetische Einschlag übertrug den Impuls, verringerte die Umlaufgeschwindigkeit und verkürzte die Umlaufzeit von Dimorphos weit über die 73-Sekunden-Schwelle der NASA hinaus.',
+    dartTipSuccess: 'Hervorragende Rekonstruktion! Sie können SMART Nav deaktivieren, um manuelles Steuern zu testen.',
+    dartReasonInsufficient: 'Das Raumschiff traf Dimorphos, aber Anflugwinkel oder Stoßrichtung reichten nicht aus, um die Umlaufzeit um 73 Sekunden zu verkürzen.',
+    dartTipInsufficient: 'Tipp: Richten Sie den Anflug genau retrograd gegen die Bahnbewegung aus, um maximale Bremswirkung zu erzielen.',
+    dartReasonHitDidymos: 'Das Raumschiff traf den Hauptasteroiden Didymos statt des Mondes Dimorphos. Das Ablenkungsziel wurde verfehlt.',
+    dartTipAimDimorphos: 'Tipp: Zielen Sie auf den kleineren Begleiter Dimorphos und lassen Sie den SMART Nav-Assistenten aktiv.',
+    dartReasonMissed: 'Das Raumschiff flog an Didymos und Dimorphos vorbei. Es fand keine Impulsübertragung statt.',
+    dartTipEnableGuidance: 'Tipp: Aktivieren Sie SMART Nav und halten Sie das Ziel in der Mitte des Anflugkorridors.',
+    dartReasonInvalid: 'Ungültige physikalische Simulationsparameter oder Konfiguration.',
+    dartTipCheckConfig: 'Prüfen Sie Gesamtmasse und Geschwindigkeitsvektoren des Raumschiffs.',
+
+    dartSourceHeading: 'Offizielle NASA-Dokumentation & Quellen:',
+    dartSourceOverview: 'DART-Missionsübersicht (NASA Science)',
+    dartSourceResults2022: 'NASA-Einschlagsbestätigung & Bahnänderung (Okt. 2022)',
+    dartSourceStudy2024: 'Aktualisierte Studie zu Bahndynamik & Asteroidenform (März 2024)',
+    navMissions: 'MISSIONEN',
+    navOutfit: 'AUSRÜSTUNG',
+    navTelemetry: 'AVIONIK',
+    navView3d: '3D-ANSICHT'
   },
 
   it: {
@@ -1612,7 +2080,65 @@ spotlightTourBtn: '✨ TOUR GUIDATO',
     dartBtnRetry: '↺ RIPROVA AVVICINAMENTO DART',
     dartBtnReturnHangar: '↺ TORNA ALL’HANGAR',
     dartCraftName: 'Impattatore cinetico NASA DART',
-    dartCraftDesc: 'Configurazione storica DART (~570 kg) dotata di fotocamera di guida ottica DRACO e pannelli solari ROSA.'
+    dartCraftDesc: 'Configurazione storica DART (~570 kg) dotata di fotocamera di guida ottica DRACO e pannelli solari ROSA.',
+
+    tourStepCounter: 'PASSO {current} / {total}',
+    tourBtnPrev: '◀ INDIETRO',
+    tourBtnNext: 'AVANTI ▶',
+    tourBtnFinish: 'FINE 🚀',
+    tourBtnSkip: 'SALTA TOUR ✕',
+    tourBtnCloseAria: 'Chiudi tour guidato',
+    tourStepAria: 'Passo {current} di {total}: {title}',
+    tourStep1Title: '01 // SELEZIONA BERSAGLIO MISSIONE',
+    tourStep1Desc: 'Sfoglia i profili di missione NASA a sinistra: Artemis verso la Luna, JWST, impatto cinetico DART, OSIRIS-REx... Ognuno definisce destinazione, dati scientifici e budget.',
+    tourStep1Hint: '💡 Clicca o usa i tasti freccia per esaminare obiettivi e requisiti.',
+    tourStep2Title: '02 // HANGAR E ALLESTIMENTO NAVETTA',
+    tourStep2Desc: 'Allestisci la navetta nel dock inferiore: scegli scafi 4K, livree nazionali, pannelli solari o RTG, sensori scientifici, motori e vettori di lancio.',
+    tourStep2Hint: '💡 Scorri le schede per bilanciare massa, alimentazione e budget.',
+    tourStep3Title: '03 // AVIONICA PRE-VOLO E TELEMETRIA',
+    tourStep3Desc: 'Verifica la telemetria pre-lancio: Delta-V calcolato ≥ Delta-V richiesto (equazione di Tsiolkovsky), Carico utile ≤ Capacità vettore, e Bilancio potenza ≥ 0 W.',
+    tourStep3Hint: '💡 Gli indicatori verdi confermano che la navetta è pronta al volo.',
+    tourStep4Title: '04 // AUTORIZZA IL LANCIO',
+    tourStep4Desc: 'Quando tutti i controlli sono superati, clicca qui per accendere i motori ed entrare nella simulazione di volo 3D!',
+    tourStep4Hint: '💡 Se il pulsante è rosso, consulta il pannello di destra per correggere gli errori.',
+    tourStep5Title: '05 // PANNELLI A SCOMPARSA',
+    tourStep5Desc: 'Clicca su questa linguetta o sulle frecce laterali per richiudere i pannelli e ammirare la navetta 3D a schermo intero.',
+    tourStep5Hint: '💡 Clicca di nuovo in qualsiasi momento per riaprire i pannelli.',
+    tourStep6Title: '06 // NAVIGAZIONE 3D INTERATTIVA DELL’HANGAR',
+    tourStep6Desc: 'Trascina sul pavimento dell’hangar per ruotare a 360° intorno alla navetta. Usa la rotellina per ingrandire i dettagli dello scafo.',
+    tourStep6Hint: '💡 Ora hai la certificazione di volo! Clicca su [FINE] per iniziare il progetto.',
+
+    dockCollapse: '▼ NASCONDI DOCK',
+    dockExpand: '▲ MOSTRA DOCK',
+    dockToggleAria: 'Comprimi o espandi il dock dell’armeria',
+    bladeMissionsCollapseAria: 'Comprimi il pannello missioni',
+    bladeMissionsExpandAria: 'Espandi il pannello missioni',
+    bladeAvionicsCollapseAria: 'Comprimi il pannello avionica',
+    bladeAvionicsExpandAria: 'Espandi il pannello avionica',
+    missionsListAria: 'Selezione missioni NASA',
+    armoryGridAria: 'Componenti di allestimento navetta',
+
+    dartReasonApproaching: 'La sonda è nella fase di avvicinamento finale al sistema binario Didymos-Dimorphos.',
+    dartTipGeneral: 'Mantieni l’allineamento e monitora la velocità relativa.',
+    dartReasonSuccess: 'L’impatto cinetico retrogrado frontale ha trasferito la quantità di moto, riducendo la velocità orbitale e accorciando il periodo orbitale di Dimorphos ben oltre la soglia minima di 73 secondi della NASA.',
+    dartTipSuccess: 'Ottima ricostruzione! Puoi riprovare disattivando SMART Nav per metterti alla prova con la guida manuale.',
+    dartReasonInsufficient: 'La sonda ha impattato Dimorphos, ma l’angolo di incidenza o l’impulso non hanno ridotto il periodo orbitale della soglia richiesta di 73 secondi.',
+    dartTipInsufficient: 'Suggerimento: Allinea l’approccio esattamente in senso contrario al moto orbitale per massimizzare la decelerazione.',
+    dartReasonHitDidymos: 'La sonda ha colpito l’asteroide principale Didymos invece del satellite Dimorphos. Obiettivo di deflessione non raggiunto.',
+    dartTipAimDimorphos: 'Suggerimento: Concentra il puntamento sul piccolo satellite Dimorphos e mantieni attivo SMART Nav.',
+    dartReasonMissed: 'La sonda ha mancato sia Didymos che Dimorphos senza impatto. Nessun impulso cinetico è stato trasferito.',
+    dartTipEnableGuidance: 'Suggerimento: Attiva la guida assistita SMART Nav e mantieni il bersaglio al centro della rotta.',
+    dartReasonInvalid: 'Parametri fisici o configurazione di simulazione non validi.',
+    dartTipCheckConfig: 'Controlla la massa totale e i vettori di velocità della navetta.',
+
+    dartSourceHeading: 'Documentazione e fonti ufficiali NASA:',
+    dartSourceOverview: 'Panoramica della missione DART (NASA Science)',
+    dartSourceResults2022: 'Conferma impatto e variazione orbitale (ottobre 2022)',
+    dartSourceStudy2024: 'Studio aggiornato sulla dinamica orbitale e la forma (marzo 2024)',
+    navMissions: 'MISSIONI',
+    navOutfit: 'DOTAZIONE',
+    navTelemetry: 'AVIONICA',
+    navView3d: 'VISTA 3D'
   },
 
   es: {
@@ -1779,7 +2305,65 @@ spotlightTourBtn: '✨ TOUR GUIDATO',
     dartBtnRetry: '↺ REINTENTAR APROXIMACIÓN DART',
     dartBtnReturnHangar: '↺ VOLVER AL HANGAR',
     dartCraftName: 'Impactador cinético NASA DART',
-    dartCraftDesc: 'Configuración histórica de DART (~570 kg) equipada con cámara de guiado óptico DRACO y paneles solares desplegables ROSA.'
+    dartCraftDesc: 'Configuración histórica de DART (~570 kg) equipada con cámara de guiado óptico DRACO y paneles solares desplegables ROSA.',
+
+    tourStepCounter: 'PASO {current} / {total}',
+    tourBtnPrev: '◀ ANTERIOR',
+    tourBtnNext: 'SIGUIENTE ▶',
+    tourBtnFinish: 'FINALIZAR 🚀',
+    tourBtnSkip: 'SALTAR TOUR ✕',
+    tourBtnCloseAria: 'Cerrar tour guiado',
+    tourStepAria: 'Paso {current} de {total}: {title}',
+    tourStep1Title: '01 // SELECCIONAR MISIÓN',
+    tourStep1Desc: 'Explora los perfiles de misión de la NASA a la izquierda: Artemis a la Luna, JWST, impacto cinético DART... Cada uno define destino, requisitos de datos y presupuesto.',
+    tourStep1Hint: '💡 Haz clic o usa las flechas para inspeccionar objetivos y requisitos.',
+    tourStep2Title: '02 // HANGAR Y EQUIPAMIENTO DE LA NAVE',
+    tourStep2Desc: 'Equipa tu nave en el panel inferior: elige cascos 4K, insignias nacionales, paneles solares o RTG, sensores científicos, motores y cohetes lanzadores.',
+    tourStep2Hint: '💡 Cambia de pestaña para equilibrar masa, energía y presupuesto.',
+    tourStep3Title: '03 // AVIÓNICA PREVUELO Y TELEMETRÍA',
+    tourStep3Desc: 'Verifica la telemetría antes del despegue: Delta-V calculado ≥ Delta-V requerido, Masa útil ≤ Capacidad del cohete, y Balance de potencia ≥ 0 W.',
+    tourStep3Hint: '💡 Las barras verdes indican que la nave está lista para el vuelo.',
+    tourStep4Title: '04 // AUTORIZAR EL LANZAMIENTO',
+    tourStep4Desc: '¡Cuando todas las comprobaciones sean correctas, haz clic aquí para encender los motores e iniciar la simulación 3D!',
+    tourStep4Hint: '💡 Si está bloqueado en rojo, consulta el panel de la derecha para corregir fallos.',
+    tourStep5Title: '05 // PANELES PLEGABLES',
+    tourStep5Desc: 'Haz clic en esta pestaña o en las flechas laterales para ocultar los paneles y admirar tu nave 3D sin obstáculos.',
+    tourStep5Hint: '💡 Haz clic de nuevo en cualquier pestaña para volver a abrir los paneles.',
+    tourStep6Title: '06 // NAVEGACIÓN 3D INTERACTIVA DEL HANGAR',
+    tourStep6Desc: 'Arrastra en el hangar para girar 360° alrededor de la nave. Usa la rueda del ratón para hacer zoom e inspeccionar el casco.',
+    tourStep6Hint: '💡 ¡Instrucción completada! Haz clic en [FINALIZAR] para empezar a diseñar tu nave.',
+
+    dockCollapse: '▼ OCULTAR DOCK',
+    dockExpand: '▲ MOSTRAR DOCK',
+    dockToggleAria: 'Plegar o desplegar el dock de equipamiento',
+    bladeMissionsCollapseAria: 'Plegar el panel de misiones',
+    bladeMissionsExpandAria: 'Desplegar el panel de misiones',
+    bladeAvionicsCollapseAria: 'Plegar el panel de aviónica',
+    bladeAvionicsExpandAria: 'Desplegar el panel de aviónica',
+    missionsListAria: 'Selección de misiones de la NASA',
+    armoryGridAria: 'Componentes de equipamiento de la nave',
+
+    dartReasonApproaching: 'La sonda se encuentra en aproximación terminal hacia el sistema binario Didymos-Dimorphos.',
+    dartTipGeneral: 'Mantén la alineación de rumbo y vigila la velocidad relativa.',
+    dartReasonSuccess: 'El impacto cinético retrógrado frontal transfirió cantidad de movimiento, reduciendo la velocidad orbital y acortando el período de Dimorphos muy por encima del umbral de 73 segundos de la NASA.',
+    dartTipSuccess: '¡Reconstrucción excelente! Puedes reintentar con SMART Nav desactivado para poner a prueba el pilotaje manual.',
+    dartReasonInsufficient: 'La sonda impactó contra Dimorphos, pero el ángulo o la dirección del impulso no lograron reducir el período los 73 segundos requeridos.',
+    dartTipInsufficient: 'Consejo: Alinea la trayectoria frontalmente contra el movimiento orbital para maximizar la reducción de velocidad.',
+    dartReasonHitDidymos: 'La sonda impactó contra el asteroide principal Didymos en lugar del satélite Dimorphos. Objetivo de deflexión no cumplido.',
+    dartTipAimDimorphos: 'Consejo: Apunta hacia el pequeño satélite Dimorphos y mantén activada la asistencia SMART Nav.',
+    dartReasonMissed: 'La sonda pasó de largo sin impactar en Didymos ni en Dimorphos. No se produjo transferencia de momento.',
+    dartTipEnableGuidance: 'Consejo: Activa la asistencia SMART Nav y mantén el objetivo en el centro del pasillo de vuelo.',
+    dartReasonInvalid: 'Parámetros físicos o configuración de simulación no válidos.',
+    dartTipCheckConfig: 'Comprueba la masa total y los vectores de velocidad de la nave.',
+
+    dartSourceHeading: 'Documentación y fuentes oficiales de la NASA:',
+    dartSourceOverview: 'Visión general de la misión DART (NASA Science)',
+    dartSourceResults2022: 'Confirmación del impacto y cambio orbital (octubre de 2022)',
+    dartSourceStudy2024: 'Estudio actualizado sobre dinámica orbital y forma (marzo de 2024)',
+    navMissions: 'MISIONES',
+    navOutfit: 'EQUIPAMIENTO',
+    navTelemetry: 'AVIÓNICA',
+    navView3d: 'VISTA 3D'
   }
 };
 

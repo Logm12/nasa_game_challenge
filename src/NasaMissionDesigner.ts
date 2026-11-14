@@ -9,6 +9,7 @@ import * as THREE from 'three/src/Three';
 import { OBJLoader } from './OBJLoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { AU, CelestialBody } from './CelestialBody';
+import { DART_OFFICIAL_SOURCES, renderDartSourcesHTML } from './DartSources';
 import { SUPPORTED_FLAGS, generateFlagCanvasTexture, generateNasaDecalTexture } from './FlagDecals';
 import {
   SupportedLang,
@@ -304,76 +305,17 @@ export const NASA_MISSIONS: NasaMission[] = [
 
 export interface TourStep {
   targetId: string;
-  titleVi: string;
-  titleEn: string;
-  descVi: string;
-  descEn: string;
-  hintVi: string;
-  hintEn: string;
+  stepNum: 1 | 2 | 3 | 4 | 5 | 6;
   preferredPos: 'right' | 'left' | 'top' | 'bottom';
 }
 
 export const TOUR_STEPS: TourStep[] = [
-  {
-    targetId: 'blade-missions',
-    titleVi: '01 // CHỌN NHIỆM VỤ BAY NASA',
-    titleEn: '01 // SELECT FLIGHT MANIFEST',
-    descVi: 'Bắt đầu bằng việc chọn một nhiệm vụ khám phá vũ trụ: Artemis lên Mặt Trăng, DART thử nghiệm va chạm thiên thạch, hoặc Voyager 1 bay vào không gian liên sao. Mỗi nhiệm vụ sẽ quy định ngân sách, vận tốc Δv yêu cầu và mục tiêu khoa học.',
-    descEn: 'Begin by selecting a flight manifest: Artemis to the Moon, DART kinetic impactor, or Voyager 1 interstellar crossing. Each mission sets budget, required orbital Δv, and scientific goals.',
-    hintVi: '💡 Nhấp chọn một nhiệm vụ trong danh sách để xem chi tiết.',
-    hintEn: '💡 Click any mission card to load its flight parameters.',
-    preferredPos: 'right'
-  },
-  {
-    targetId: 'dock-bottom',
-    titleVi: '02 // THIẾT KẾ & TRANG BỊ TÀU (HANGAR ARMORY)',
-    titleEn: '02 // SPACECRAFT HANGAR & OUTFITTING',
-    descVi: 'Khay trang bị dưới chân cho phép bạn chọn vỏ tàu 4K (Space Shuttle, Apollo Lunar Module, Voyager, Flagship hoặc tự nạp file 3D .glb/.obj của bạn), sơn cờ Tổ quốc Việt Nam 🇻🇳, trang bị tấm pin quang năng hoặc lò hạt nhân RTG, động cơ đẩy và tên lửa mang phóng.',
-    descEn: 'Configure your spacecraft: Select official 4K hulls (Shuttle, Apollo LM, Voyager, Flagship or import your own 3D file), apply national decals, install solar arrays or RTGs, propulsion engines, and launch boosters.',
-    hintVi: '💡 Duyệt qua các tab: Hạm đội tàu, Cờ Tổ quốc, Lõi năng lượng, Động cơ, Tên lửa...',
-    hintEn: '💡 Browse tabs: Fleet, Decals, Power, Engines, Boosters...',
-    preferredPos: 'top'
-  },
-  {
-    targetId: 'blade-diagnostics',
-    titleVi: '03 // KIỂM SOÁT THÔNG SỐ AVIONICS',
-    titleEn: '03 // AVIONICS & FLIGHT DYNAMICS',
-    descVi: 'Trước khi phóng, hãy kiểm tra các chỉ số kỹ thuật: Đảm bảo Vận tốc tính toán Delta-V ≥ Delta-V yêu cầu (Phương trình Tsiolkovsky), Khối lượng khô ≤ Sức nâng tên lửa, và Thặng dư ngân sách ≥ $0 (không vượt quá chi phí).',
-    descEn: 'Verify telemetry before flight: Ensure Calculated Delta-V ≥ Required Delta-V (Tsiolkovsky equation), Payload Mass ≤ Booster Capacity, and Budget Surplus ≥ $0.',
-    hintVi: '💡 Các thanh thông số chuyển sang màu xanh lục biểu thị hệ thống đã sẵn sàng.',
-    hintEn: '💡 All bars must turn green for flight authorization.',
-    preferredPos: 'left'
-  },
-  {
-    targetId: 'btn-approve-launch',
-    titleVi: '04 // PHÊ DUYỆT & XUẤT KÍCH VÀO KHÔNG GIAN',
-    titleEn: '04 // AUTHORIZE & INITIATE LAUNCH',
-    descVi: 'Khi hệ thống thông báo "FLIGHT DIRECTOR: ALL SYSTEMS NOMINAL", hãy nhấp vào nút màu cam rực rỡ này để kích hoạt tên lửa đẩy, đưa phi thuyền rời bệ phóng vào không gian 3D thực tế!',
-    descEn: 'When the flight controller announces all systems nominal, click this glowing orange button to ignite boosters and launch into the 3D Keplerian solar system!',
-    hintVi: '💡 Nút sẽ kích hoạt hiệu ứng âm thanh và hiệu ứng bước nhảy không gian.',
-    hintEn: '💡 Initiates launch profile and orbital flight HUD.',
-    preferredPos: 'top'
-  },
-  {
-    targetId: 'btn-toggle-dock-bottom',
-    titleVi: '05 // THU GỌN GIAO DIỆN ĐỂ NGẮM TÀU 3D',
-    titleEn: '05 // COLLAPSIBLE LOBBY PANELS',
-    descVi: 'Nhấp vào thanh ▼ HIDE DOCK ở đây, hoặc các mũi tên ◀ / ▶ ở hai mép màn hình để thu gọn các bảng menu. Khi đó bạn sẽ có một góc nhìn Hangar hoàn toàn sạch sẽ, tự do xoay chuột 360° chiêm ngưỡng tàu vũ trụ 4K không góc chết!',
-    descEn: 'Click the ▼ HIDE DOCK tab here, or the ◀ / ▶ arrow tabs on the edges to collapse panels. This gives you an unobstructed 4K view to admire your 3D spacecraft with zero clutter!',
-    hintVi: '💡 Nhấp lại vào các thanh bất kỳ lúc nào để mở lại bảng menu.',
-    hintEn: '💡 Click any handle again to slide the panels back out.',
-    preferredPos: 'top'
-  },
-  {
-    targetId: 'solar-system-dock',
-    titleVi: '06 // THƯỚC NGẮM THIÊN VĂN & DỊCH CHUYỂN TỨC THÌ',
-    titleEn: '06 // COSMIC ORRERY & INSTANT WARP',
-    descVi: 'Thanh trên đỉnh hiển thị toàn bộ Thái Dương Hệ, các ngôi sao và vũ trụ sâu. Khi nhấp vào bất kỳ hành tinh nào, trong hồ sơ thiên thể hãy nhấp nút "🚀 ESTABLISH ORBIT HERE" để tàu vũ trụ ngay lập tức dịch chuyển vào quỹ đạo tròn Keplerian quanh thiên thể đó!',
-    descEn: 'The top orrery tracks planets, stars, and deep space. Click any celestial body and press "🚀 ESTABLISH ORBIT HERE" in its dossier to warp instantly into a circular Keplerian orbit around it!',
-    hintVi: '💡 Thử nghiệm bay quanh Trái Đất, Mặt Trăng, Sao Hỏa hay áp sát tiểu hành tinh Didymos!',
-    hintEn: '💡 Practice orbital insertions around Earth, Mars, Jupiter, or Didymos!',
-    preferredPos: 'bottom'
-  }
+  { targetId: 'blade-missions', stepNum: 1, preferredPos: 'right' },
+  { targetId: 'dock-bottom', stepNum: 2, preferredPos: 'top' },
+  { targetId: 'blade-diagnostics', stepNum: 3, preferredPos: 'left' },
+  { targetId: 'btn-approve-launch', stepNum: 4, preferredPos: 'top' },
+  { targetId: 'btn-toggle-dock-bottom', stepNum: 5, preferredPos: 'top' },
+  { targetId: 'solar-system-dock', stepNum: 6, preferredPos: 'bottom' }
 ];
 
 export class NasaMissionDesigner {
@@ -883,7 +825,7 @@ export class NasaMissionDesigner {
 
           <!-- Horizontal Scroll Armory Shelf -->
           <div class="dock-shelf-container">
-            <div class="inventory-items-grid" id="armory-items-grid"></div>
+            <div class="inventory-items-grid" id="armory-items-grid" role="radiogroup" aria-label="${t.armoryGridAria}"></div>
           </div>
 
           <!-- Launch Bar -->
@@ -989,6 +931,9 @@ export class NasaMissionDesigner {
     // Create Debrief Modal
     const debrief = document.createElement('div');
     debrief.id = 'nasa-debrief-modal';
+    debrief.setAttribute('role', 'dialog');
+    debrief.setAttribute('aria-modal', 'true');
+    debrief.setAttribute('aria-labelledby', 'debrief-title');
     debrief.innerHTML = `
       <!-- Generic Mission Debrief View -->
       <div class="debrief-box" id="debrief-generic-view" style="display: block;">
@@ -1061,6 +1006,17 @@ export class NasaMissionDesigner {
           </div>
           <div style="font-size: 0.7rem; color: #64748b; margin-top: 6px;" id="dart-txt-real-source">
             ${t.dartRealSourceRef}
+          </div>
+
+          <!-- Official NASA DART Sources Links (FE14) -->
+          <div id="dart-sources-container" class="dart-sources-container">
+            <div id="dart-sources-heading" class="dart-sources-heading">
+              <span aria-hidden="true">📚</span>
+              <span id="dart-lbl-sources-title">${t.dartSourceHeading}</span>
+            </div>
+            <div id="dart-sources-list" class="dart-sources-list">
+              ${renderDartSourcesHTML(this.currentLanguage)}
+            </div>
           </div>
         </div>
 
@@ -3044,14 +3000,17 @@ export class NasaMissionDesigner {
     return flightGroup;
   }
 
-  private renderMissions() {
+  private renderMissions(focusMissionId?: string) {
     const list = document.getElementById('marvel-missions-list');
     if (!list) return;
+    const shouldRestoreFocus = !!(focusMissionId || (document.activeElement && list.contains(document.activeElement)));
     list.innerHTML = '';
 
     const t = getTexts(this.currentLanguage);
+    list.setAttribute('role', 'radiogroup');
+    list.setAttribute('aria-label', t.missionsListAria);
 
-    NASA_MISSIONS.forEach(m => {
+    NASA_MISSIONS.forEach((m, idx) => {
       const loc = getMissionText(m.id, this.currentLanguage);
       const title = loc ? loc.title : m.title;
       const dest = loc ? loc.destination : m.destination;
@@ -3059,12 +3018,22 @@ export class NasaMissionDesigner {
       const desc = loc ? loc.description : m.description;
       const budgetText = `${formatNum(m.budgetCredits, this.currentLanguage)}M`;
       const reqText = formatNum(m.reqDeltaV, this.currentLanguage);
+      const isSel = m.id === this.selectedMission.id;
 
       const item = document.createElement('div');
-      item.className = `nasa-mission-item ${m.id === this.selectedMission.id ? 'active' : ''}`;
+      item.className = `nasa-mission-item ${isSel ? 'active' : ''}`;
+      item.id = `mission-card-${m.id}`;
+      item.setAttribute('data-mission-id', m.id);
+      item.setAttribute('role', 'radio');
+      item.setAttribute('aria-checked', isSel ? 'true' : 'false');
+      item.setAttribute('tabindex', isSel ? '0' : '-1');
+      item.setAttribute('aria-label', `${title}: ${dest}. ${formatTpl(t.missionBudgetMeta, { budget: budgetText })}, ${formatTpl(t.reqDeltaVMeta, { req: reqText })}. ${desc}`);
       item.title = desc;
       item.innerHTML = `
-        <div style="font-size: 0.72rem; color: var(--stark-gold); font-weight: 700; margin-bottom: 2px;">${badge}</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+          <span style="font-size: 0.72rem; color: var(--stark-gold); font-weight: 700;">${badge}</span>
+          <span class="mission-select-status" aria-hidden="true" style="font-size: 0.75rem; color: ${isSel ? 'var(--stark-amber)' : 'transparent'}; font-weight: 800;">${isSel ? '✓' : ''}</span>
+        </div>
         <div class="mission-name">${title}</div>
         <div class="mission-dest">📍 ${dest}</div>
         <div class="mission-meta">
@@ -3072,16 +3041,43 @@ export class NasaMissionDesigner {
           <span>${formatTpl(t.reqDeltaVMeta, { req: `<strong>${reqText}</strong>` })}</span>
         </div>
       `;
-      item.onclick = () => {
+
+      const selectMission = () => {
         this.selectedMission = m;
         if (m.id === 'nasa_dart' && this.selectedChassisId !== 'dart_impactor') {
           this.selectedChassisId = 'dart_impactor';
           this.rebuild3DShipModel();
         }
         this.playClickSound();
-        this.renderMissions();
+        this.renderMissions(m.id);
         this.updateLiveTelemetry();
       };
+
+      item.onclick = selectMission;
+
+      item.onkeydown = (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectMission();
+        } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          const nextIdx = (idx + 1) % NASA_MISSIONS.length;
+          const nextId = NASA_MISSIONS[nextIdx].id;
+          this.renderMissions(nextId);
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const prevIdx = (idx - 1 + NASA_MISSIONS.length) % NASA_MISSIONS.length;
+          const prevId = NASA_MISSIONS[prevIdx].id;
+          this.renderMissions(prevId);
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          this.renderMissions(NASA_MISSIONS[0].id);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          this.renderMissions(NASA_MISSIONS[NASA_MISSIONS.length - 1].id);
+        }
+      };
+
       list.appendChild(item);
     });
 
@@ -3126,17 +3122,65 @@ export class NasaMissionDesigner {
 
     const creditEl = document.getElementById('mission-budget-display');
     if (creditEl) creditEl.textContent = `${formatNum(this.selectedMission.budgetCredits, this.currentLanguage, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}M`;
+
+    if (shouldRestoreFocus) {
+      const targetCardId = `mission-card-${focusMissionId || this.selectedMission.id}`;
+      const targetCard = document.getElementById(targetCardId);
+      if (targetCard) {
+        targetCard.focus();
+        targetCard.scrollIntoView({ block: 'nearest' });
+      }
+    }
   }
 
-  private renderArmoryGrid() {
+  public selectMissionById(id: string) {
+    const m = NASA_MISSIONS.find(mission => mission.id === id);
+    if (!m) return;
+    this.selectedMission = m;
+    if (m.id === 'nasa_dart' && this.selectedChassisId !== 'dart_impactor') {
+      this.selectedChassisId = 'dart_impactor';
+      this.rebuild3DShipModel();
+    }
+    this.renderMissions(m.id);
+    this.updateLiveTelemetry();
+  }
+
+  private renderArmoryGrid(focusItemId?: string) {
     const grid = document.getElementById('armory-items-grid');
     if (!grid) return;
+    const shouldRestoreFocus = !!(focusItemId || (document.activeElement && grid.contains(document.activeElement)));
     grid.innerHTML = '';
 
     const t = getTexts(this.currentLanguage);
+    const isTechTab = this.activeTab === 'tech';
+    grid.setAttribute('role', isTechTab ? 'group' : 'radiogroup');
+    grid.setAttribute('aria-label', isTechTab ? t.tabTech : t.armoryGridAria);
+
+    const setupCardKeyboard = (card: HTMLElement, selectFn: () => void, list: Array<{ id: string }>, currentIdx: number) => {
+      card.onkeydown = (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectFn();
+        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          const nextIdx = (currentIdx + 1) % list.length;
+          this.renderArmoryGrid(list[nextIdx].id);
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          const prevIdx = (currentIdx - 1 + list.length) % list.length;
+          this.renderArmoryGrid(list[prevIdx].id);
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          this.renderArmoryGrid(list[0].id);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          this.renderArmoryGrid(list[list.length - 1].id);
+        }
+      };
+    };
 
     if (this.activeTab === 'chassis') {
-      SPACECRAFT_FLEET.forEach(it => {
+      SPACECRAFT_FLEET.forEach((it, idx) => {
         const isEq = it.id === this.selectedChassisId;
         const loc = getSpacecraftText(it.id, this.currentLanguage);
         const name = loc ? loc.name : it.name;
@@ -3144,6 +3188,11 @@ export class NasaMissionDesigner {
         const desc = loc ? loc.desc : it.desc;
         const card = document.createElement('div');
         card.className = `armory-card ${it.rarity} ${isEq ? 'equipped' : ''}`;
+        card.id = `armory-card-${it.id}`;
+        card.setAttribute('role', 'radio');
+        card.setAttribute('aria-checked', isEq ? 'true' : 'false');
+        card.setAttribute('tabindex', isEq ? '0' : '-1');
+        card.setAttribute('aria-label', `${name}: ${desc}. ${isEq ? t.equipped : t.clickToEquip}`);
         card.innerHTML = `
           <div>
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;">
@@ -3155,20 +3204,22 @@ export class NasaMissionDesigner {
           </div>
           <div class="armory-item-perk">${isEq ? t.equipped : t.clickToEquip}</div>
         `;
-        card.onclick = () => {
+        const selectCard = () => {
           this.isCustomModelLoaded = false;
           this.selectedChassisId = it.id;
           this.playEquipSound();
           this.rebuild3DShipModel();
           this.updateHeaderShipInfo();
-          this.renderArmoryGrid();
+          this.renderArmoryGrid(it.id);
           this.updateLiveTelemetry();
           this.onShipChangedCallback?.();
         };
+        card.onclick = selectCard;
+        setupCardKeyboard(card, selectCard, SPACECRAFT_FLEET, idx);
         grid.appendChild(card);
       });
     } else if (this.activeTab === 'flags') {
-      SUPPORTED_FLAGS.forEach(flag => {
+      SUPPORTED_FLAGS.forEach((flag, idx) => {
         const isEq = flag.id === this.selectedFlagId;
         const loc = getFlagText(flag.id, this.currentLanguage);
         const name = loc ? loc.name : flag.name;
@@ -3176,6 +3227,11 @@ export class NasaMissionDesigner {
         const country = loc ? loc.country : flag.country;
         const card = document.createElement('div');
         card.className = `armory-card legendary ${isEq ? 'equipped' : ''}`;
+        card.id = `armory-card-${flag.id}`;
+        card.setAttribute('role', 'radio');
+        card.setAttribute('aria-checked', isEq ? 'true' : 'false');
+        card.setAttribute('tabindex', isEq ? '0' : '-1');
+        card.setAttribute('aria-label', `${name}: ${agency}, ${country}. ${isEq ? t.equippedLivery : t.clickToApply}`);
         card.innerHTML = `
           <div style="display: flex; gap: 12px; align-items: center;">
             <span style="font-size: 2.2rem;">${flag.badge.split(' ')[0]}</span>
@@ -3189,13 +3245,15 @@ export class NasaMissionDesigner {
             ${isEq ? t.equippedLivery : t.clickToApply}
           </div>
         `;
-        card.onclick = () => {
+        const selectCard = () => {
           this.selectedFlagId = flag.id;
           this.playEquipSound();
           this.rebuild3DShipModel();
-          this.renderArmoryGrid();
+          this.renderArmoryGrid(flag.id);
           this.onShipChangedCallback?.();
         };
+        card.onclick = selectCard;
+        setupCardKeyboard(card, selectCard, SUPPORTED_FLAGS, idx);
         grid.appendChild(card);
       });
     } else if (this.activeTab === 'power') {
@@ -3206,13 +3264,18 @@ export class NasaMissionDesigner {
         { id: 'tesseract_core', mass: 280, cost: 380, power: 4500, rarity: 'mythic' }
       ];
 
-      items.forEach(it => {
+      items.forEach((it, idx) => {
         const isEq = it.id === this.selectedPowerId;
         const loc = getPowerText(it.id, this.currentLanguage);
         const name = loc ? loc.name : it.id;
         const desc = loc ? loc.desc : '';
         const card = document.createElement('div');
         card.className = `armory-card ${it.rarity} ${isEq ? 'equipped' : ''}`;
+        card.id = `armory-card-${it.id}`;
+        card.setAttribute('role', 'radio');
+        card.setAttribute('aria-checked', isEq ? 'true' : 'false');
+        card.setAttribute('tabindex', isEq ? '0' : '-1');
+        card.setAttribute('aria-label', `${name}: ${desc}. ${isEq ? t.equipped : t.clickToEquip}`);
         card.innerHTML = `
           <div>
             <div class="armory-item-name">${name}</div>
@@ -3221,14 +3284,16 @@ export class NasaMissionDesigner {
           </div>
           <div class="armory-item-perk">${isEq ? t.equipped : t.clickToEquip}</div>
         `;
-        card.onclick = () => {
+        const selectCard = () => {
           this.selectedPowerId = it.id;
           this.playEquipSound();
           this.rebuild3DShipModel();
-          this.renderArmoryGrid();
+          this.renderArmoryGrid(it.id);
           this.updateLiveTelemetry();
           this.onShipChangedCallback?.();
         };
+        card.onclick = selectCard;
+        setupCardKeyboard(card, selectCard, items, idx);
         grid.appendChild(card);
       });
     } else if (this.activeTab === 'tech') {
@@ -3240,13 +3305,18 @@ export class NasaMissionDesigner {
         { id: 'kree_array', mass: 30, cost: 28, power: 45, points: 40, rarity: 'epic' }
       ];
 
-      items.forEach(it => {
+      items.forEach((it, idx) => {
         const isEq = this.selectedTechIds.has(it.id);
         const loc = getTechText(it.id, this.currentLanguage);
         const name = loc ? loc.name : it.id;
         const desc = loc ? loc.desc : '';
         const card = document.createElement('div');
         card.className = `armory-card ${it.rarity} ${isEq ? 'equipped' : ''}`;
+        card.id = `armory-card-${it.id}`;
+        card.setAttribute('role', 'checkbox');
+        card.setAttribute('aria-checked', isEq ? 'true' : 'false');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', `${name}: ${desc}. ${isEq ? 'Installed' : 'Click to install'}`);
         card.innerHTML = `
           <div>
             <div class="armory-item-name">${name}</div>
@@ -3255,7 +3325,7 @@ export class NasaMissionDesigner {
           </div>
           <div class="armory-item-perk" style="color: var(--stark-cyan);">${isEq ? formatTpl(t.equippedScience, { points: it.points }) : `+ ${t.clickToEquip}`}</div>
         `;
-        card.onclick = () => {
+        const toggleCard = () => {
           if (this.selectedTechIds.has(it.id)) {
             this.selectedTechIds.delete(it.id);
           } else {
@@ -3263,10 +3333,12 @@ export class NasaMissionDesigner {
           }
           this.playEquipSound();
           this.rebuild3DShipModel();
-          this.renderArmoryGrid();
+          this.renderArmoryGrid(it.id);
           this.updateLiveTelemetry();
           this.onShipChangedCallback?.();
         };
+        card.onclick = toggleCard;
+        setupCardKeyboard(card, toggleCard, items, idx);
         grid.appendChild(card);
       });
     } else if (this.activeTab === 'engines') {
@@ -3276,13 +3348,18 @@ export class NasaMissionDesigner {
         { id: 'nova_warp', dryMass: 65, fuelMass: 550, cost: 160, isp: 4400, rarity: 'mythic' }
       ];
 
-      items.forEach(it => {
+      items.forEach((it, idx) => {
         const isEq = it.id === this.selectedEngineId;
         const loc = getEngineText(it.id, this.currentLanguage);
         const name = loc ? loc.name : it.id;
         const desc = loc ? loc.desc : '';
         const card = document.createElement('div');
         card.className = `armory-card ${it.rarity} ${isEq ? 'equipped' : ''}`;
+        card.id = `armory-card-${it.id}`;
+        card.setAttribute('role', 'radio');
+        card.setAttribute('aria-checked', isEq ? 'true' : 'false');
+        card.setAttribute('tabindex', isEq ? '0' : '-1');
+        card.setAttribute('aria-label', `${name}: ${desc}. ${isEq ? t.equipped : t.clickToEquip}`);
         card.innerHTML = `
           <div>
             <div class="armory-item-name">${name}</div>
@@ -3291,14 +3368,16 @@ export class NasaMissionDesigner {
           </div>
           <div class="armory-item-perk">${isEq ? t.equipped : t.clickToEquip}</div>
         `;
-        card.onclick = () => {
+        const selectCard = () => {
           this.selectedEngineId = it.id;
           this.playEquipSound();
           this.rebuild3DShipModel();
-          this.renderArmoryGrid();
+          this.renderArmoryGrid(it.id);
           this.updateLiveTelemetry();
           this.onShipChangedCallback?.();
         };
+        card.onclick = selectCard;
+        setupCardKeyboard(card, selectCard, items, idx);
         grid.appendChild(card);
       });
     } else if (this.activeTab === 'carriers') {
@@ -3309,13 +3388,18 @@ export class NasaMissionDesigner {
         { id: 'starship_superheavy', cost: 150, cap: 150000, rarity: 'mythic' }
       ];
 
-      items.forEach(it => {
+      items.forEach((it, idx) => {
         const isEq = it.id === this.selectedCarrierId;
         const loc = getCarrierText(it.id, this.currentLanguage);
         const name = loc ? loc.name : it.id;
         const desc = loc ? loc.desc : '';
         const card = document.createElement('div');
         card.className = `armory-card ${it.rarity} ${isEq ? 'equipped' : ''}`;
+        card.id = `armory-card-${it.id}`;
+        card.setAttribute('role', 'radio');
+        card.setAttribute('aria-checked', isEq ? 'true' : 'false');
+        card.setAttribute('tabindex', isEq ? '0' : '-1');
+        card.setAttribute('aria-label', `${name}: ${desc}. ${isEq ? t.equipped : t.clickToEquip}`);
         card.innerHTML = `
           <div>
             <div class="armory-item-name">${name}</div>
@@ -3324,14 +3408,32 @@ export class NasaMissionDesigner {
           </div>
           <div class="armory-item-perk">${isEq ? t.equipped : t.clickToEquip}</div>
         `;
-        card.onclick = () => {
+        const selectCard = () => {
           this.selectedCarrierId = it.id;
           this.playEquipSound();
-          this.renderArmoryGrid();
+          this.renderArmoryGrid(it.id);
           this.updateLiveTelemetry();
         };
+        card.onclick = selectCard;
+        setupCardKeyboard(card, selectCard, items, idx);
         grid.appendChild(card);
       });
+    }
+
+    if (shouldRestoreFocus) {
+      let defaultId = this.selectedChassisId;
+      if (this.activeTab === 'flags') defaultId = this.selectedFlagId;
+      else if (this.activeTab === 'power') defaultId = this.selectedPowerId;
+      else if (this.activeTab === 'engines') defaultId = this.selectedEngineId;
+      else if (this.activeTab === 'carriers') defaultId = this.selectedCarrierId;
+      else if (this.activeTab === 'tech') defaultId = focusItemId || 'cerebro';
+
+      const targetCardId = `armory-card-${focusItemId || defaultId}`;
+      const targetCard = document.getElementById(targetCardId);
+      if (targetCard) {
+        targetCard.focus();
+        targetCard.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
     }
   }
 
@@ -3717,7 +3819,13 @@ export class NasaMissionDesigner {
       if (icon) icon.textContent = isCollapsed ? '▶' : '◀';
       const headerBtn = btnCollapseLeft;
       if (headerBtn) headerBtn.textContent = isCollapsed ? '▶' : '◀';
-      btnToggleLeft?.setAttribute('title', isCollapsed ? 'Mở rộng bảng Nhiệm vụ (Expand)' : 'Thu gọn bảng Nhiệm vụ (Collapse)');
+      const t = getTexts(this.currentLanguage);
+      const title = isCollapsed ? t.bladeMissionsExpandAria : t.bladeMissionsCollapseAria;
+      btnToggleLeft?.setAttribute('title', title);
+      btnToggleLeft?.setAttribute('aria-label', title);
+      btnToggleLeft?.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+      btnCollapseLeft?.setAttribute('title', title);
+      btnCollapseLeft?.setAttribute('aria-label', title);
     };
     btnToggleLeft?.addEventListener('click', toggleLeftBlade);
     btnCollapseLeft?.addEventListener('click', toggleLeftBlade);
@@ -3735,7 +3843,13 @@ export class NasaMissionDesigner {
       if (icon) icon.textContent = isCollapsed ? '◀' : '▶';
       const headerBtn = btnCollapseRight;
       if (headerBtn) headerBtn.textContent = isCollapsed ? '◀' : '▶';
-      btnToggleRight?.setAttribute('title', isCollapsed ? 'Mở rộng bảng Avionics (Expand)' : 'Thu gọn bảng Avionics (Collapse)');
+      const t = getTexts(this.currentLanguage);
+      const title = isCollapsed ? t.bladeAvionicsExpandAria : t.bladeAvionicsCollapseAria;
+      btnToggleRight?.setAttribute('title', title);
+      btnToggleRight?.setAttribute('aria-label', title);
+      btnToggleRight?.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+      btnCollapseRight?.setAttribute('title', title);
+      btnCollapseRight?.setAttribute('aria-label', title);
     };
     btnToggleRight?.addEventListener('click', toggleRightBlade);
     btnCollapseRight?.addEventListener('click', toggleRightBlade);
@@ -3750,14 +3864,14 @@ export class NasaMissionDesigner {
       const isCollapsed = dockBottom.classList.toggle('collapsed');
       const icon = btnToggleDock?.querySelector('.dock-tab-icon');
       const label = btnToggleDock?.querySelector('.dock-tab-label');
+      const t = getTexts(this.currentLanguage);
       if (icon) icon.textContent = isCollapsed ? '▲' : '▼';
       if (label) {
-        const isVi = this.currentLanguage === 'vi';
-        label.textContent = isCollapsed 
-          ? (isVi ? 'MỞ RỘNG BẢNG TRANG BỊ' : 'SHOW DOCK') 
-          : (isVi ? 'THU GỌN BẢNG' : 'HIDE DOCK');
+        label.textContent = isCollapsed ? t.dockExpand : t.dockCollapse;
       }
-      btnToggleDock?.setAttribute('title', isCollapsed ? 'Mở rộng bảng Trang bị (Expand Dock)' : 'Thu gọn bảng Trang bị (Collapse Dock)');
+      btnToggleDock?.setAttribute('title', isCollapsed ? t.dockExpand : t.dockCollapse);
+      btnToggleDock?.setAttribute('aria-label', t.dockToggleAria);
+      btnToggleDock?.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
     };
     btnToggleDock?.addEventListener('click', toggleBottomDock);
   }
@@ -4358,9 +4472,6 @@ export class NasaMissionDesigner {
     this.currentTourStep = Math.max(0, Math.min(TOUR_STEPS.length - 1, stepIndex));
     this.playClickSound();
 
-    const overlay = document.getElementById('spotlight-tour-overlay');
-    if (overlay) overlay.style.display = 'block';
-
     if (!this.tourResizeListener) {
       this.tourResizeListener = () => this.updateTourSpotlight();
       window.addEventListener('resize', this.tourResizeListener);
@@ -4378,6 +4489,11 @@ export class NasaMissionDesigner {
       };
       window.addEventListener('keydown', this.tourKeyListener);
     }
+
+    this.updateTourSpotlight();
+
+    const overlay = document.getElementById('spotlight-tour-overlay');
+    if (overlay) overlay.style.display = 'block';
 
     setTimeout(() => this.updateTourSpotlight(), 60);
   }
@@ -4422,7 +4538,7 @@ export class NasaMissionDesigner {
     const tooltip = document.getElementById('spotlight-tooltip');
     if (!overlay || !box || !tooltip) return;
 
-    const isVi = this.currentLanguage === 'vi';
+    const t = getTexts(this.currentLanguage);
     const step = TOUR_STEPS[this.currentTourStep];
     if (!step) {
       this.endSpotlightTour();
@@ -4430,28 +4546,38 @@ export class NasaMissionDesigner {
     }
 
     // Automatically expand any collapsed blade if targeted
-    if (step.targetId === 'blade-missions') {
-      const el = document.getElementById('blade-missions');
-      if (el?.classList.contains('collapsed')) {
-        el.classList.remove('collapsed');
-        const icon = document.querySelector('#btn-toggle-blade-left .tab-icon');
-        if (icon) icon.textContent = '◀';
+    if (window.innerWidth <= 768) {
+      if (step.targetId === 'blade-missions') {
+        this.setMobilePanel('missions');
+      } else if (step.targetId === 'blade-diagnostics') {
+        this.setMobilePanel('telemetry');
+      } else if (step.targetId === 'dock-bottom' || step.targetId === 'btn-approve-launch' || step.targetId === 'btn-toggle-dock-bottom' || step.targetId === 'armory-items-grid') {
+        this.setMobilePanel('outfit');
       }
-    } else if (step.targetId === 'blade-diagnostics') {
-      const el = document.getElementById('blade-diagnostics');
-      if (el?.classList.contains('collapsed')) {
-        el.classList.remove('collapsed');
-        const icon = document.querySelector('#btn-toggle-blade-right .tab-icon');
-        if (icon) icon.textContent = '▶';
-      }
-    } else if (step.targetId === 'dock-bottom' || step.targetId === 'btn-approve-launch' || step.targetId === 'btn-toggle-dock-bottom') {
-      const el = document.getElementById('dock-bottom');
-      if (el?.classList.contains('collapsed')) {
-        el.classList.remove('collapsed');
-        const icon = document.querySelector('#btn-toggle-dock-bottom .dock-tab-icon');
-        const label = document.querySelector('#btn-toggle-dock-bottom .dock-tab-label');
-        if (icon) icon.textContent = '▼';
-        if (label) label.textContent = isVi ? 'THU GỌN BẢNG' : 'HIDE DOCK';
+    } else {
+      if (step.targetId === 'blade-missions') {
+        const el = document.getElementById('blade-missions');
+        if (el?.classList.contains('collapsed')) {
+          el.classList.remove('collapsed');
+          const icon = document.querySelector('#btn-toggle-blade-left .tab-icon');
+          if (icon) icon.textContent = '◀';
+        }
+      } else if (step.targetId === 'blade-diagnostics') {
+        const el = document.getElementById('blade-diagnostics');
+        if (el?.classList.contains('collapsed')) {
+          el.classList.remove('collapsed');
+          const icon = document.querySelector('#btn-toggle-blade-right .tab-icon');
+          if (icon) icon.textContent = '▶';
+        }
+      } else if (step.targetId === 'dock-bottom' || step.targetId === 'btn-approve-launch' || step.targetId === 'btn-toggle-dock-bottom') {
+        const el = document.getElementById('dock-bottom');
+        if (el?.classList.contains('collapsed')) {
+          el.classList.remove('collapsed');
+          const icon = document.querySelector('#btn-toggle-dock-bottom .dock-tab-icon');
+          const label = document.querySelector('#btn-toggle-dock-bottom .dock-tab-label');
+          if (icon) icon.textContent = '▼';
+          if (label) label.textContent = t.dockCollapse;
+        }
       }
     }
 
@@ -4473,10 +4599,15 @@ export class NasaMissionDesigner {
     const btnNext = document.getElementById('btn-tour-next') as HTMLButtonElement | null;
     const btnSkip = document.getElementById('btn-tour-skip') as HTMLButtonElement | null;
 
-    if (badgeEl) badgeEl.textContent = isVi ? `BƯỚC ${this.currentTourStep + 1} / ${TOUR_STEPS.length}` : `STEP ${this.currentTourStep + 1} / ${TOUR_STEPS.length}`;
-    if (titleEl) titleEl.textContent = isVi ? step.titleVi : step.titleEn;
-    if (descEl) descEl.textContent = isVi ? step.descVi : step.descEn;
-    if (hintEl) hintEl.textContent = isVi ? step.hintVi : step.hintEn;
+    const stepNum = step.stepNum;
+    const titleKey = `tourStep${stepNum}Title` as keyof I18nTexts;
+    const descKey = `tourStep${stepNum}Desc` as keyof I18nTexts;
+    const hintKey = `tourStep${stepNum}Hint` as keyof I18nTexts;
+
+    if (badgeEl) badgeEl.textContent = t.tourStepCounter.replace('{current}', String(stepNum)).replace('{total}', String(TOUR_STEPS.length));
+    if (titleEl) titleEl.textContent = (t[titleKey] as string) || '';
+    if (descEl) descEl.textContent = (t[descKey] as string) || '';
+    if (hintEl) hintEl.textContent = (t[hintKey] as string) || '';
 
     const dotsContainer = document.getElementById('tour-dots');
     if (dotsContainer) {
@@ -4487,16 +4618,20 @@ export class NasaMissionDesigner {
 
     if (btnPrev) {
       btnPrev.style.display = this.currentTourStep === 0 ? 'none' : 'inline-block';
-      btnPrev.textContent = isVi ? '◀ Quay lại' : '◀ Prev';
+      btnPrev.textContent = t.tourBtnPrev;
     }
     if (btnNext) {
       const isLast = this.currentTourStep === TOUR_STEPS.length - 1;
       btnNext.textContent = isLast 
-        ? (isVi ? 'Hoàn tất 🚀' : 'Finish 🚀') 
-        : (isVi ? 'Tiếp tục ▶' : 'Next ▶');
+        ? t.tourBtnFinish 
+        : t.tourBtnNext;
     }
     if (btnSkip) {
-      btnSkip.textContent = isVi ? 'Bỏ qua tour' : 'Skip tour';
+      btnSkip.textContent = t.tourBtnSkip;
+    }
+    const btnClose = document.getElementById('btn-tour-close');
+    if (btnClose) {
+      btnClose.setAttribute('aria-label', t.tourBtnCloseAria);
     }
 
     const tooltipWidth = 360;
@@ -4587,6 +4722,12 @@ export class NasaMissionDesigner {
       const realUpdEl = document.getElementById('dart-txt-real-updated');
       if (realUpdEl) realUpdEl.innerHTML = `• <strong>${t.dartRealUpdatedStudy}</strong>`;
 
+      setTxt('dart-lbl-sources-title', t.dartSourceHeading);
+      const sourcesList = document.getElementById('dart-sources-list');
+      if (sourcesList) {
+        sourcesList.innerHTML = renderDartSourcesHTML(this.currentLanguage);
+      }
+
       setTxt('debrief-btn-dart-retry', t.dartBtnRetry);
       setTxt('debrief-btn-dart-restart', t.dartBtnReturnHangar);
 
@@ -4615,42 +4756,20 @@ export class NasaMissionDesigner {
         }
 
         let outcomeText = t.dartOutcomeInvalid;
-        let reasonText = '';
-        let adviceText = '';
-
         if (res.state === 'completed') {
           outcomeText = t.dartOutcomeCompleted;
-          reasonText = this.currentLanguage === 'vi'
-            ? 'Va chạm động năng trực tiếp đối đầu đã truyền xung lực làm giảm vận tốc quỹ đạo của Dimorphos quanh Didymos, rút ngắn chu kỳ quỹ đạo thành công vượt ngưỡng 73 giây của NASA.'
-            : 'Direct head-on retrograde kinetic impact transferred momentum, reducing orbital velocity and shortening the orbital period of Dimorphos around Didymos well beyond NASA\'s 73-second threshold.';
-          adviceText = this.currentLanguage === 'vi'
-            ? 'Tái hiện xuất sắc! Bạn có thể thử nghiệm tắt SMART Nav để tự tay điều khiển lái tàu thủ công.'
-            : 'Excellent reconstruction! You can retry with SMART Nav disabled to test manual piloting.';
         } else if (res.state === 'insufficient_period_change') {
           outcomeText = t.dartOutcomeInsufficient;
-          reasonText = this.currentLanguage === 'vi'
-            ? 'Tàu đã va chạm Dimorphos nhưng góc tiếp cận hoặc hướng truyền xung không làm giảm chu kỳ đủ ngưỡng 73 giây yêu cầu.'
-            : 'Spacecraft impacted Dimorphos, but the approach angle or impulse direction failed to shorten the orbit by the required 73-second threshold.';
-          adviceText = this.currentLanguage === 'vi'
-            ? 'Gợi ý: Căn chỉnh hướng tiếp cận trực diện đối đầu (retrograde) để triệt tiêu vận tốc quỹ đạo hiệu quả nhất.'
-            : 'Tip: Align approach head-on (retrograde) against orbital motion to maximize speed reduction.';
         } else if (res.state === 'hit_wrong_body') {
           outcomeText = t.dartOutcomeWrongBody;
-          reasonText = this.currentLanguage === 'vi'
-            ? 'Tàu đã va chạm vào tiểu hành tinh chính Didymos thay vì vệ tinh nhỏ Dimorphos. Mục tiêu thử nghiệm làm đổi quỹ đạo không đạt được.'
-            : 'The spacecraft impacted the primary asteroid Didymos instead of the moonlet Dimorphos. Deflection objective not met.';
-          adviceText = this.currentLanguage === 'vi'
-            ? 'Gợi ý: Hãy nhắm kỹ vào mục tiêu nhỏ Dimorphos quay quanh Didymos và bật hỗ trợ SMART Nav.'
-            : 'Tip: Focus tracking on the smaller orbiting moonlet Dimorphos and keep SMART Nav enabled.';
         } else if (res.state === 'missed') {
           outcomeText = t.dartOutcomeMissed;
-          reasonText = this.currentLanguage === 'vi'
-            ? 'Tàu bay trượt qua cả Didymos và Dimorphos mà không xảy ra va chạm. Không có động năng nào được truyền.'
-            : 'Spacecraft missed both Didymos and Dimorphos without impact. No kinetic momentum transfer occurred.';
-          adviceText = this.currentLanguage === 'vi'
-            ? 'Gợi ý: Bật chế độ hỗ trợ dẫn đường SMART Nav và giữ hướng ngắm trung tâm mục tiêu.'
-            : 'Tip: Enable SMART Nav guidance assist and keep target centered in the approach corridor.';
         }
+
+        const reasonKey = (res.explanationKey || 'dartReasonInvalid') as keyof I18nTexts;
+        const adviceKey = (res.retryTipKey || 'dartTipCheckConfig') as keyof I18nTexts;
+        const reasonText = (t[reasonKey] as string) || '';
+        const adviceText = (t[adviceKey] as string) || '';
 
         setTxt('dart-res-outcome', outcomeText);
         setTxt('dart-res-reason', reasonText);
@@ -4759,14 +4878,47 @@ export class NasaMissionDesigner {
       this.renderFlightManualContent();
     }
 
-    const isVi = lang === 'vi';
     const dockBottom = document.getElementById('dock-bottom');
     const isCollapsedDock = dockBottom?.classList.contains('collapsed');
     const dockLabel = document.querySelector('#btn-toggle-dock-bottom .dock-tab-label');
+    const btnToggleDock = document.getElementById('btn-toggle-dock-bottom');
     if (dockLabel) {
-      dockLabel.textContent = isCollapsedDock
-        ? (isVi ? 'MỞ RỘNG BẢNG TRANG BỊ' : 'SHOW DOCK')
-        : (isVi ? 'THU GỌN BẢNG' : 'HIDE DOCK');
+      dockLabel.textContent = isCollapsedDock ? t.dockExpand : t.dockCollapse;
+    }
+    if (btnToggleDock) {
+      btnToggleDock.setAttribute('title', isCollapsedDock ? t.dockExpand : t.dockCollapse);
+      btnToggleDock.setAttribute('aria-label', t.dockToggleAria);
+      btnToggleDock.setAttribute('aria-expanded', isCollapsedDock ? 'false' : 'true');
+    }
+
+    const btnToggleLeft = document.getElementById('btn-toggle-blade-left');
+    const btnCollapseLeft = document.getElementById('btn-collapse-blade-left');
+    const bladeLeft = document.getElementById('blade-missions');
+    const isLeftCollapsed = bladeLeft?.classList.contains('collapsed');
+    const leftTitle = isLeftCollapsed ? t.bladeMissionsExpandAria : t.bladeMissionsCollapseAria;
+    if (btnToggleLeft) {
+      btnToggleLeft.setAttribute('title', leftTitle);
+      btnToggleLeft.setAttribute('aria-label', leftTitle);
+      btnToggleLeft.setAttribute('aria-expanded', isLeftCollapsed ? 'false' : 'true');
+    }
+    if (btnCollapseLeft) {
+      btnCollapseLeft.setAttribute('title', leftTitle);
+      btnCollapseLeft.setAttribute('aria-label', leftTitle);
+    }
+
+    const btnToggleRight = document.getElementById('btn-toggle-blade-right');
+    const btnCollapseRight = document.getElementById('btn-collapse-blade-right');
+    const bladeRight = document.getElementById('blade-diagnostics');
+    const isRightCollapsed = bladeRight?.classList.contains('collapsed');
+    const rightTitle = isRightCollapsed ? t.bladeAvionicsExpandAria : t.bladeAvionicsCollapseAria;
+    if (btnToggleRight) {
+      btnToggleRight.setAttribute('title', rightTitle);
+      btnToggleRight.setAttribute('aria-label', rightTitle);
+      btnToggleRight.setAttribute('aria-expanded', isRightCollapsed ? 'false' : 'true');
+    }
+    if (btnCollapseRight) {
+      btnCollapseRight.setAttribute('title', rightTitle);
+      btnCollapseRight.setAttribute('aria-label', rightTitle);
     }
 
     const setTxt = (id: string, text: string) => {
@@ -4774,6 +4926,11 @@ export class NasaMissionDesigner {
       if (el) el.textContent = text;
     };
 
+    // Mobile Bottom Navigation Bar Labels
+    setTxt('lbl-nav-missions', t.navMissions);
+    setTxt('lbl-nav-outfit', t.navOutfit);
+    setTxt('lbl-nav-telemetry', t.navTelemetry);
+    setTxt('lbl-nav-view3d', t.navView3d);
     // Left Blade: Missions (both ID and class)
     setTxt('blade-missions-title', t.sectorOpsTitle);
     setTxt('blade-missions-badge', t.targetsBadge);
@@ -5065,7 +5222,7 @@ export class NasaMissionDesigner {
     document.getElementById('nasa-flight-hud')!.style.display = 'none';
   }
 
-  private showDebrief() {
+  public showDebrief() {
     this.isMissionActive = false;
     this.isHangarVisible = false;
     const debrief = document.getElementById('nasa-debrief-modal');
