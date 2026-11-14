@@ -601,10 +601,7 @@ export class NasaMissionDesigner {
               </select>
             </div>
             <button id="btn-start-spotlight-tour" class="btn-spotlight-tour" title="Interactive Step-by-Step Guided Tour / Hướng dẫn tương tác sáng đèn">
-              ✨ TOUR HƯỚNG DẪN
-            </button>
-            <button id="btn-flight-manual" class="btn-flight-manual" title="NASA Flight Operations Manual & Beginner's Guide">
-              ${t.flightManualBtn || '📖 FLIGHT MANUAL'}
+              ${t.spotlightTourBtn || '✨ TOUR HƯỚNG DẪN'}
             </button>
             <button id="btn-resource-vault" class="btn-resource-mode" title="${t.assetVaultTitle}">
               ${t.assetVaultBtn}
@@ -3342,7 +3339,6 @@ export class NasaMissionDesigner {
 
     // Flight Manual Modal
     const manualModal = document.getElementById('flight-manual-modal');
-    const btnManual = document.getElementById('btn-flight-manual');
     const btnManualClose = document.getElementById('manual-btn-close');
 
     // Spotlight Guided Tour Controls
@@ -3360,12 +3356,6 @@ export class NasaMissionDesigner {
     });
     document.getElementById('btn-tour-close')?.addEventListener('click', () => {
       this.endSpotlightTour();
-    });
-
-    btnManual?.addEventListener('click', () => {
-      this.playClickSound();
-      this.renderFlightManualContent();
-      if (manualModal) manualModal.style.display = 'flex';
     });
 
     btnManualClose?.addEventListener('click', () => {
@@ -4296,9 +4286,6 @@ export class NasaMissionDesigner {
     if (langWrap) langWrap.title = t.langSelectorTitle;
     if (langSelect) langSelect.setAttribute('aria-label', t.langSelectorAria);
 
-    const btnFlightManual = document.getElementById('btn-flight-manual');
-    if (btnFlightManual) btnFlightManual.textContent = t.flightManualBtn;
-
     const btnTour = document.getElementById('btn-start-spotlight-tour');
     if (btnTour) btnTour.textContent = t.spotlightTourBtn;
 
@@ -4316,9 +4303,6 @@ export class NasaMissionDesigner {
     if (btnExitCinematic) btnExitCinematic.textContent = t.restoreFlightBtn;
 
     this.updateHeaderShipInfo();
-
-    const manualBtn = document.getElementById('btn-flight-manual');
-    if (manualBtn) manualBtn.textContent = t.flightManualBtn || '📖 FLIGHT MANUAL';
 
     const manualModal = document.getElementById('flight-manual-modal');
     if (manualModal && manualModal.style.display === 'flex') {
