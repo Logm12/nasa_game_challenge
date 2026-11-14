@@ -239,6 +239,48 @@ The simulation includes verified flight scenarios accessible via the Scenario Se
 
 ---
 
+### 3.4 NASA Space Apps Challenge — Space Mission Design Architecture & Trade-Offs
+
+The project strictly complies with the **NASA Space Apps Challenge** mission design rubric, implementing real-time aerospace engineering trade-offs:
+
+#### A. Inverse-Square Solar Energy Falloff ($1/r^2$ Solar Law)
+Solar array electrical output decreases quadratically with heliocentric distance $r$ (in AU):
+
+$$P_{\text{solar}}(r) = P_0 \left( \frac{r_0}{r} \right)^2 = \frac{1400\text{ W}}{r^2}$$
+
+* **Earth ($1.0\text{ AU}$)**: $P = 1400\text{ W}$ (UltraFlex arrays operate at peak capacity).
+* **Mars ($1.52\text{ AU}$)**: $P \approx 605\text{ W}$ (Moderate degradation, requiring power prioritization).
+* **Europa / Jupiter ($5.20\text{ AU}$)**: $P \approx 51.8\text{ W}$ (Critical power starvation; engineering constraint mandates Next-Gen RTG Plutonium-238 nuclear power delivering $800\text{ W}$ continuously).
+
+#### B. Mass vs. Launch Vehicle Lift Capacity Constraints
+Spacecraft wet mass $m_{\text{wet}} = m_{\text{dry}} + m_{\text{propellant}} + m_{\text{payload}}$ is rigorously bounded by real launch vehicle payload capacities:
+
+| Launch Vehicle | Max Payload to LEO ($m_{\text{max}}$) | Mission Class Suitability |
+| :--- | :---: | :--- |
+| **Rocket Lab Electron** | $300\text{ kg}$ | CubeSat / SmallSat (6U/12U) Scout Missions |
+| **SpaceX Falcon 9** | $15,000\text{ kg}$ | Discovery Medium Bus Lunar & Planetary Probes |
+| **SpaceX Falcon Heavy** | $63,800\text{ kg}$ | Heavy Deep Space Flagship & Mars Sample Return |
+| **NASA SLS Block 1/1B** | $95,000\text{ kg}$ | Artemis Lunar Surface & Outer Solar System Flagships |
+
+If $m_{\text{wet}} > m_{\text{max}}$, the launch interlock triggers an over-mass lockout requiring structural or propellant redesign.
+
+#### C. Tsiolkovsky $\Delta v$ Budget Verification
+The spacecraft propulsion subsystem calculates available mission $\Delta v$ against destination requirements:
+
+$$\Delta v_{\text{avail}} = I_{\text{sp}} \cdot g_0 \cdot \ln \left( \frac{m_{\text{dry}} + m_{\text{prop}}}{m_{\text{dry}}} \right) \ge \Delta v_{\text{mission}}$$
+
+* **Hydrazine Monopropellant**: $I_{\text{sp}} = 220\text{ s}, m_{\text{prop}} = 350\text{ kg}$.
+* **Hypergolic Bipropellant (MMH/NTO)**: $I_{\text{sp}} = 325\text{ s}, m_{\text{prop}} = 1400\text{ kg}$.
+* **NEXT-C Gridded Xenon Ion Thruster**: $I_{\text{sp}} = 4150\text{ s}, m_{\text{prop}} = 300\text{ kg}$ (requires electric power $P \ge 700\text{ W}$).
+
+#### D. Scientific Payload & Mission Debrief Scoring
+Telemetry sensors generate cumulative science yield:
+$$\text{Score}_{\text{science}} = \sum_{k} \text{SciencePoints}_k \cdot \eta_{\text{telemetry}}$$
+subject to operational budget reserves:
+$$\text{Budget}_{\text{reserve}} = \text{Budget}_{\text{cap}} - \text{Cost}_{\text{bus}} - \text{Cost}_{\text{prop}} - \text{Cost}_{\text{power}} - \sum \text{Cost}_{\text{payload}} \ge \$0\text{M}$$
+
+---
+
 ## 🕹️ Unified Aerospace Flight Deck & Controls
 
 ```
