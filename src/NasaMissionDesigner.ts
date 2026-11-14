@@ -469,6 +469,12 @@ export class NasaMissionDesigner {
   }
 
   private createLobbyDOM() {
+    const t = getTexts(this.currentLanguage);
+    const initCraft = SPACECRAFT_FLEET.find(c => c.id === this.selectedChassisId);
+    const initLoc = getSpacecraftText(this.selectedChassisId, this.currentLanguage);
+    const initCraftName = (initLoc ? initLoc.name : initCraft?.name || 'Quinjet Mk-VII').toUpperCase();
+    const initCraftDesc = initLoc ? initLoc.desc : initCraft?.desc || '';
+
     const modal = document.createElement('div');
     modal.id = 'nasa-mission-modal';
     modal.innerHTML = `
@@ -482,28 +488,28 @@ export class NasaMissionDesigner {
           <div class="topbar-left">
             <div class="brand-monogram" style="background: linear-gradient(135deg, #0b3d91 0%, #1e3a8a 100%); border-color: rgba(56, 189, 248, 0.4); font-size: 0.85rem; font-weight: 800; letter-spacing: 0.5px;">NASA</div>
             <div class="brand-titles">
-              <div class="brand-name">NASA <span>MISSION-VIZ</span> <span id="brand-tag" class="tag-sword" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">DEEP SPACE GNC</span></div>
-              <div class="brand-sub">INTERSTELLAR FLIGHT ARCHITECTURE & KEPLERIAN DYNAMICS</div>
+              <div class="brand-name">NASA <span>MISSION-VIZ</span> <span id="brand-tag" class="tag-sword" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-weight: 700;">${t.brandTag}</span></div>
+              <div class="brand-sub">${t.brandSub}</div>
             </div>
           </div>
 
           <div class="topbar-center">
             <div class="ship-callsign-pill">
               <span class="pulse-indicator"></span>
-              <span id="hangar-ship-name">NASA SPACE SHUTTLE ORBITER</span>
+              <span id="hangar-ship-name">${initCraftName}</span>
               <span class="sep">•</span>
-              <span id="hangar-ship-class" class="ship-class-text">DISCOVERY OV-103 (4K PBR)</span>
+              <span id="hangar-ship-class" class="ship-class-text">${initCraftDesc}</span>
             </div>
           </div>
 
           <div class="topbar-right">
             <div class="telemetry-pill">
-              <span class="pill-label">CREDITS:</span>
+              <span class="pill-label" id="pill-credits-label">${t.creditsLabel}</span>
               <strong id="mission-budget-display" class="pill-val">$480.0M</strong>
             </div>
-            <div id="lang-selector-wrap" class="lang-selector-wrap" title="Select interface language">
+            <div id="lang-selector-wrap" class="lang-selector-wrap" title="${t.langSelectorTitle}">
               <span class="lang-icon">🌐</span>
-              <select id="select-game-language" class="select-game-language" aria-label="Game Language">
+              <select id="select-game-language" class="select-game-language" aria-label="${t.langSelectorAria}">
                 <option value="en_us">🇺🇸 English (US)</option>
                 <option value="vi">🇻🇳 Tiếng Việt</option>
                 <option value="en_uk">🇬🇧 English (UK)</option>
@@ -515,15 +521,15 @@ export class NasaMissionDesigner {
                 <option value="es">🇪🇸 Español</option>
               </select>
             </div>
-            <button id="btn-resource-vault" class="btn-resource-mode" title="Free 3D Spacecraft & Battleship Repositories">
-              🌐 3D ASSET VAULT
+            <button id="btn-resource-vault" class="btn-resource-mode" title="${t.assetVaultTitle}">
+              ${t.assetVaultBtn}
             </button>
-            <button id="btn-import-3d" class="btn-import-mode" title="Import 3D spacecraft model (.glb, .gltf, .obj)">
-              📂 IMPORT 3D
+            <button id="btn-import-3d" class="btn-import-mode" title="${t.import3dTitle}">
+              ${t.import3dBtn}
             </button>
             <input type="file" id="input-import-3d" accept=".glb,.gltf,.obj" style="display: none;" />
-            <button id="btn-toggle-cinematic" class="btn-cinematic-mode" title="Full-screen cinematic spacecraft inspection">
-              👁 CINEMATIC VIEW
+            <button id="btn-toggle-cinematic" class="btn-cinematic-mode" title="${t.cinematicTitle}">
+              ${t.cinematicBtn}
             </button>
           </div>
         </header>
@@ -594,35 +600,35 @@ export class NasaMissionDesigner {
         </div>
 
         <!-- Left Operations Blade: Sector Missions -->
-        <aside class="hud-blade hud-blade-left">
+        <aside class="hud-blade hud-blade-left" id="blade-missions">
           <div class="blade-header">
-            <div class="blade-title">01 // SECTOR OPERATIONS</div>
-            <div class="blade-badge">TARGETS</div>
+            <div class="blade-title" id="blade-missions-title">${t.sectorOpsTitle}</div>
+            <div class="blade-badge" id="blade-missions-badge">${t.targetsBadge}</div>
           </div>
           <div class="blade-content" id="marvel-missions-list"></div>
         </aside>
 
         <!-- Right Avionics Blade: Realtime Telemetry & Diagnostics -->
-        <aside class="hud-blade hud-blade-right">
+        <aside class="hud-blade hud-blade-right" id="blade-diagnostics">
           <div class="blade-header">
-            <div class="blade-title">02 // AVIONICS & FLIGHT DYNAMICS</div>
-            <div class="blade-badge">FLIGHT DYNAMICS</div>
+            <div class="blade-title" id="blade-telemetry-title">${t.avionicsDiagTitle}</div>
+            <div class="blade-badge" id="blade-telemetry-badge">${t.avionicsBadge}</div>
           </div>
           <div class="blade-content">
-            <!-- Remaining Stark Budget -->
+            <!-- Remaining Budget -->
             <div class="gauge-box">
               <div class="gauge-label">
-                <span>Budget Surplus</span>
+                <span id="lbl-metric-budget">${t.budgetSurplus}</span>
                 <span id="metric-budget-percent" class="mono-tag">100%</span>
               </div>
               <div class="gauge-value" id="metric-budget">$0.0M</div>
               <div class="gauge-track"><div class="gauge-fill" id="bar-budget"></div></div>
             </div>
 
-            <!-- Mass vs Carrier Limit -->
+            <!-- Total Launch Mass vs Limit -->
             <div class="gauge-box">
               <div class="gauge-label">
-                <span>Dry Mass vs Limit</span>
+                <span id="lbl-metric-mass">${t.totalMassLabel}</span>
                 <span id="metric-mass-limit" class="mono-tag">LIMIT: 16,000 kg</span>
               </div>
               <div class="gauge-value" id="metric-mass">0 kg</div>
@@ -632,27 +638,27 @@ export class NasaMissionDesigner {
             <!-- Power Core Balance -->
             <div class="gauge-box">
               <div class="gauge-label">
-                <span>Power Balance (1/r²)</span>
+                <span id="lbl-metric-power">${t.powerBalance}</span>
                 <span id="metric-power-distance" class="mono-tag">@ 1.0 AU</span>
               </div>
               <div class="gauge-value" id="metric-power">+0 W</div>
               <div class="gauge-track"><div class="gauge-fill" id="bar-power"></div></div>
             </div>
 
-            <!-- Warp Delta-V Output -->
+            <!-- Calculated Delta-V -->
             <div class="gauge-box">
               <div class="gauge-label">
-                <span>Calculated Delta-V</span>
+                <span id="lbl-metric-deltav">${t.calcDeltaV}</span>
                 <span id="metric-deltav-req" class="mono-tag">REQ: 3900 m/s</span>
               </div>
               <div class="gauge-value" id="metric-deltav">0 m/s</div>
               <div class="gauge-track"><div class="gauge-fill" id="bar-deltav"></div></div>
             </div>
 
-            <!-- Cosmic Intel Return -->
+            <!-- Projected Science Data -->
             <div class="gauge-box">
               <div class="gauge-label">
-                <span>Projected Science Return</span>
+                <span id="lbl-metric-science">${t.scienceReturn}</span>
                 <span id="metric-science-target" class="mono-tag">TARGET: 120 pts</span>
               </div>
               <div class="gauge-value" id="metric-science">0 pts</div>
@@ -664,12 +670,12 @@ export class NasaMissionDesigner {
         <!-- Bottom Subsystem Armory Dock & Launch Control -->
         <footer class="hud-dock-bottom">
           <div class="dock-tabs-row">
-            <button class="inv-tab-btn active" data-tab="chassis">🚀 SPACECRAFT HULL</button>
-            <button class="inv-tab-btn" data-tab="flags">🇺🇸 NATIONAL INSIGNIA</button>
-            <button class="inv-tab-btn" data-tab="power">⚛ ARC & QUANTUM POWER</button>
-            <button class="inv-tab-btn" data-tab="tech">🔬 SCIENTIFIC AVIONICS</button>
-            <button class="inv-tab-btn" data-tab="engines">⚡ PROPULSION & WARP</button>
-            <button class="inv-tab-btn" data-tab="carriers">🛸 LAUNCH VEHICLE</button>
+            <button class="inv-tab-btn active" id="tab-btn-chassis" data-tab="chassis">${t.tabChassis}</button>
+            <button class="inv-tab-btn" id="tab-btn-flags" data-tab="flags">${t.tabFlags}</button>
+            <button class="inv-tab-btn" id="tab-btn-power" data-tab="power">${t.tabPower}</button>
+            <button class="inv-tab-btn" id="tab-btn-tech" data-tab="tech">${t.tabTech}</button>
+            <button class="inv-tab-btn" id="tab-btn-engines" data-tab="engines">${t.tabEngines}</button>
+            <button class="inv-tab-btn" id="tab-btn-carriers" data-tab="carriers">${t.tabCarriers}</button>
           </div>
 
           <!-- Horizontal Scroll Armory Shelf -->
@@ -680,10 +686,10 @@ export class NasaMissionDesigner {
           <!-- Launch Bar -->
           <div class="dock-launch-bar">
             <div class="jarvis-status" id="validation-msg">
-              <span class="status-dot"></span> FLIGHT CONTROL: ALL SYSTEMS NOMINAL • MISSION PROFILE APPROVED.
+              <span class="status-dot"></span> ${t.statusNominal}
             </div>
             <button id="btn-approve-launch" class="btn-hyperspace-launch">
-              <span>⚡</span> AUTHORIZE & INITIATE LAUNCH
+              <span>⚡</span> ${t.launchBtn}
             </button>
           </div>
         </footer>
@@ -691,7 +697,7 @@ export class NasaMissionDesigner {
 
       <!-- Quick Exit Button for Cinematic Mode -->
       <button id="btn-exit-cinematic" class="btn-exit-cinematic">
-        ✕ RESTORE FLIGHT CONTROLS
+        ${t.restoreFlightBtn}
       </button>
     `;
     document.body.appendChild(modal);
@@ -712,10 +718,10 @@ export class NasaMissionDesigner {
           </div>
         </div>
         <div id="hud-body-content" class="hud-body-content">
-          <div class="hud-row"><span>Target Destination:</span><strong id="hud-target-name">65803 Didymos</strong></div>
-          <div class="hud-row"><span>Science Telemetry:</span><strong id="hud-science-live" style="color: var(--stark-gold);">0 pts</strong></div>
-          <div class="hud-row"><span>Electrical Bus Output:</span><strong id="hud-power-live">2,200 W</strong></div>
-          <div class="hud-row"><span>Flight Status:</span><strong id="hud-status-text" style="color: var(--stark-cyan);">Trajectory Nominal • Orbit Tracking Active</strong></div>
+          <div class="hud-row"><span id="hud-lbl-target">${t.hudTargetSector}</span><strong id="hud-target-name">65803 Didymos</strong></div>
+          <div class="hud-row"><span id="hud-lbl-science">${t.hudCosmicIntel}</span><strong id="hud-science-live" style="color: var(--stark-gold);">0 pts</strong></div>
+          <div class="hud-row"><span id="hud-lbl-power">${t.hudArcOutput}</span><strong id="hud-power-live">2,200 W</strong></div>
+          <div class="hud-row"><span id="hud-lbl-status">${t.hudJarvisStatus}</span><strong id="hud-status-text" style="color: var(--stark-cyan);">${t.hudStatusInitial}</strong></div>
           
           <!-- NASA WSMV (Web-based Space Mission Visualization) Telemetry & PHA Radar -->
           <div class="nasa-wsmv-section">
@@ -3253,18 +3259,33 @@ export class NasaMissionDesigner {
 
     this.updateHeaderShipInfo();
 
-    // Left Blade: Missions (actual selector .hud-blade-left)
-    const sectorTitle = document.querySelector('.hud-blade-left .blade-title');
+    const setTxt = (id: string, text: string) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    };
+
+    // Left Blade: Missions (both ID and class)
+    setTxt('blade-missions-title', t.sectorOpsTitle);
+    setTxt('blade-missions-badge', t.targetsBadge);
+    const sectorTitle = document.querySelector('.hud-blade-left .blade-title, #blade-missions .blade-title');
     if (sectorTitle) sectorTitle.textContent = t.sectorOpsTitle;
-    const sectorBadge = document.querySelector('.hud-blade-left .blade-badge');
+    const sectorBadge = document.querySelector('.hud-blade-left .blade-badge, #blade-missions .blade-badge');
     if (sectorBadge) sectorBadge.textContent = t.targetsBadge;
 
-    // Right Blade: Telemetry & Diagnostics (actual selector .hud-blade-right)
-    const avionicsTitle = document.querySelector('.hud-blade-right .blade-title');
+    // Right Blade: Diagnostics (both ID and class)
+    setTxt('blade-telemetry-title', t.avionicsDiagTitle);
+    setTxt('blade-telemetry-badge', t.avionicsBadge);
+    const avionicsTitle = document.querySelector('.hud-blade-right .blade-title, #blade-diagnostics .blade-title');
     if (avionicsTitle) avionicsTitle.textContent = t.avionicsDiagTitle;
-    const avionicsBadge = document.querySelector('.hud-blade-right .blade-badge');
+    const avionicsBadge = document.querySelector('.hud-blade-right .blade-badge, #blade-diagnostics .blade-badge');
     if (avionicsBadge) avionicsBadge.textContent = t.avionicsBadge;
 
+    // Gauge Labels
+    setTxt('lbl-metric-budget', t.budgetSurplus);
+    setTxt('lbl-metric-mass', t.totalMassLabel);
+    setTxt('lbl-metric-power', t.powerBalance);
+    setTxt('lbl-metric-deltav', t.calcDeltaV);
+    setTxt('lbl-metric-science', t.scienceReturn);
     const metricLabels = document.querySelectorAll('.hud-blade-right .gauge-box .gauge-label > span:first-child');
     if (metricLabels.length >= 5) {
       metricLabels[0].textContent = t.budgetSurplus;
@@ -3274,7 +3295,13 @@ export class NasaMissionDesigner {
       metricLabels[4].textContent = t.scienceReturn;
     }
 
-    // Category Tabs
+    // Category Tabs (both ID and attribute selector)
+    setTxt('tab-btn-chassis', t.tabChassis);
+    setTxt('tab-btn-flags', t.tabFlags);
+    setTxt('tab-btn-power', t.tabPower);
+    setTxt('tab-btn-tech', t.tabTech);
+    setTxt('tab-btn-engines', t.tabEngines);
+    setTxt('tab-btn-carriers', t.tabCarriers);
     const tabChassis = document.querySelector('[data-tab="chassis"]');
     if (tabChassis) tabChassis.textContent = t.tabChassis;
     const tabFlags = document.querySelector('[data-tab="flags"]');
@@ -3326,6 +3353,11 @@ export class NasaMissionDesigner {
     if (hudDragHandle) hudDragHandle.title = t.hudDragTitle;
     const hudBtnMin = document.getElementById('hud-btn-minimize');
     if (hudBtnMin) hudBtnMin.title = t.hudMinimizeTitle;
+
+    setTxt('hud-lbl-target', t.hudTargetSector);
+    setTxt('hud-lbl-science', t.hudCosmicIntel);
+    setTxt('hud-lbl-power', t.hudArcOutput);
+    setTxt('hud-lbl-status', t.hudJarvisStatus);
 
     const hudLabels = document.querySelectorAll('#hud-body-content .hud-row > span:first-child');
     if (hudLabels.length >= 4) {

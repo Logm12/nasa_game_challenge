@@ -2,6 +2,7 @@ import * as THREE from 'three/src/Three';
 import { CelestialBody, AU } from './CelestialBody';
 import { RotationButtons } from './RotationControl';
 import GameState from './GameState';
+import { getControlTexts, onLangChange, formatTpl } from './i18n';
 
 export type SasMode = 'STABILITY' | 'PROGRADE' | 'RETROGRADE' | 'MANUAL';
 
@@ -312,7 +313,8 @@ export class FlightDeckControl {
         if (sel) {
           sel.sasMode = mode;
           this.syncSasUI(mode);
-          this.gameState.sendMessage(`SAS Autopilot Engaged: ${mode}`);
+          const ct = getControlTexts();
+          this.gameState.sendMessage(formatTpl(ct.sasEngagedMsg, { mode }));
         }
       });
     });
@@ -413,6 +415,68 @@ export class FlightDeckControl {
       else if (mode === 'RETROGRADE') this.sasStatusPill.textContent = 'RETROGRADE';
       else this.sasStatusPill.textContent = 'MANUAL';
     }
+  }
+
+
+  public applyLanguage() {
+    const ct = getControlTexts();
+    const setTxt = (id: string, text: string) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    };
+    const setTitle = (id: string, title: string) => {
+      const el = document.getElementById(id);
+      if (el) el.title = title;
+    };
+
+    // Pill & Collapse
+    const pillTitle = document.querySelector('#flight-deck-pill .pill-title');
+    if (pillTitle) pillTitle.textContent = ct.flightDeckTitle;
+    setTitle('deck-collapse-btn', ct.flightDeckToggleTitle);
+
+    // Thrust
+    const thrustTitle = document.querySelector('.deck-throttle-wing .wing-title');
+    if (thrustTitle) thrustTitle.textContent = ct.mainThrustTitle;
+    setTitle('deck-btn-full', ct.throttleFullTitle);
+    setTitle('deck-btn-half', ct.throttleHalfTitle);
+    setTitle('deck-btn-cut', ct.throttleCutTitle);
+    const cutLbl = document.querySelector('#deck-btn-cut > span:first-child');
+    if (cutLbl) cutLbl.textContent = ct.throttleCutLabel;
+    setTitle('deck-btn-step-up', ct.throttleStepUpTitle);
+    setTitle('deck-btn-step-down', ct.throttleStepDownTitle);
+
+    // Orbit Speed
+    const orbitLbl = document.querySelector('#deck-orbit-speed-badge .telemetry-label');
+    if (orbitLbl) orbitLbl.textContent = ct.orbitSpeedLabel;
+
+    // D-Pad
+    setTitle('btn-pitch-up', ct.pitchUpTitle);
+    setTitle('btn-pitch-down', ct.pitchDownTitle);
+    setTitle('btn-yaw-left', ct.yawLeftTitle);
+    setTitle('btn-yaw-right', ct.yawRightTitle);
+    setTitle('btn-roll-ccw', ct.rollCcwTitle);
+    setTitle('btn-roll-cw', ct.rollCwTitle);
+
+    // Autopilot / SAS
+    const sasTitle = document.querySelector('.deck-sas-wing .wing-title');
+    if (sasTitle) sasTitle.textContent = ct.autopilotTitle;
+
+    const setSasBtn = (id: string, main: string, sub: string, title: string) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.title = title;
+      const m = btn.querySelector('.sas-btn-main');
+      if (m) m.textContent = main;
+      const s = btn.querySelector('.sas-btn-sub');
+      if (s) s.textContent = sub;
+    };
+    setSasBtn('btn-sas-stab', ct.sasStabMain, ct.sasStabSub, ct.sasStabTitle);
+    setSasBtn('btn-sas-prograde', ct.sasProgradeMain, ct.sasProgradeSub, ct.sasProgradeTitle);
+    setSasBtn('btn-sas-retrograde', ct.sasRetrogradeMain, ct.sasRetrogradeSub, ct.sasRetrogradeTitle);
+    setSasBtn('btn-sas-manual', ct.sasManualMain, ct.sasManualSub, ct.sasManualTitle);
+
+    const sel = this.gameState.getSelectObj();
+    this.syncSasUI((sel && sel.sasMode) ? (sel.sasMode as SasMode) : 'STABILITY');
   }
 
   public update() {
