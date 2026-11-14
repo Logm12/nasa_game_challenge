@@ -6,7 +6,7 @@
  */
 
 import * as THREE from 'three/src/Three';
-import { CelestialBody, AU } from './CelestialBody';
+import { CelestialBody, AU, AxisAngleQuaternion } from './CelestialBody';
 import { Settings } from './SettingsControl';
 
 export interface PlanetDossier {
@@ -487,6 +487,7 @@ export class SolarSystemExplorer {
   private dockElement: HTMLElement | null = null;
   private modalElement: HTMLElement | null = null;
   private isDockCollapsed = false;
+  private currentTargetBody: CelestialBody | null = null;
 
   constructor(
     private getSelectObj: () => CelestialBody | null,
@@ -726,6 +727,11 @@ export class SolarSystemExplorer {
       if (this.modalElement) this.modalElement.style.display = 'none';
     });
 
+    // Teleport / Establish Orbit button inside Dossier
+    document.getElementById('dossier-btn-teleport')?.addEventListener('click', () => {
+      this.establishOrbitAtCurrentTarget();
+    });
+
     // Close on background click
     this.modalElement?.addEventListener('click', (e) => {
       if (e.target === this.modalElement) {
@@ -780,6 +786,7 @@ export class SolarSystemExplorer {
     }
 
     if (body) {
+      this.currentTargetBody = body;
       this.setSelectObj(body);
       const settings = this.getSettings();
       settings.center_select = true;
@@ -861,5 +868,68 @@ export class SolarSystemExplorer {
     }
 
     this.modalElement.style.display = 'flex';
+  }
+
+  /**
+   * Thiết lập Quỹ đạo Dịch chuyển Tức thời (Warp / Instant Orbital Insertion)
+   * Đưa tàu vũ trụ của người chơi vào quỹ đạo tròn Keplerian ổn định quanh thiên thể đang chọn
+   */
+  private establishOrbitAtCurrentTarget() {
+    if (!this.currentTargetBody) return;
+    const target = this.currentTargetBody;
+
+    // Tìm phi thuyền điều khiển được của người chơi
+    let rocket = CelestialBody.findBody('rocket');
+    if (!rocket) {
+      const cur = this.getSelectObj();
+      if (cur && cur.controllable) {
+        rocket = cur;
+      }
+    }
+
+    if (!rocket) {
+      this.sendMessage('⚠️ Không tìm thấy phi thuyền đang hoạt động trong mô phỏng!');
+      return;
+    }
+
+    // Đóng modal hồ sơ thiên văn
+    if (this.modalElement) this.modalElement.style.display = 'none';
+
+    // Tính toán bán kính quỹ đạo an toàn dựa theo kích thước thiên thể
+    const targetRadiusKm = target.radius || 6000;
+    let altitudeKm = targetRadiusKm * 0.5;
+    if (target.name === 'sun') altitudeKm = 40000000; // 0.27 AU vành an toàn
+    else if (targetRadiusKm < 50) altitudeKm = 80; // Tiểu hành tinh nhỏ
+    else if (targetRadiusKm > 50000) altitudeKm = 35000; // Các hành tinh khí khổng lồ
+
+    const semimajor_axis = (targetRadiusKm + altitudeKm) / AU;
+    const rotation = new THREE.Quaternion(); // Quỹ đạo xích đạo
+
+    rocket.setParent(target);
+    rocket.position = new THREE.Vector3(0, semimajor_axis, 0);
+    rocket.quaternion = rotation.clone();
+    rocket.quaternion.multiply(AxisAngleQuaternion(1, 0, 0, -Math.PI / 2));
+    rocket.angularVelocity = new THREE.Vector3(0, 0, 0);
+    rocket.throttle = 0;
+    if (rocket.blastModel) rocket.blastModel.visible = false;
+    rocket.setOrbitingVelocity(semimajor_axis, rotation);
+    rocket.totalDeltaV = 0;
+    rocket.ignitionCount = 0;
+
+    // Chọn phi thuyền làm đối tượng điều khiển chính
+    this.setSelectObj(rocket);
+
+    // Canh chỉnh camera lại gần phi thuyền ở quỹ đạo mới
+    const camera = this.getCamera();
+    const cameraControls = this.getCameraControls();
+    const viewScale = this.getViewScale();
+    const shipViewDist = Math.max(0.00005, (viewScale * 25) / AU * 5.0);
+    camera.position.set(0, shipViewDist * 0.4, shipViewDist);
+    if (cameraControls && cameraControls.target) {
+      cameraControls.target.set(0, 0, 0);
+      cameraControls.update();
+    }
+
+    this.sendMessage(`🚀 Đã thiết lập quỹ đạo thành công! Tàu vũ trụ đang quay quanh ${target.name} (Độ cao: ${Math.round(altitudeKm).toLocaleString()} km, Vận tốc quỹ đạo tròn ổn định).`);
   }
 }
