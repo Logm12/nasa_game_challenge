@@ -7,9 +7,6 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Orbital simulation with three.js',
-      meta: {
-        viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover',
-      },
     }),
     new CleanWebpackPlugin(),
   ],
