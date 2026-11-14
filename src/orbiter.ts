@@ -8,7 +8,7 @@ import { NasaMissionDesigner } from './NasaMissionDesigner';
 import { getTexts, getControlTexts, onLangChange, formatTpl } from './i18n';
 import { getMissionText } from './i18n-catalog';
 import { SolarSystemExplorer } from './SolarSystemExplorer';
-import { computeEffectiveDpr, onQualityChange } from './QualityManager';
+import { computeEffectiveDpr, onQualityChange, getQualityConfig } from './QualityManager';
 
 import { CelestialBody, AU, AxisAngleQuaternion } from './CelestialBody';
 import { Settings, SettingsControl } from './SettingsControl';
@@ -327,6 +327,104 @@ function init() {
 
     nasaDesigner.onReturnToHangar(() => {
         isFlightMode = false;
+    });
+
+    function spawnDartImpactPlume(impactPos: THREE.Vector3) {
+        const qualityCfg = getQualityConfig();
+        const count = Math.max(8, Math.round(35 * qualityCfg.particleCountFactor));
+
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(count * 3);
+        const velocities = new Float32Array(count * 3);
+
+        for (let i = 0; i < count; i++) {
+            positions[i * 3] = impactPos.x;
+            positions[i * 3 + 1] = impactPos.y;
+            positions[i * 3 + 2] = impactPos.z;
+
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(Math.random() * 2 - 1);
+            const speed = 0.5 + Math.random() * 2.5;
+
+            velocities[i * 3] = Math.sin(phi) * Math.cos(theta) * speed;
+            velocities[i * 3 + 1] = Math.sin(phi) * Math.sin(theta) * speed;
+            velocities[i * 3 + 2] = Math.cos(phi) * speed;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0xffe082,
+            size: 2.5,
+            transparent: true,
+            opacity: 0.95,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const plumePoints = new THREE.Points(geometry, material);
+        scene.add(plumePoints);
+
+        let age = 0;
+        const maxAge = 3.0;
+        let lastTime = performance.now();
+
+        const updatePlume = () => {
+            const now = performance.now();
+            const dt = Math.min(0.1, (now - lastTime) / 1000);
+            lastTime = now;
+            age += dt;
+
+            const posAttr = geometry.getAttribute('position') as THREE.BufferAttribute;
+            const posArray = posAttr.array as Float32Array;
+
+            for (let i = 0; i < count; i++) {
+                posArray[i * 3] += velocities[i * 3] * dt * 5;
+                posArray[i * 3 + 1] += velocities[i * 3 + 1] * dt * 5;
+                posArray[i * 3 + 2] += velocities[i * 3 + 2] * dt * 5;
+            }
+            posAttr.needsUpdate = true;
+
+            material.opacity = Math.max(0, 0.95 * (1 - age / maxAge));
+
+            if (age < maxAge) {
+                requestAnimationFrame(updatePlume);
+            } else {
+                scene.remove(plumePoints);
+                geometry.dispose();
+                material.dispose();
+            }
+        };
+
+        requestAnimationFrame(updatePlume);
+    }
+
+    nasaDesigner.onDartImpact((result) => {
+        const targetName = result.impactBodyId === 'didymos' ? '65803 Didymos' : 'Dimorphos';
+        const targetBody = CelestialBody.findBody(targetName) || CelestialBody.findBody('Dimorphos') || CelestialBody.findBody('65803 Didymos');
+
+        const rocket = gameState.universe.sun.findRocket() || gameState.select_obj;
+        const impactPos = (rocket && rocket.model) ? rocket.model.position.clone() : new THREE.Vector3(0, 0, 0);
+        spawnDartImpactPlume(impactPos);
+
+        if (targetBody) {
+            gameState.select_obj = targetBody;
+            if (bodiesControl) {
+                bodiesControl.selectBody(targetBody);
+            }
+            if (throttleControl) {
+                throttleControl.visible = false;
+            }
+            if (cameraControls) {
+                cameraControls.target.set(0, 0, 0);
+            }
+            camera.position.set(0, 30, 60);
+        }
+
+        if (messageControl) {
+            const t = getTexts();
+            messageControl.setText(result.meetsSuccessCriteria ? t.dartOutcomeCompleted : (result.impactBodyId === 'didymos' ? t.dartOutcomeWrongBody : t.dartOutcomeInsufficient));
+        }
     });
 
     equipRocketShip();

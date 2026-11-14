@@ -502,6 +502,7 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     hyperion: { name: 'Hyperion Exploration Flagship', badge: '🌌 FLAGSHIP', desc: 'Heavy deep-space hull with 6 instrument bays and sensor spine.' },
     ghostwing: { name: 'Ghostwing Recon Interceptor', badge: '⚡ RECON', desc: 'Light forward-swept reconnaissance hull with 3 instrument bays.' },
     shuttle: { name: 'NASA Space Shuttle Orbiter (Discovery OV-103)', badge: '🚀 NASA ORBITER', desc: 'Official NASA winged orbiter model with delta wings and thermal tiles (5 bays).' },
+    dart_impactor: { name: 'NASA DART Kinetic Impactor', badge: '🎯 DART PROBE', desc: 'Authentic DART planetary defense spacecraft (~570 kg) equipped with DRACO imaging navigation and ROSA solar arrays.' },
     apollo_lm: { name: 'NASA Apollo 11 Lunar Module (Eagle)', badge: '🌙 APOLLO 11', desc: 'Historic lunar lander with shock-absorbing legs and gold thermal foil (4 bays).' },
     voyager: { name: 'NASA Voyager 1 Interstellar Probe', badge: '📡 NASA PROBE', desc: 'Deep-space probe with high-gain parabolic dish and Golden Record (3 bays).' }
   },
@@ -513,6 +514,7 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     hyperion: { name: 'Soái hạm thám hiểm Hyperion', badge: '🌌 SOÁI HẠM', desc: 'Thân tàu thám hiểm cỡ lớn với 6 khoang lắp thiết bị khoa học.' },
     ghostwing: { name: 'Tàu đánh chặn trinh sát Ghostwing', badge: '⚡ TRINH SÁT', desc: 'Thân tàu trinh sát nhẹ cánh vát ngược, lắp tối đa 3 thiết bị đo.' },
     shuttle: { name: 'Tàu con thoi NASA Discovery (OV-103)', badge: '🚀 TÀU CON THOI NASA', desc: 'Mô hình tàu con thoi chính thức của NASA với cánh delta và gạch chịu nhiệt (5 khoang).' },
+    dart_impactor: { name: 'Tàu va chạm động năng NASA DART', badge: '🎯 TÀU DART', desc: 'Cấu hình lịch sử chuẩn của DART (~570 kg) trang bị camera trinh sát DRACO và mảng pin mặt trời màng cuộn ROSA.' },
     apollo_lm: { name: 'Tàu đổ bộ Mặt Trăng NASA Apollo 11 (Eagle)', badge: '🌙 APOLLO 11', desc: 'Mô-đun đổ bộ lịch sử với chân đáp giảm chấn và lớp chắn nhiệt vàng (4 khoang).' },
     voyager: { name: 'Tàu thám hiểm NASA Voyager 1', badge: '📡 TÀU THĂM DÒ NASA', desc: 'Tàu thăm dò không gian sâu với ăng-ten parabol lớn và Đĩa Vàng (3 khoang).' }
   },
@@ -524,6 +526,7 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     hyperion: { name: 'Hyperion Exploration Flagship', badge: '🌌 FLAGSHIP', desc: 'Heavy deep-space hull with 6 instrument bays and sensor spine.' },
     ghostwing: { name: 'Ghostwing Recon Interceptor', badge: '⚡ RECON', desc: 'Light forward-swept reconnaissance hull with 3 instrument bays.' },
     shuttle: { name: 'NASA Space Shuttle Orbiter (Discovery OV-103)', badge: '🚀 NASA ORBITER', desc: 'Official NASA winged orbiter model with delta wings and thermal tiles (5 bays).' },
+    dart_impactor: { name: 'NASA DART Kinetic Impactor', badge: '🎯 DART PROBE', desc: 'Authentic DART planetary defense spacecraft (~570 kg) equipped with DRACO imaging navigation and ROSA solar arrays.' },
     apollo_lm: { name: 'NASA Apollo 11 Lunar Module (Eagle)', badge: '🌙 APOLLO 11', desc: 'Historic lunar lander with shock-absorbing legs and gold thermal foil (4 bays).' },
     voyager: { name: 'NASA Voyager 1 Interstellar Probe', badge: '📡 NASA PROBE', desc: 'Deep-space probe with high-gain parabolic dish and Golden Record (3 bays).' }
   },
@@ -535,6 +538,7 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     hyperion: { name: 'Hyperion 探査旗艦', badge: '🌌 旗艦', desc: '6基の観測機器スロットを備えた大型深宇宙探査船体。' },
     ghostwing: { name: 'Ghostwing 偵察迎撃機', badge: '⚡ 偵察', desc: '前進翼を備えた軽量の偵察船体。最大3基の観測機器を搭載可能。' },
     shuttle: { name: 'NASA スペースシャトル Discovery (OV-103)', badge: '🚀 NASA シャトル', desc: 'デルタ翼と耐熱タイルを備えたNASA公式オービターモデル（最大5基）。' },
+    dart_impactor: { name: 'NASA DART 運動衝突探査機', badge: '🎯 DART探査機', desc: 'DRACO光学航法カメラとROSA太陽電池パネルを備えたDART実機仕様（約570kg）。' },
     apollo_lm: { name: 'NASA アポロ11号 月着陸船 (Eagle)', badge: '🌙 APOLLO 11', desc: '着陸脚と金色の断熱材を備えた歴史的な月着陸船（最大4基）。' },
     voyager: { name: 'NASA ボイジャー1号 探査機', badge: '📡 NASA 探査機', desc: '大型パラボラアンテナとゴールデンレコードを備えた深宇宙探査機（最大3基）。' }
   },
@@ -546,6 +550,7 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     hyperion: { name: 'Hyperion 탐사 기함', badge: '🌌 기함', desc: '6개 장비 슬롯을 갖춘 대형 심우주 탐사 선체.' },
     ghostwing: { name: 'Ghostwing 정찰 요격선', badge: '⚡ 정찰', desc: '최대 3개의 장비를 탑재하는 경량 정찰 선체.' },
     shuttle: { name: 'NASA 우주왕복선 Discovery (OV-103)', badge: '🚀 NASA 왕복선', desc: '델타 날개와 내열 타일을 갖춘 공식 NASA 우주왕복선 모델 (최대 5슬롯).' },
+    dart_impactor: { name: 'NASA DART 운동 충돌체', badge: '🎯 DART 탐사선', desc: 'DRACO 광학 유도 카메라와 ROSA 태양광 패널을 장착한 공식 DART 구성 (약 570kg).' },
     apollo_lm: { name: 'NASA 아폴로 11호 달 착륙선 (Eagle)', badge: '🌙 APOLLO 11', desc: '충격 흡수 다리와 금박 단열재를 갖춘 역사적인 달 착륙선 (최대 4슬롯).' },
     voyager: { name: 'NASA 보이저 1호 성간 탐사선', badge: '📡 NASA 탐사선', desc: '대형 파라볼라 안테나와 골든 레코드를 탑재한 심우주 탐사선 (최대 3슬롯).' }
   },
@@ -557,6 +562,7 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     hyperion: { name: 'Vaisseau amiral d’exploration Hyperion', badge: '🌌 AMIRAL', desc: 'Coque d’exploration lourde dotée de 6 emplacements scientifiques.' },
     ghostwing: { name: 'Intercepteur de reconnaissance Ghostwing', badge: '⚡ RECON', desc: 'Coque légère de reconnaissance à 3 baies d’instruments.' },
     shuttle: { name: 'Navette spatiale NASA Discovery (OV-103)', badge: '🚀 NAVETTE NASA', desc: 'Modèle officiel de navette NASA avec ailes delta et tuiles thermiques (5 baies).' },
+    dart_impactor: { name: 'Impacteur cinétique NASA DART', badge: '🎯 SONDE DART', desc: 'Configuration historique authentique de DART (~570 kg) dotée de la caméra de navigation DRACO et de panneaux solaires déployables ROSA.' },
     apollo_lm: { name: 'Module lunaire NASA Apollo 11 (Eagle)', badge: '🌙 APOLLO 11', desc: 'Atterrisseur lunaire historique avec trains amortisseurs et feuille d’or (4 baies).' },
     voyager: { name: 'Sonde interstellaire NASA Voyager 1', badge: '📡 SONDE NASA', desc: 'Sonde lointaine avec antenne parabolique et Disque d’or (3 baies).' }
   },
@@ -568,6 +574,7 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     hyperion: { name: 'Hyperion Forschungs-Flaggschiff', badge: '🌌 FLAGGSCHIFF', desc: 'Schweres Tiefraumschiff mit 6 Plätzen für Messgeräte.' },
     ghostwing: { name: 'Ghostwing Aufklärungs-Abfangjäger', badge: '⚡ AUFKLÄRUNG', desc: 'Leichter Aufklärer mit 3 Geräteplätzen.' },
     shuttle: { name: 'NASA Space Shuttle Discovery (OV-103)', badge: '🚀 NASA SHUTTLE', desc: 'Offizielles NASA-Orbiter-Modell mit Deltaflügeln und Hitzeschutzkacheln (5 Plätze).' },
+    dart_impactor: { name: 'Kinetischer Impaktor NASA DART', badge: '🎯 DART-SONDE', desc: 'Historische DART-Konfiguration (~570 kg) mit DRACO-Navigationskamera und entfaltbaren ROSA-Solarmodulen.' },
     apollo_lm: { name: 'NASA Apollo 11 Mondlandefähre (Eagle)', badge: '🌙 APOLLO 11', desc: 'Historische Mondfähre mit Landebeinen und Goldfolie (4 Plätze).' },
     voyager: { name: 'NASA Voyager 1 Raumsonde', badge: '📡 NASA SONDE', desc: 'Tiefraumsonde mit Parabolantenne und Golden Record (3 Plätze).' }
   },
@@ -579,6 +586,7 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     hyperion: { name: 'Nave ammiraglia da esplorazione Hyperion', badge: '🌌 AMMIRAGLIA', desc: 'Scafo da esplorazione pesante con 6 vani per sensori.' },
     ghostwing: { name: 'Intercettore di ricognizione Ghostwing', badge: '⚡ RICOGNIZIONE', desc: 'Scafo leggero da ricognizione con 3 vani strumenti.' },
     shuttle: { name: 'Navetta Spaziale NASA Discovery (OV-103)', badge: '🚀 NAVETTA NASA', desc: 'Modello ufficiale NASA con ali a delta e piastrelle termiche (5 vani).' },
+    dart_impactor: { name: 'Impattatore cinetico NASA DART', badge: '🎯 SONDA DART', desc: 'Configurazione storica DART (~570 kg) dotata di fotocamera di guida ottica DRACO e pannelli solari ROSA.' },
     apollo_lm: { name: 'Modulo Lunare NASA Apollo 11 (Eagle)', badge: '🌙 APOLLO 11', desc: 'Storico lander lunare con gambe ammortizzate e lamina d’oro (4 vani).' },
     voyager: { name: 'Sonda interstellare NASA Voyager 1', badge: '📡 SONDA NASA', desc: 'Sonda per lo spazio profondo con antenna parabolica e Golden Record (3 vani).' }
   },
@@ -590,6 +598,7 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     hyperion: { name: 'Buque insignia de exploración Hyperion', badge: '🌌 INSIGNIA', desc: 'Casco pesado de exploración con 6 bahías científicas.' },
     ghostwing: { name: 'Interceptor de reconocimiento Ghostwing', badge: '⚡ RECON', desc: 'Nave ligera de reconocimiento con 3 bahías de instrumentos.' },
     shuttle: { name: 'Transbordador Espacial NASA Discovery (OV-103)', badge: '🚀 TRANSBORDADOR NASA', desc: 'Modelo oficial de la NASA con alas delta y losetas térmicas (5 bahías).' },
+    dart_impactor: { name: 'Impactador cinético NASA DART', badge: '🎯 SONDA DART', desc: 'Configuración histórica de DART (~570 kg) equipada con cámara de guiado óptico DRACO y paneles solares desplegables ROSA.' },
     apollo_lm: { name: 'Módulo Lunar NASA Apolo 11 (Eagle)', badge: '🌙 APOLLO 11', desc: 'Histórico módulo lunar con patas amortiguadoras y lámina dorada (4 bahías).' },
     voyager: { name: 'Sonda interstellare NASA Voyager 1', badge: '📡 SONDA NASA', desc: 'Sonda interestelar con antena parabólica y Disco de Oro (3 bahías).' }
   }

@@ -57,10 +57,10 @@ export class ScenarioSelectorControl extends MenuControl{
                 inclination: 28.5 * Math.PI / 180
             },
             {
-                title: "NASA DART: 65803 Didymos Intercept",
-                parent: "65803 Didymos",
-                semimajor_axis: 500 / AU,
-                eccentricity: 0.05
+                title: "NASA DART: Dimorphos Kinetic Impact",
+                parent: "Dimorphos",
+                semimajor_axis: 180 / AU,
+                eccentricity: 0.15
             },
             {
                 title: "NASA OSIRIS-REx: 101955 Bennu Rendezvous",
@@ -150,12 +150,22 @@ export class ScenarioSelectorControl extends MenuControl{
             });
             elem.onclick = clickHandler;
             this.scenarioMap.set(scenario.title.toLowerCase(), clickHandler);
+            if (scenario.title.includes("Dimorphos Kinetic Impact")) {
+                this.scenarioMap.set("nasa dart: 65803 didymos intercept", clickHandler);
+            }
             this.valueElement.appendChild(elem);
         }
     }
 
     loadScenarioByName(name: string) {
-        const handler = this.scenarioMap.get(name.toLowerCase());
+        let handler = this.scenarioMap.get(name.toLowerCase());
+        if (!handler && name.toLowerCase().includes('dart')) {
+            this.scenarioMap.forEach((val, key) => {
+                if (!handler && key.includes('dart')) {
+                    handler = val;
+                }
+            });
+        }
         if (handler) {
             handler();
         }
