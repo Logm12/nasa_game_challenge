@@ -3,6 +3,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 
 import "./main.css";
+import "./nasa_mission.css";
+import { NasaMissionDesigner } from './NasaMissionDesigner';
+import { SolarSystemExplorer } from './SolarSystemExplorer';
 
 import { CelestialBody, AU, AxisAngleQuaternion } from './CelestialBody';
 import { Settings, SettingsControl } from './SettingsControl';
@@ -43,6 +46,7 @@ let grids: THREE.Object3D;
 let scenarioSelectorControl: ScenarioSelectorControl;
 let saveControl: SaveControl;
 let loadControl: LoadControl;
+let nasaDesigner: NasaMissionDesigner;
 
 let windowHalfX = window.innerWidth / 2;
 let windowHalfY = window.innerHeight / 2;
@@ -138,9 +142,13 @@ function init() {
 
     camera.position.set(0.005, 0.003, 0.005);
 
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor( 0x000000 );
     renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setPixelRatio( Math.max(window.devicePixelRatio || 1, 2) );
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.3;
+    renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.autoClear = false;
 
     cameraControls = new OrbitControls(camera, renderer.domElement);
@@ -155,7 +163,11 @@ function init() {
 
     stats = Stats();
     stats.domElement.style.position = 'absolute';
-    stats.domElement.style.top = '0px';
+    stats.domElement.style.top = '6px';
+    stats.domElement.style.left = '8px';
+    stats.domElement.style.borderRadius = '4px';
+    stats.domElement.style.overflow = 'hidden';
+    stats.domElement.style.zIndex = '5';
     container.appendChild( stats.domElement );
 
     timescaleControl = new TimeScaleControl(function(scale){ return gameState.setTimeScale(scale); });
@@ -267,8 +279,11 @@ function init() {
     container.appendChild( messageControl.domElement );
 
     scenarioSelectorControl = new ScenarioSelectorControl(
-        () => gameState.universe.sun.findRocket(),
-        (obj) => bodiesControl.selectBody(obj),
+        () => gameState.universe.sun.findRocket() || gameState.select_obj,
+        (obj) => {
+            bodiesControl.selectBody(obj);
+            equipRocketShip();
+        },
         function(throttle){ throttleControl.setThrottle(throttle); },
         function(){ gameState.resetTime(); },
         function(msg){ messageControl.setText(msg); },
@@ -277,6 +292,76 @@ function init() {
         }
     );
     container.appendChild( scenarioSelectorControl.domElement );
+
+    function equipRocketShip() {
+        if (!nasaDesigner) return;
+        const rocket = gameState.universe.sun.findRocket() || gameState.select_obj;
+        if (!rocket || !rocket.model) return;
+
+        // Clear previous ship models while keeping the thrust flame assembly
+        const toRemove: THREE.Object3D[] = [];
+        rocket.model.children.forEach(c => {
+            if (c !== rocket.blastModel) toRemove.push(c);
+        });
+        toRemove.forEach(c => rocket.model.remove(c));
+
+        // Mount authentic 4K NASA Spacecraft or Sci-Fi Battleship equipped in Hangar
+        const flightShip = nasaDesigner.createFlightShipModel();
+        rocket.model.add(flightShip);
+
+        // Align thrust plume to spacecraft engine bells
+        if (rocket.blastModel) {
+            rocket.blastModel.position.set(-18 / AU, 0, 0);
+        }
+
+        // Update HUD label tag to active spacecraft designation
+        if (rocket.markerLabel) {
+            rocket.markerLabel.innerHTML = `🚀 ${nasaDesigner.getSelectedCraftName()}`;
+            rocket.markerLabel.style.color = "#00f0ff";
+            rocket.markerLabel.style.border = "1px solid rgba(0, 240, 255, 0.4)";
+            rocket.markerLabel.style.borderRadius = "4px";
+            rocket.markerLabel.style.padding = "2px 8px";
+            rocket.markerLabel.style.fontFamily = "monospace";
+            rocket.markerLabel.style.fontSize = "11px";
+            rocket.markerLabel.style.background = "rgba(10, 16, 28, 0.85)";
+        }
+    }
+
+    nasaDesigner = new NasaMissionDesigner((mission, telemetry) => {
+        if (scenarioSelectorControl) {
+            scenarioSelectorControl.loadScenarioByName(mission.scenarioName);
+        }
+        equipRocketShip();
+        if (messageControl) {
+            messageControl.setText(`NASA Mission-Viz Flight: ${mission.title}! Destination: ${mission.destination}`);
+        }
+    }, () => {
+        equipRocketShip();
+    });
+
+    equipRocketShip();
+
+    // Auto-equip equipped 4K spacecraft immediately upon load
+    setTimeout(() => { equipRocketShip(); }, 200);
+    setTimeout(() => { equipRocketShip(); }, 800);
+    setTimeout(() => { equipRocketShip(); }, 2000);
+
+    // Bảng Điều Khiển & Khám Phá Toàn Cảnh Hệ Mặt Trời (Interactive Solar System Explorer)
+    const solarExplorer = new SolarSystemExplorer(
+        () => gameState.getSelectObj(),
+        (body) => {
+            gameState.select_obj = body;
+            throttleControl.visible = body.controllable;
+            if (bodiesControl) {
+                bodiesControl.selectBody(body);
+            }
+        },
+        () => camera,
+        () => cameraControls,
+        () => viewScale,
+        () => settings,
+        (msg) => messageControl.setText(msg)
+    );
 
     saveControl = new SaveControl(
         function(){ return gameState.serializeState(); },
@@ -362,6 +447,9 @@ function render() {
     gameState.universe.update(settings.center_select, viewScale, settings, camera, windowHalfX, windowHalfY,
         function(o, headingApoapsis){
             orbitalElementsControl.setText(o, headingApoapsis, settings.units_km);
+            if (nasaDesigner) {
+                nasaDesigner.updateFlightTelemetry(o, headingApoapsis);
+            }
         },
         scene,
         select_obj

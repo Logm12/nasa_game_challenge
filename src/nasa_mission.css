@@ -1,0 +1,1623 @@
+/* ==========================================================================
+   STARK AEROSPACE & S.W.O.R.D. INTERSTELLAR DOCK // AAA BATTLESHIP ARMORY
+   World-Class Game UI/UX Design System (Inspired by World of Warships & Star Citizen)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Rajdhani:wght@500;600;700;800&display=swap');
+
+:root {
+  /* Master Palette: Deep Space Obsidian & Aerospace Alloys */
+  --bg-void: #050811;
+  --glass-base: rgba(10, 15, 25, 0.76);
+  --glass-surface: rgba(16, 24, 38, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-border-focus: rgba(245, 158, 11, 0.5);
+
+  /* Refined Accent Hierarchy (Restrained & Purposeful) */
+  --accent-amber: #f59e0b;
+  --accent-amber-glow: rgba(245, 158, 11, 0.25);
+  --accent-cyan: #38bdf8;
+  --accent-cyan-glow: rgba(56, 189, 248, 0.2);
+  --accent-emerald: #10b981;
+  --accent-red: #ef4444;
+
+  /* Typography */
+  --font-display: 'Rajdhani', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* UI/UX Pro Max & Impeccable Motion & Elevation Tokens */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 150ms var(--ease-out-expo);
+  --transition-normal: 250ms var(--ease-out-expo);
+  --elevation-ring: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --glow-cyan-sm: 0 0 12px rgba(56, 189, 248, 0.3);
+  --glow-amber-sm: 0 0 12px rgba(245, 158, 11, 0.3);
+
+  /* Text Hierarchy */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+}
+
+/* ==========================================================================
+   MASTER FULLSCREEN CONTAINER
+   ========================================================================== */
+#nasa-mission-modal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-void);
+  z-index: 99999;
+  font-family: var(--font-display);
+  color: var(--text-primary);
+  user-select: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Living Fullscreen 3D Hangar Canvas */
+.fullscreen-hangar-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  z-index: 1;
+  cursor: grab;
+}
+
+.fullscreen-hangar-canvas:active {
+  cursor: grabbing;
+}
+
+/* ==========================================================================
+   AAA FLOATING HUD LAYER
+   ========================================================================== */
+.aaa-hud-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 28px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   1. TOP AEROSPACE HEADER
+   ========================================================================== */
+.aaa-topbar {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--glass-base);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 10px 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-monogram {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--accent-amber) 0%, #b45309 100%);
+  color: #070913;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -1px;
+  box-shadow: 0 0 16px var(--accent-amber-glow);
+}
+
+.brand-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #fff;
+}
+
+.brand-name span {
+  color: var(--accent-amber);
+}
+
+.tag-sword {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 3px;
+  margin-left: 8px;
+  letter-spacing: 1px;
+}
+
+.brand-sub {
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+.topbar-center {
+  display: flex;
+  align-items: center;
+}
+
+.ship-callsign-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 5px 18px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #f1f5f9;
+}
+
+.pulse-indicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-emerald);
+  box-shadow: 0 0 8px var(--accent-emerald);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.ship-callsign-pill .sep {
+  color: var(--text-muted);
+}
+
+.ship-class-text {
+  font-size: 0.75rem;
+  color: var(--accent-cyan);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.telemetry-pill {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 6px;
+  padding: 5px 14px;
+}
+
+.lang-selector-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 6px;
+  padding: 4px 10px;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+}
+
+.lang-icon {
+  font-size: 0.95rem;
+}
+
+.select-game-language {
+  background: transparent;
+  border: none;
+  color: #f1f5f9;
+  font-family: var(--font-tech);
+  font-weight: 700;
+  font-size: 0.78rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.select-game-language option {
+  background: #0b1329;
+  color: #f1f5f9;
+}
+
+.pill-label {
+  font-size: 0.72rem;
+  color: var(--accent-amber);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.pill-val {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: #fff;
+  font-weight: 700;
+}
+
+.btn-cinematic-mode {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cinematic-mode:hover {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: var(--accent-amber);
+  color: #fff;
+}
+
+.btn-resource-mode {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #10b981;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-resource-mode:hover {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: #10b981;
+  color: #fff;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+}
+
+.vault-sources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 6px;
+  margin-top: 12px;
+}
+
+.vault-source-item {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px 14px;
+  transition: border-color 0.2s ease;
+}
+
+.vault-source-item:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.vault-source-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.vault-source-desc {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  margin-bottom: 8px;
+}
+
+.vault-links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.vault-links a {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #38bdf8;
+  text-decoration: none;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  padding: 4px 10px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.vault-links a:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  color: #fff;
+  text-decoration: none;
+}
+
+.btn-import-mode {
+  background: rgba(0, 240, 255, 0.08);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  color: #00f0ff;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-import-mode:hover {
+  background: rgba(0, 240, 255, 0.25);
+  border-color: #00f0ff;
+  color: #fff;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+}
+
+.import-toast {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 16, 28, 0.92);
+  border: 1px solid #00f0ff;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-family: var(--font-tech);
+  font-size: 0.85rem;
+  color: #00f0ff;
+  letter-spacing: 1px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 10000;
+  pointer-events: none;
+  animation: fadeInDown 0.3s ease;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ==========================================================================
+   2. FLOATING HUD BLADES (LEFT & RIGHT)
+   ========================================================================== */
+.hud-blade {
+  pointer-events: auto;
+  width: 320px;
+  background: var(--glass-base);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+
+.hud-blade-left {
+  position: absolute;
+  left: 28px;
+  top: 86px;
+  max-height: calc(100vh - 380px);
+}
+
+.hud-blade-right {
+  position: absolute;
+  right: 28px;
+  top: 86px;
+  max-height: calc(100vh - 380px);
+}
+
+.blade-header {
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.blade-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #fff;
+}
+
+.blade-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--accent-amber);
+}
+
+.blade-content {
+  padding: 14px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Scrollbar Styling */
+.blade-content::-webkit-scrollbar,
+.dock-shelf-container::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.blade-content::-webkit-scrollbar-thumb,
+.dock-shelf-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+/* ==========================================================================
+   MISSION TARGET CARDS (LEFT BLADE)
+   ========================================================================== */
+.marvel-mission-item,
+.nasa-mission-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.marvel-mission-item:hover,
+.nasa-mission-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(3px);
+}
+
+.marvel-mission-item.active,
+.nasa-mission-item.active {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: var(--accent-amber);
+  box-shadow: inset 3px 0 0 var(--accent-amber), 0 4px 20px var(--accent-amber-glow);
+}
+
+.mission-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #fff;
+  margin-bottom: 3px;
+}
+
+.mission-dest {
+  font-size: 0.78rem;
+  color: var(--accent-cyan);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.mission-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+.mission-meta strong {
+  color: #fff;
+}
+
+/* ==========================================================================
+   AVIONICS TELEMETRY GAUGES (RIGHT BLADE)
+   ========================================================================== */
+.gauge-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 10px 14px;
+}
+
+.gauge-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mono-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-cyan);
+}
+
+.gauge-value {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 4px 0 6px 0;
+  letter-spacing: -0.5px;
+}
+
+.gauge-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.gauge-fill {
+  height: 100%;
+  background: var(--accent-cyan);
+  transition: width 0.3s ease, background-color 0.3s;
+}
+
+/* ==========================================================================
+   3. BOTTOM SUBSYSTEM DOCK & LAUNCH BAR
+   ========================================================================== */
+.hud-dock-bottom {
+  pointer-events: auto;
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 56px);
+  max-width: 1380px;
+  background: var(--glass-base);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 14px 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+
+/* Category Tab Pills */
+.dock-tabs-row {
+  display: flex;
+  gap: 8px;
+}
+
+.inv-tab-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  padding: 7px 12px;
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.inv-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.inv-tab-btn.active {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--accent-amber);
+  border-color: var(--accent-amber);
+  box-shadow: 0 0 12px var(--accent-amber-glow);
+}
+
+/* Horizontal Scroll Armory Shelf */
+.dock-shelf-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-height: 140px;
+}
+
+.inventory-items-grid {
+  display: flex;
+  gap: 10px;
+  min-height: 125px;
+  padding-bottom: 4px;
+}
+
+/* Armory Card (AAA Military Hardware Card) */
+.armory-card {
+  min-width: 220px;
+  max-width: 240px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.armory-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.armory-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.armory-card:active {
+  transform: scale(0.98);
+}
+
+.armory-card:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+
+.armory-card.equipped {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: var(--accent-amber);
+  box-shadow: 0 4px 20px var(--accent-amber-glow);
+}
+
+.armory-card.equipped::before {
+  background: var(--accent-amber);
+}
+
+.armory-item-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.armory-item-stats {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-cyan);
+  margin-bottom: 4px;
+}
+
+.armory-item-perk {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   LAUNCH & VALIDATION DOCK BAR
+   ========================================================================== */
+.dock-launch-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--glass-border);
+  padding-top: 10px;
+}
+
+.jarvis-status {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-emerald);
+  box-shadow: 0 0 10px var(--accent-emerald);
+}
+
+.btn-hyperspace-launch {
+  background: linear-gradient(135deg, var(--accent-amber) 0%, #b45309 100%);
+  color: #070913;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  padding: 10px 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 20px var(--accent-amber-glow);
+  transition: all 0.2s var(--ease-out-expo);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-hyperspace-launch:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 32px var(--accent-amber-glow);
+  filter: brightness(1.12);
+}
+
+.btn-hyperspace-launch:active:not(:disabled) {
+  transform: scale(0.97);
+  box-shadow: 0 0 12px var(--accent-amber-glow);
+}
+
+.btn-hyperspace-launch:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 3px;
+}
+
+.btn-hyperspace-launch:disabled {
+  background: #1e293b;
+  border-color: #334155;
+  color: #64748b;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ==========================================================================
+   4. CINEMATIC MODE TOGGLE
+   ========================================================================== */
+.btn-exit-cinematic {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  z-index: 20;
+  background: var(--glass-base);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--accent-amber);
+  color: var(--accent-amber);
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  display: none;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+  transition: all 0.2s;
+}
+
+.btn-exit-cinematic:hover {
+  background: var(--accent-amber);
+  color: #000;
+}
+
+/* When in Cinematic Mode: Hide HUD blades smoothly */
+#nasa-mission-modal.cinematic-mode .aaa-topbar {
+  transform: translateY(-140%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#nasa-mission-modal.cinematic-mode .hud-blade-left {
+  transform: translateX(-140%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#nasa-mission-modal.cinematic-mode .hud-blade-right {
+  transform: translateX(140%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#nasa-mission-modal.cinematic-mode .hud-dock-bottom {
+  transform: translate(-50%, 140%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#nasa-mission-modal.cinematic-mode .btn-exit-cinematic {
+  display: block;
+}
+
+/* ==========================================================================
+   5. IN-FLIGHT HUD (AEROSPACE TACTICAL OVERLAY)
+   ========================================================================== */
+#nasa-flight-hud {
+  position: fixed;
+  top: 24px;
+  right: 28px;
+  left: auto;
+  z-index: 9999;
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  font-family: var(--font-display);
+}
+
+.hud-panel {
+  background: rgba(11, 17, 30, 0.90);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 8px;
+  padding: 14px 18px;
+  color: var(--text-primary);
+  pointer-events: auto;
+  min-width: 320px;
+  max-width: 380px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 24px rgba(0, 240, 255, 0.15);
+  user-select: none;
+  transition: box-shadow 0.2s ease;
+}
+
+.hud-panel:hover {
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.85), 0 0 32px rgba(0, 240, 255, 0.25);
+}
+
+.hud-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  letter-spacing: 1.2px;
+  cursor: grab;
+}
+
+.hud-title:active {
+  cursor: grabbing;
+}
+
+.hud-drag-icon {
+  font-size: 1.1rem;
+  color: rgba(0, 240, 255, 0.6);
+  margin-right: 4px;
+  letter-spacing: -2px;
+}
+
+.hud-mini-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #a0aec0;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hud-mini-btn:hover {
+  background: rgba(0, 240, 255, 0.25);
+  color: #fff;
+  border-color: #00f0ff;
+}
+
+.hud-body-content {
+  display: block;
+}
+
+.hud-body-content.minimized {
+  display: none;
+}
+
+.hud-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  margin-bottom: 5px;
+  color: var(--text-secondary);
+}
+
+.hud-row strong {
+  font-family: var(--font-mono);
+  color: #fff;
+}
+
+.hud-btn-group {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.hud-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  text-align: center;
+}
+
+.hud-btn:hover {
+  background: var(--accent-amber);
+  color: #000;
+  border-color: var(--accent-amber);
+}
+
+/* ==========================================================================
+   NASA WSMV (Web-based Space Mission Visualization) Telemetry & PHA Radar
+   ========================================================================== */
+.nasa-wsmv-section {
+  margin: 10px 0;
+  padding: 8px 10px;
+  background: rgba(6, 182, 212, 0.04);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  border-radius: 6px;
+  box-shadow: inset 0 0 10px rgba(6, 182, 212, 0.05);
+}
+
+.nasa-wsmv-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--stark-cyan);
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(6, 182, 212, 0.15);
+  padding-bottom: 4px;
+}
+
+.nasa-badge {
+  background: #0b3d91; /* Official NASA Blue */
+  color: #fff;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  box-shadow: 0 0 8px rgba(11, 61, 145, 0.5);
+}
+
+.wsmv-telemetry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px 6px;
+  margin-bottom: 8px;
+}
+
+.wsmv-item {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 3px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.wsmv-lbl {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+}
+
+.wsmv-val {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* PHA Radar Box */
+.pha-radar-box {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 4px;
+  padding: 6px 8px;
+}
+
+.pha-radar-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.radar-ping-icon {
+  font-size: 0.75rem;
+  animation: radar-pulse 1.5s infinite;
+}
+
+@keyframes radar-pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; filter: drop-shadow(0 0 4px #06b6d4); }
+  100% { opacity: 0.4; }
+}
+
+.pha-name-tag {
+  color: #f59e0b;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.pha-distance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.pha-dist-lbl {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+.pha-dist-val {
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  color: #fff;
+}
+
+.hazard-badge-safe {
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(6, 182, 212, 0.15);
+  color: #06b6d4;
+  border: 1px solid #06b6d4;
+}
+
+.hazard-badge-warn {
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(245, 158, 11, 0.18);
+  color: #f59e0b;
+  border: 1px solid #f59e0b;
+  animation: radar-pulse 1s infinite;
+}
+
+.hazard-badge-danger {
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+  animation: radar-pulse 0.5s infinite;
+}
+
+.pha-radar-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.pha-radar-fill {
+  height: 100%;
+  width: 15%;
+  background: #06b6d4;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+/* ==========================================================================
+   7. INTERACTIVE SOLAR SYSTEM EXPLORER DOCK & ASTRONOMICAL DOSSIER
+   ========================================================================== */
+.solar-dock {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  max-width: 96vw;
+  pointer-events: auto;
+  font-family: var(--font-display);
+}
+
+.solar-dock-inner {
+  display: flex;
+  align-items: center;
+  background: rgba(10, 15, 29, 0.88);
+  border: 1px solid rgba(0, 240, 255, 0.28);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.15);
+  border-radius: 40px;
+  padding: 6px 12px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  gap: 8px;
+}
+
+.solar-dock-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.solar-dock-brand:hover {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: var(--stark-cyan);
+}
+
+.dock-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--stark-cyan);
+  box-shadow: 0 0 8px var(--stark-cyan);
+  animation: radar-pulse 1.5s infinite;
+}
+
+.dock-icon {
+  font-size: 1.1rem;
+}
+
+.dock-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.dock-chevron {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.solar-dock-category-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.75);
+  padding: 3px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.dock-cat-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-family: var(--font-tech);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.dock-cat-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dock-cat-btn.active {
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  font-weight: 800;
+}
+
+.planet-cat-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.solar-planets-track {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 4px;
+  max-width: 78vw;
+  scrollbar-width: thin;
+}
+
+.solar-planets-track::-webkit-scrollbar {
+  height: 4px;
+}
+
+.solar-planets-track::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.2);
+  border-radius: 4px;
+}
+
+.planet-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 5px 12px;
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.planet-btn .p-icon {
+  font-size: 0.95rem;
+}
+
+.planet-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.planet-btn.active {
+  background: rgba(0, 240, 255, 0.16);
+  border-color: var(--stark-cyan);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.4);
+}
+
+.planet-btn.ship-btn {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: var(--accent-amber);
+  color: var(--accent-amber);
+}
+
+.planet-btn.ship-btn:hover {
+  background: rgba(245, 158, 11, 0.3);
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+}
+
+/* Cosmic Observation Dossier Modal */
+.cosmic-dossier-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3, 7, 18, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 20px;
+  font-family: var(--font-display);
+}
+
+.dossier-card {
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 240, 255, 0.15);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 640px;
+  padding: 24px 28px;
+  color: #fff;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.dossier-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.dossier-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dossier-avatar {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.3));
+}
+
+.dossier-name-vi {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #fff;
+}
+
+.dossier-name-en {
+  font-size: 0.8rem;
+  color: var(--stark-cyan);
+  font-family: var(--font-mono);
+}
+
+.dossier-close-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.dossier-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.dossier-desc {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+
+.dossier-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.dossier-metric {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dossier-metric.full-col {
+  grid-column: span 2;
+}
+
+.dossier-metric .m-label {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dossier-metric .m-val {
+  font-size: 0.88rem;
+  font-family: var(--font-mono);
+  color: #fff;
+}
+
+.dossier-highlights {
+  background: rgba(245, 158, 11, 0.05);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.dossier-section-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--stark-gold);
+  margin-bottom: 6px;
+  letter-spacing: 0.8px;
+}
+
+.dossier-ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.dossier-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.dossier-act-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.dossier-act-btn.primary {
+  background: var(--stark-cyan);
+  color: #000;
+  border: none;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+}
+
+.dossier-act-btn.primary:hover {
+  background: #fff;
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.8);
+}
+
+.dossier-act-btn.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: #fff;
+}
+
+.dossier-act-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ==========================================================================
+   6. DEBRIEF REPORT MODAL
+   ========================================================================== */
+#nasa-debrief-modal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(5, 8, 17, 0.94);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  z-index: 100000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  color: #fff;
+}
+
+.debrief-box {
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 36px 48px;
+  max-width: 620px;
+  width: 90%;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+  text-align: center;
+}
+
+/* ==========================================================================
+   7. IMPECCABLE & UI/UX PRO MAX POLISH: SCROLLBARS & ACCESSIBILITY
+   ========================================================================== */
+.dock-shelf-container::-webkit-scrollbar,
+.blade-content::-webkit-scrollbar,
+.planets-scroll-strip::-webkit-scrollbar,
+.vault-sources-list::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+.dock-shelf-container::-webkit-scrollbar-track,
+.blade-content::-webkit-scrollbar-track,
+.planets-scroll-strip::-webkit-scrollbar-track,
+.vault-sources-list::-webkit-scrollbar-track {
+  background: rgba(10, 15, 25, 0.6);
+  border-radius: 4px;
+}
+
+.dock-shelf-container::-webkit-scrollbar-thumb,
+.blade-content::-webkit-scrollbar-thumb,
+.planets-scroll-strip::-webkit-scrollbar-thumb,
+.vault-sources-list::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.35);
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.dock-shelf-container::-webkit-scrollbar-thumb:hover,
+.blade-content::-webkit-scrollbar-thumb:hover,
+.planets-scroll-strip::-webkit-scrollbar-thumb:hover,
+.vault-sources-list::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-cyan);
+}
+
+.inv-tab-btn:active,
+.dock-cat-btn:active,
+.planet-btn:active {
+  transform: scale(0.97);
+}
+
+.inv-tab-btn:focus-visible,
+.dock-cat-btn:focus-visible,
+.planet-btn:focus-visible,
+.select-game-language:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}

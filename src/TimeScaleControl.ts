@@ -17,8 +17,15 @@ export class TimeScaleControl{
         this.setTimeScale = setTimeScale;
         this.element = document.createElement('div');
         this.element.style.position = 'absolute';
-        this.element.style.top = '50px';
-        this.element.style.background = '#7f7f7f';
+        this.element.style.top = '56px';
+        this.element.style.left = '8px';
+        this.element.style.background = 'rgba(15, 23, 42, 0.82)';
+        (this.element.style as any).backdropFilter = 'blur(12px)';
+        this.element.style.border = '1px solid rgba(255, 255, 255, 0.15)';
+        this.element.style.borderRadius = '6px';
+        this.element.style.padding = '6px 10px';
+        this.element.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.6)';
+        this.element.style.color = '#e2e8f0';
         this.element.style.zIndex = '10';
         this.timeIndex = 0;
         for(let i = 0; i < TimeScaleControl.series.length; i++){

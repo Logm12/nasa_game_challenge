@@ -386,7 +386,7 @@ export class CelestialBody{
                             this.marker.visible = false;
                     }
                     if(this.markerLabel){
-                        if(show_label){
+                        if(show_label && this.name !== "rocket"){
                             this.markerLabel.style.display = "block";
                             this.markerLabel.style.left = `${(8 + markerPos.x + windowHalfX)}px`;
                             this.markerLabel.style.top = `${(-8 - markerPos.y + windowHalfY)}px`;
@@ -620,7 +620,11 @@ export function addPlanet(orbitalElements: OrbitalElements,
     else if(params.modelName){
         const modelScale = params.modelScale ?? 100;
         if(params.mtlName){
-            if(params.modelColor){
+            if(params.name === "rocket"){
+                // Do not load the legacy low-poly rocket.obj cylinder!
+                // High-fidelity 4K NASA Space Shuttle / CC0 Battleship is dynamically mounted by NasaMissionDesigner.
+            }
+            else if(params.modelColor){
                 fetch(params.mtlName)
                     .then(mtlFile => mtlFile.text())
                     .then(mtlFile => {
@@ -737,7 +741,12 @@ export function addPlanet(orbitalElements: OrbitalElements,
     overlay.add(ret.marker);
 
     ret.markerLabel = document.createElement("div");
-    ret.markerLabel.innerHTML = ret.name;
+    if (ret.name === "rocket") {
+        ret.markerLabel.innerHTML = "";
+        ret.markerLabel.style.display = "none";
+    } else {
+        ret.markerLabel.innerHTML = ret.name;
+    }
     ret.markerLabel.style.position = "absolute";
     ret.markerLabel.style.backgroundColor = "rgba(0,0,0,0.75)";
     ret.markerLabel.style.pointerEvents = "none";
