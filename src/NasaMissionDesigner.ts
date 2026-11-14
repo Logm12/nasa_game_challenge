@@ -397,6 +397,7 @@ export class NasaMissionDesigner {
 
   private activeTab: 'chassis' | 'flags' | 'power' | 'tech' | 'engines' | 'carriers' = 'chassis';
   private activeManualTab: string = 'quickstart';
+  private activeMobilePanel: 'missions' | 'outfit' | 'telemetry' | 'view3d' = 'missions';
 
   // NASA DART Simulation State
   public dartSimulation: DartSimulation | null = null;
@@ -651,6 +652,7 @@ export class NasaMissionDesigner {
 
     const modal = document.createElement('div');
     modal.id = 'nasa-mission-modal';
+    modal.className = 'mobile-panel-missions';
     modal.innerHTML = `
       <!-- Fullscreen Living 3D Hangar Canvas -->
       <canvas id="hangar-canvas" class="fullscreen-hangar-canvas"></canvas>
@@ -896,6 +898,26 @@ export class NasaMissionDesigner {
             </button>
           </div>
         </footer>
+
+        <!-- Mobile Bottom Ergonomic Navigation Bar -->
+        <nav class="mobile-nav-bar" id="mobile-nav-bar" aria-label="Mobile Navigation">
+          <button class="mobile-nav-btn active" id="btn-mobile-missions" data-mobile-panel="missions" aria-label="Sector Missions">
+            <span class="mobile-nav-icon">🎯</span>
+            <span class="mobile-nav-label" id="lbl-nav-missions">MISSIONS</span>
+          </button>
+          <button class="mobile-nav-btn" id="btn-mobile-outfit" data-mobile-panel="outfit" aria-label="Subsystem Outfit">
+            <span class="mobile-nav-icon">🛠️</span>
+            <span class="mobile-nav-label" id="lbl-nav-outfit">OUTFIT</span>
+          </button>
+          <button class="mobile-nav-btn" id="btn-mobile-telemetry" data-mobile-panel="telemetry" aria-label="Flight Telemetry">
+            <span class="mobile-nav-icon">📊</span>
+            <span class="mobile-nav-label" id="lbl-nav-telemetry">AVIONICS</span>
+          </button>
+          <button class="mobile-nav-btn" id="btn-mobile-view3d" data-mobile-panel="view3d" aria-label="3D Viewport">
+            <span class="mobile-nav-icon">👁️</span>
+            <span class="mobile-nav-label" id="lbl-nav-view3d">3D VIEW</span>
+          </button>
+        </nav>
       </div>
 
       <!-- Quick Exit Button for Cinematic Mode -->
@@ -1512,6 +1534,62 @@ export class NasaMissionDesigner {
       this.targetDistance = Math.max(2.2, Math.min(8.0, this.targetDistance + e.deltaY * 0.004));
     }, { passive: true });
 
+    // Tương tác cảm ứng màn hình di động đa điểm (1 ngón xoay 360°, 2 ngón phóng to/thu nhỏ Pinch-to-zoom)
+    let isHangarTouching = false;
+    let prevTouchX = 0;
+    let prevTouchY = 0;
+    let prevPinchDist = 0;
+
+    window.addEventListener('touchstart', (e: TouchEvent) => {
+      if ((e.target as HTMLElement).closest('.hud-blade, .hud-dock-bottom, .aaa-topbar, .mobile-nav-bar, .dossier-card, .flight-manual-card, .debrief-box, button, select, input, .spotlight-tooltip')) return;
+      if (e.touches.length === 1) {
+        isHangarTouching = true;
+        prevTouchX = e.touches[0].clientX;
+        prevTouchY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        isHangarTouching = true;
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        prevPinchDist = Math.hypot(dx, dy);
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e: TouchEvent) => {
+      if (!isHangarTouching) return;
+      if ((e.target as HTMLElement).closest('.hud-blade, .hud-dock-bottom, .aaa-topbar, .mobile-nav-bar, .dossier-card, .flight-manual-card, .debrief-box, button, select, input, .spotlight-tooltip')) return;
+
+      if (e.touches.length === 1) {
+        const dx = e.touches[0].clientX - prevTouchX;
+        const dy = e.touches[0].clientY - prevTouchY;
+        this.targetAzimuth += dx * 0.007;
+        this.targetElevation = Math.max(-0.25, Math.min(0.95, this.targetElevation - dy * 0.007));
+        prevTouchX = e.touches[0].clientX;
+        prevTouchY = e.touches[0].clientY;
+        if (e.cancelable) e.preventDefault();
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.hypot(dx, dy);
+        const deltaDist = dist - prevPinchDist;
+        this.targetDistance = Math.max(2.2, Math.min(8.0, this.targetDistance - deltaDist * 0.012));
+        prevPinchDist = dist;
+        if (e.cancelable) e.preventDefault();
+      }
+    }, { passive: false });
+
+    window.addEventListener('touchend', (e: TouchEvent) => {
+      if (e.touches.length === 0) {
+        isHangarTouching = false;
+      } else if (e.touches.length === 1) {
+        prevTouchX = e.touches[0].clientX;
+        prevTouchY = e.touches[0].clientY;
+      }
+    });
+
+    window.addEventListener('touchcancel', () => {
+      isHangarTouching = false;
+    });
+
     // Vòng lặp render Hangar 4K
     const animateHangar = () => {
       requestAnimationFrame(animateHangar);
@@ -1582,7 +1660,7 @@ export class NasaMissionDesigner {
     };
     animateHangar();
 
-    window.addEventListener('resize', () => {
+    const handleHangarResize = () => {
       if (!this.hangarCamera || !this.hangarRenderer) return;
       const w = window.innerWidth;
       const h = window.innerHeight;
@@ -1590,6 +1668,10 @@ export class NasaMissionDesigner {
       this.hangarCamera.updateProjectionMatrix();
       this.hangarRenderer.setSize(w, h);
       this.hangarRenderer.setPixelRatio(computeEffectiveDpr());
+    };
+    window.addEventListener('resize', handleHangarResize);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(handleHangarResize, 100);
     });
   }
 
@@ -3523,6 +3605,21 @@ export class NasaMissionDesigner {
     }
   }
 
+  public setMobilePanel(panel: 'missions' | 'outfit' | 'telemetry' | 'view3d'): void {
+    this.activeMobilePanel = panel;
+    const modal = document.getElementById('nasa-mission-modal');
+    if (modal) {
+      modal.classList.remove('mobile-panel-missions', 'mobile-panel-outfit', 'mobile-panel-telemetry', 'mobile-panel-view3d');
+      modal.classList.add(`mobile-panel-${panel}`);
+    }
+
+    const navBtns = document.querySelectorAll('.mobile-nav-btn');
+    navBtns.forEach(btn => {
+      const p = (btn as HTMLElement).getAttribute('data-mobile-panel');
+      btn.classList.toggle('active', p === panel);
+    });
+  }
+
   private bindDOMEvents() {
     // Inventory Tabs
     const tabBtns = document.querySelectorAll('.inv-tab-btn');
@@ -3597,6 +3694,36 @@ export class NasaMissionDesigner {
       });
 
       window.addEventListener('mouseup', () => {
+        isHudDragging = false;
+      });
+
+      hudHandle.addEventListener('touchstart', (e: TouchEvent) => {
+        if ((e.target as HTMLElement).closest('button')) return;
+        if (e.touches.length === 1) {
+          isHudDragging = true;
+          const rect = hudEl.getBoundingClientRect();
+          hudEl.style.right = 'auto';
+          hudEl.style.left = `${rect.left}px`;
+          hudEl.style.top = `${rect.top}px`;
+          startMouseX = e.touches[0].clientX;
+          startMouseY = e.touches[0].clientY;
+          initLeft = rect.left;
+          initTop = rect.top;
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e: TouchEvent) => {
+        if (!isHudDragging || e.touches.length !== 1) return;
+        const dx = e.touches[0].clientX - startMouseX;
+        const dy = e.touches[0].clientY - startMouseY;
+        const newLeft = Math.max(8, Math.min(window.innerWidth - hudEl.offsetWidth - 8, initLeft + dx));
+        const newTop = Math.max(8, Math.min(window.innerHeight - hudEl.offsetHeight - 8, initTop + dy));
+        hudEl.style.left = `${newLeft}px`;
+        hudEl.style.top = `${newTop}px`;
+        if (e.cancelable) e.preventDefault();
+      }, { passive: false });
+
+      window.addEventListener('touchend', () => {
         isHudDragging = false;
       });
     }
@@ -3712,6 +3839,10 @@ export class NasaMissionDesigner {
     const toggleLeftBlade = () => {
       if (!bladeLeft) return;
       this.playClickSound();
+      if (window.innerWidth <= 768) {
+        this.setMobilePanel('view3d');
+        return;
+      }
       const isCollapsed = bladeLeft.classList.toggle('collapsed');
       const icon = btnToggleLeft?.querySelector('.tab-icon');
       if (icon) icon.textContent = isCollapsed ? '▶' : '◀';
@@ -3730,6 +3861,10 @@ export class NasaMissionDesigner {
     const toggleRightBlade = () => {
       if (!bladeRight) return;
       this.playClickSound();
+      if (window.innerWidth <= 768) {
+        this.setMobilePanel('view3d');
+        return;
+      }
       const isCollapsed = bladeRight.classList.toggle('collapsed');
       const icon = btnToggleRight?.querySelector('.tab-icon');
       if (icon) icon.textContent = isCollapsed ? '◀' : '▶';
@@ -3747,6 +3882,10 @@ export class NasaMissionDesigner {
     const toggleBottomDock = () => {
       if (!dockBottom) return;
       this.playClickSound();
+      if (window.innerWidth <= 768) {
+        this.setMobilePanel('view3d');
+        return;
+      }
       const isCollapsed = dockBottom.classList.toggle('collapsed');
       const icon = btnToggleDock?.querySelector('.dock-tab-icon');
       const label = btnToggleDock?.querySelector('.dock-tab-label');
@@ -3760,6 +3899,22 @@ export class NasaMissionDesigner {
       btnToggleDock?.setAttribute('title', isCollapsed ? 'Mở rộng bảng Trang bị (Expand Dock)' : 'Thu gọn bảng Trang bị (Collapse Dock)');
     };
     btnToggleDock?.addEventListener('click', toggleBottomDock);
+
+    // Mobile Bottom Navigation Bar Events
+    const mobileNavBtns = document.querySelectorAll('.mobile-nav-btn');
+    mobileNavBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetPanel = btn.getAttribute('data-mobile-panel') as 'missions' | 'outfit' | 'telemetry' | 'view3d';
+        if (targetPanel) {
+          this.playClickSound();
+          if (this.activeMobilePanel === targetPanel && targetPanel !== 'view3d') {
+            this.setMobilePanel('view3d');
+          } else {
+            this.setMobilePanel(targetPanel);
+          }
+        }
+      });
+    });
   }
 
   private renderFlightManualContent() {
@@ -4430,28 +4585,38 @@ export class NasaMissionDesigner {
     }
 
     // Automatically expand any collapsed blade if targeted
-    if (step.targetId === 'blade-missions') {
-      const el = document.getElementById('blade-missions');
-      if (el?.classList.contains('collapsed')) {
-        el.classList.remove('collapsed');
-        const icon = document.querySelector('#btn-toggle-blade-left .tab-icon');
-        if (icon) icon.textContent = '◀';
+    if (window.innerWidth <= 768) {
+      if (step.targetId === 'blade-missions') {
+        this.setMobilePanel('missions');
+      } else if (step.targetId === 'blade-diagnostics') {
+        this.setMobilePanel('telemetry');
+      } else if (step.targetId === 'dock-bottom' || step.targetId === 'btn-approve-launch' || step.targetId === 'btn-toggle-dock-bottom' || step.targetId === 'armory-items-grid') {
+        this.setMobilePanel('outfit');
       }
-    } else if (step.targetId === 'blade-diagnostics') {
-      const el = document.getElementById('blade-diagnostics');
-      if (el?.classList.contains('collapsed')) {
-        el.classList.remove('collapsed');
-        const icon = document.querySelector('#btn-toggle-blade-right .tab-icon');
-        if (icon) icon.textContent = '▶';
-      }
-    } else if (step.targetId === 'dock-bottom' || step.targetId === 'btn-approve-launch' || step.targetId === 'btn-toggle-dock-bottom') {
-      const el = document.getElementById('dock-bottom');
-      if (el?.classList.contains('collapsed')) {
-        el.classList.remove('collapsed');
-        const icon = document.querySelector('#btn-toggle-dock-bottom .dock-tab-icon');
-        const label = document.querySelector('#btn-toggle-dock-bottom .dock-tab-label');
-        if (icon) icon.textContent = '▼';
-        if (label) label.textContent = isVi ? 'THU GỌN BẢNG' : 'HIDE DOCK';
+    } else {
+      if (step.targetId === 'blade-missions') {
+        const el = document.getElementById('blade-missions');
+        if (el?.classList.contains('collapsed')) {
+          el.classList.remove('collapsed');
+          const icon = document.querySelector('#btn-toggle-blade-left .tab-icon');
+          if (icon) icon.textContent = '◀';
+        }
+      } else if (step.targetId === 'blade-diagnostics') {
+        const el = document.getElementById('blade-diagnostics');
+        if (el?.classList.contains('collapsed')) {
+          el.classList.remove('collapsed');
+          const icon = document.querySelector('#btn-toggle-blade-right .tab-icon');
+          if (icon) icon.textContent = '▶';
+        }
+      } else if (step.targetId === 'dock-bottom' || step.targetId === 'btn-approve-launch' || step.targetId === 'btn-toggle-dock-bottom') {
+        const el = document.getElementById('dock-bottom');
+        if (el?.classList.contains('collapsed')) {
+          el.classList.remove('collapsed');
+          const icon = document.querySelector('#btn-toggle-dock-bottom .dock-tab-icon');
+          const label = document.querySelector('#btn-toggle-dock-bottom .dock-tab-label');
+          if (icon) icon.textContent = '▼';
+          if (label) label.textContent = isVi ? 'THU GỌN BẢNG' : 'HIDE DOCK';
+        }
       }
     }
 
@@ -4504,22 +4669,27 @@ export class NasaMissionDesigner {
     let tLeft = 0;
     let tTop = 0;
 
-    if (step.preferredPos === 'right') {
-      tLeft = rect.right + 24;
-      tTop = Math.max(80, Math.min(window.innerHeight - tooltipHeight - 30, rect.top));
-    } else if (step.preferredPos === 'left') {
-      tLeft = rect.left - tooltipWidth - 24;
-      tTop = Math.max(80, Math.min(window.innerHeight - tooltipHeight - 30, rect.top));
-    } else if (step.preferredPos === 'top') {
-      tLeft = Math.max(20, Math.min(window.innerWidth - tooltipWidth - 20, rect.left + (rect.width - tooltipWidth) / 2));
-      tTop = Math.max(20, rect.top - tooltipHeight - 24);
+    if (window.innerWidth <= 768) {
+      const mobWidth = Math.min(window.innerWidth - 20, 360);
+      tLeft = Math.max(10, (window.innerWidth - mobWidth) / 2);
+      tTop = Math.max(54, window.innerHeight - tooltipHeight - 68);
     } else {
-      tLeft = Math.max(20, Math.min(window.innerWidth - tooltipWidth - 20, rect.left + (rect.width - tooltipWidth) / 2));
-      tTop = Math.min(window.innerHeight - tooltipHeight - 20, rect.bottom + 20);
+      if (step.preferredPos === 'right') {
+        tLeft = rect.right + 24;
+        tTop = Math.max(80, Math.min(window.innerHeight - tooltipHeight - 30, rect.top));
+      } else if (step.preferredPos === 'left') {
+        tLeft = rect.left - tooltipWidth - 24;
+        tTop = Math.max(80, Math.min(window.innerHeight - tooltipHeight - 30, rect.top));
+      } else if (step.preferredPos === 'top') {
+        tLeft = Math.max(20, Math.min(window.innerWidth - tooltipWidth - 20, rect.left + (rect.width - tooltipWidth) / 2));
+        tTop = Math.max(20, rect.top - tooltipHeight - 24);
+      } else {
+        tLeft = Math.max(20, Math.min(window.innerWidth - tooltipWidth - 20, rect.left + (rect.width - tooltipWidth) / 2));
+        tTop = Math.min(window.innerHeight - tooltipHeight - 20, rect.bottom + 20);
+      }
+      tLeft = Math.max(16, Math.min(window.innerWidth - tooltipWidth - 16, tLeft));
+      tTop = Math.max(16, Math.min(window.innerHeight - tooltipHeight - 16, tTop));
     }
-
-    tLeft = Math.max(16, Math.min(window.innerWidth - tooltipWidth - 16, tLeft));
-    tTop = Math.max(16, Math.min(window.innerHeight - tooltipHeight - 16, tTop));
 
     tooltip.style.left = `${tLeft}px`;
     tooltip.style.top = `${tTop}px`;
@@ -4773,6 +4943,12 @@ export class NasaMissionDesigner {
       const el = document.getElementById(id);
       if (el) el.textContent = text;
     };
+
+    // Mobile Bottom Navigation Bar Labels
+    setTxt('lbl-nav-missions', isVi ? 'SỨ MỆNH' : 'MISSIONS');
+    setTxt('lbl-nav-outfit', isVi ? 'TRANG BỊ' : 'OUTFIT');
+    setTxt('lbl-nav-telemetry', isVi ? 'THÔNG SỐ' : 'AVIONICS');
+    setTxt('lbl-nav-view3d', isVi ? 'XEM 3D' : '3D VIEW');
 
     // Left Blade: Missions (both ID and class)
     setTxt('blade-missions-title', t.sectorOpsTitle);

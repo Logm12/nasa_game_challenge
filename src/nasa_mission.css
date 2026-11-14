@@ -2389,12 +2389,17 @@
   flex-shrink: 0;
 }
 
+/* Default state: mobile navigation bar hidden on desktop */
+.mobile-nav-bar {
+  display: none;
+}
+
 @media (max-width: 1024px) {
   .aaa-topbar {
     flex-wrap: wrap;
     height: auto;
-    min-height: 56px;
-    padding: 8px 12px;
+    min-height: 54px;
+    padding: 6px 12px;
     gap: 8px;
   }
   .topbar-center {
@@ -2408,89 +2413,525 @@
   }
 }
 
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE ARCHITECTURE (<= 768px)
+   ========================================================================== */
 @media (max-width: 768px) {
-  .aaa-hud-overlay {
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    pointer-events: auto;
-    padding-bottom: 12px;
+  /* Prevent full-screen rubberbanding and keep 3D canvas full size */
+  #nasa-mission-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden !important;
   }
-  .aaa-topbar,
+
+  .fullscreen-hangar-canvas {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    touch-action: none !important;
+  }
+
+  /* HUD overlay container stays fixed and transparent to touch */
+  .aaa-hud-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Compact Aerospace Topbar */
+  .aaa-topbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    padding: 4px 10px !important;
+    padding-top: max(4px, env(safe-area-inset-top, 4px)) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    background: rgba(10, 16, 28, 0.94) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.28) !important;
+    z-index: 950 !important;
+    pointer-events: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .topbar-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .brand-monogram {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 0.72rem !important;
+    border-radius: 6px !important;
+  }
+
+  .brand-titles {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .brand-name {
+    font-size: 0.85rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  .tag-sword,
+  .brand-sub,
+  .topbar-center {
+    display: none !important;
+  }
+
+  .topbar-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .telemetry-pill {
+    padding: 3px 8px !important;
+    font-size: 0.72rem !important;
+    border-radius: 6px !important;
+  }
+
+  .pill-label {
+    display: none !important;
+  }
+
+  #mission-budget-display {
+    font-size: 0.82rem !important;
+    color: var(--accent-amber) !important;
+  }
+
+  .select-game-language {
+    font-size: 0.70rem !important;
+    padding: 3px 4px !important;
+    max-width: 100px !important;
+  }
+
+  .btn-spotlight-tour,
+  .btn-cinematic-mode {
+    font-size: 0.68rem !important;
+    padding: 4px 6px !important;
+    min-height: 32px !important;
+  }
+
+  /* Ergonomic Floating Bottom Navigation Bar */
+  .mobile-nav-bar {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: calc(52px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    background: rgba(8, 14, 26, 0.96) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border-top: 1px solid rgba(0, 240, 255, 0.35) !important;
+    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.85) !important;
+    z-index: 1000 !important;
+    pointer-events: auto !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    user-select: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .mobile-nav-btn {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: none !important;
+    color: #94a3b8 !important;
+    padding: 4px 8px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    flex: 1 1 0 !important;
+    max-width: 88px !important;
+    min-height: 44px !important;
+    box-sizing: border-box !important;
+  }
+
+  .mobile-nav-btn:active {
+    transform: scale(0.92) !important;
+  }
+
+  .mobile-nav-icon {
+    font-size: 1.15rem !important;
+    line-height: 1.1 !important;
+    margin-bottom: 2px !important;
+  }
+
+  .mobile-nav-label {
+    font-family: var(--font-tech) !important;
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    white-space: nowrap !important;
+  }
+
+  .mobile-nav-btn.active {
+    color: var(--stark-cyan) !important;
+    background: rgba(0, 240, 255, 0.12) !important;
+    box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.22) !important;
+  }
+
+  .mobile-nav-btn.active .mobile-nav-icon {
+    filter: drop-shadow(0 0 6px var(--stark-cyan)) !important;
+  }
+
+  /* Edge Rail tabs hidden on mobile (replaced by bottom nav bar) */
+  .blade-edge-tab,
+  .dock-collapse-tab {
+    display: none !important;
+  }
+
+  /* Sliding Bottom Sheet Drawers for Left Blade, Right Blade, Bottom Dock */
   .hud-blade-left,
   .hud-blade-right,
   .hud-dock-bottom {
-    position: relative !important;
+    position: fixed !important;
     top: auto !important;
-    left: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    transform: none !important;
-    width: calc(100% - 16px) !important;
-    max-width: none !important;
-    margin: 6px 8px !important;
-    max-height: none !important;
-    flex-shrink: 0 !important;
+    bottom: calc(54px + env(safe-area-inset-bottom, 0px)) !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: 620px !important;
+    margin: 0 auto !important;
+    border-radius: 16px !important;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.92), 0 0 28px rgba(0, 240, 255, 0.22) !important;
+    background: rgba(10, 16, 28, 0.96) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid rgba(0, 240, 255, 0.32) !important;
+    transform: translateY(130%) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, visibility 0.32s !important;
+    z-index: 900 !important;
+    max-height: calc(66vh - env(safe-area-inset-bottom, 0px)) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
   }
-  .aaa-topbar {
-    width: 100% !important;
-    margin: 0 !important;
+
+  /* Active Drawer States */
+  .mobile-panel-missions #blade-missions {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
+
+  .mobile-panel-outfit #dock-bottom {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  .mobile-panel-telemetry #blade-diagnostics {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  /* When 3D View is active: all drawers slide down smoothly */
+  .mobile-panel-view3d .hud-blade-left,
+  .mobile-panel-view3d .hud-blade-right,
+  .mobile-panel-view3d .hud-dock-bottom {
+    transform: translateY(130%) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  /* Drawer Content Touch Scrolling */
   .hud-blade-left .blade-content,
   .hud-blade-right .blade-content {
-    max-height: 220px;
-    overflow-y: auto;
+    max-height: calc(58vh - 55px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 10px 12px 14px 12px !important;
   }
+
+  .hud-dock-bottom {
+    padding: 10px 12px 12px 12px !important;
+  }
+
+  .dock-shelf-container {
+    max-height: calc(38vh - 40px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
   .dock-tabs-row {
-    flex-wrap: wrap;
-    gap: 4px;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 6px !important;
+    gap: 6px !important;
+    scrollbar-width: none !important;
   }
+  .dock-tabs-row::-webkit-scrollbar {
+    display: none !important;
+  }
+
   .inv-tab-btn {
-    flex: 1 1 auto;
-    font-size: 0.78rem;
-    padding: 6px 8px;
+    flex-shrink: 0 !important;
+    padding: 6px 12px !important;
+    font-size: 0.74rem !important;
+    white-space: nowrap !important;
+    min-height: 40px !important;
   }
+
+  .inventory-items-grid {
+    display: flex !important;
+    gap: 10px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 6px 2px !important;
+  }
+
+  .armory-card {
+    min-width: 220px !important;
+    max-width: 260px !important;
+    flex-shrink: 0 !important;
+  }
+
   .dock-launch-bar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    margin-top: 8px !important;
+    padding-top: 8px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
+
+  .jarvis-status {
+    font-size: 0.72rem !important;
+    line-height: 1.25 !important;
+    flex: 1 1 auto !important;
+  }
+
   .btn-hyperspace-launch {
-    width: 100%;
-    justify-content: center;
+    padding: 8px 16px !important;
+    font-size: 0.82rem !important;
+    min-height: 44px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
+
+  /* In-Flight Tactical HUD */
   #nasa-flight-hud {
+    position: fixed !important;
     right: 8px !important;
     left: 8px !important;
-    top: 8px !important;
+    top: max(8px, env(safe-area-inset-top, 8px)) !important;
     width: auto !important;
     max-width: calc(100vw - 16px) !important;
+    z-index: 100 !important;
+  }
+
+  .wsmv-telemetry-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 4px !important;
+  }
+
+  .wsmv-item {
+    padding: 3px 6px !important;
+    font-size: 0.72rem !important;
+  }
+
+  /* Flight Deck Controls */
+  .flight-deck-root {
+    position: fixed !important;
+    bottom: max(6px, env(safe-area-inset-bottom, 6px)) !important;
+    left: 50% !important;
+    transform: translateX(-50%) scale(clamp(0.60, calc(100vw / 540px), 0.92)) !important;
+    transform-origin: bottom center !important;
+    z-index: 50 !important;
+  }
+
+  .flight-deck-pill {
+    padding: 8px 18px !important;
+    font-size: 0.8rem !important;
+    border-radius: 20px !important;
+    min-height: 44px !important;
+  }
+
+  /* Solar System Explorer Dock */
+  .solar-dock {
+    max-width: 98vw !important;
+    top: max(6px, env(safe-area-inset-top, 6px)) !important;
+  }
+
+  .solar-dock-inner {
+    padding: 4px 8px !important;
+    gap: 4px !important;
+  }
+
+  .solar-dock-brand {
+    padding: 4px 10px !important;
+  }
+
+  .dock-title {
+    font-size: 0.72rem !important;
+  }
+
+  .solar-planets-track {
+    max-width: 48vw !important;
+  }
+
+  .dock-cat-btn {
+    font-size: 0.68rem !important;
+    padding: 3px 8px !important;
+  }
+
+  /* Modals & Dialogs on Mobile */
+  .flight-manual-card,
+  .dossier-card {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    max-height: 90vh !important;
+    padding: 14px 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .manual-tabs-nav {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 4px !important;
+    padding-bottom: 6px !important;
+  }
+
+  .manual-nav-btn {
+    flex-shrink: 0 !important;
+    font-size: 0.72rem !important;
+    padding: 5px 8px !important;
+    white-space: nowrap !important;
+    min-height: 38px !important;
+  }
+
+  .debrief-box {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    padding: 18px 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .spotlight-tooltip {
+    left: 8px !important;
+    right: 8px !important;
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
+    top: auto !important;
+    width: auto !important;
+    max-width: none !important;
+    transform: none !important;
   }
 }
 
+/* ==========================================================================
+   EXTRA COMPACT MOBILE DEVICES (<= 480px)
+   ========================================================================== */
 @media (max-width: 480px) {
   .brand-name {
-    font-size: 0.95rem;
+    font-size: 0.80rem !important;
   }
-  .brand-sub {
-    font-size: 0.68rem;
+
+  .telemetry-pill {
+    padding: 2px 6px !important;
   }
-  .topbar-right {
-    width: 100%;
+
+  #mission-budget-display {
+    font-size: 0.78rem !important;
   }
-  .btn-resource-mode,
-  .btn-import-mode,
-  .btn-cinematic-mode,
+
   .select-game-language {
-    font-size: 0.72rem;
-    padding: 4px 8px;
+    max-width: 86px !important;
+    font-size: 0.66rem !important;
+    text-overflow: ellipsis !important;
   }
-  .ship-callsign-pill {
-    font-size: 0.72rem;
-    flex-wrap: wrap;
-  }
+
   .armory-card {
-    min-width: 220px;
+    min-width: 195px !important;
+    max-width: 220px !important;
+  }
+
+  .wsmv-telemetry-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ==========================================================================
+   MOBILE LANDSCAPE ORIENTATION (<= 500px Height)
+   ========================================================================== */
+@media (max-height: 500px) and (orientation: landscape) {
+  .aaa-topbar {
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 2px 10px !important;
+  }
+
+  .mobile-nav-bar {
+    height: 42px !important;
+  }
+
+  .mobile-nav-icon {
+    font-size: 0.95rem !important;
+  }
+
+  .mobile-nav-label {
+    font-size: 0.58rem !important;
+  }
+
+  .hud-blade-left,
+  .hud-blade-right,
+  .hud-dock-bottom {
+    bottom: 44px !important;
+    max-height: 80vh !important;
+  }
+
+  .hud-blade-left .blade-content,
+  .hud-blade-right .blade-content {
+    max-height: calc(76vh - 46px) !important;
+  }
+
+  .dock-shelf-container {
+    max-height: calc(52vh - 36px) !important;
   }
 }
 
