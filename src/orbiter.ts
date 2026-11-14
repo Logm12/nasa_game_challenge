@@ -22,7 +22,7 @@ import { LoadControl } from './LoadControl';
 import Overlay from './Overlay';
 import GameState from './GameState';
 
-import backgroundUrl from './images/hipparcoscyl1.jpg';
+import backgroundUrl from './images/deep_space_4k.jpg';
 
 
 let container: HTMLElement;
@@ -85,7 +85,8 @@ function init() {
     const loader = new THREE.TextureLoader();
     loader.load( backgroundUrl, function ( texture ) {
 
-        const geometry = new THREE.SphereGeometry( 2, 20, 20 );
+        texture.encoding = THREE.sRGBEncoding;
+        const geometry = new THREE.SphereGeometry( 500, 64, 64 );
 
         const material = new THREE.MeshBasicMaterial( { map: texture, depthTest: false, depthWrite: false, side: THREE.BackSide } );
         material.depthWrite = false;

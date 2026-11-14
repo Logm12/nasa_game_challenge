@@ -377,101 +377,9 @@ export class SunVisuals {
     this.group.add(this.prominenceGroup);
 
     // =========================================================================
-    // 4. SOLAR FLARE PARTICLES (Hạt Plasma Gió Mặt Trời Phóng Vào Vũ Trụ)
-    // =========================================================================
-    const particleCount = 200;
-    const particleGeom = new THREE.BufferGeometry();
-    this.flareParticlePositions = new Float32Array(particleCount * 3);
-    this.flareParticleSpeeds = new Float32Array(particleCount);
-
-    for (let i = 0; i < particleCount; i++) {
-      const dir = new THREE.Vector3(
-        (Math.random() - 0.5) * 2,
-        (Math.random() - 0.5) * 2,
-        (Math.random() - 0.5) * 2
-      ).normalize();
-      this.flareParticleDirections.push(dir);
-
-      const r = this.sunRadiusInAu * (1.0 + Math.random() * 1.2);
-      this.flareParticlePositions[i * 3] = dir.x * r;
-      this.flareParticlePositions[i * 3 + 1] = dir.y * r;
-      this.flareParticlePositions[i * 3 + 2] = dir.z * r;
-
-      this.flareParticleSpeeds[i] = (0.002 + Math.random() * 0.004) * this.sunRadiusInAu;
-    }
-
-    particleGeom.setAttribute('position', new THREE.BufferAttribute(this.flareParticlePositions, 3));
-
-    // Glow dot sprite
-    const dotCanvas = document.createElement('canvas');
-    dotCanvas.width = 64;
-    dotCanvas.height = 64;
-    const dctx = dotCanvas.getContext('2d')!;
-    const grad = dctx.createRadialGradient(32, 32, 2, 32, 32, 32);
-    grad.addColorStop(0, 'rgba(255, 255, 220, 1.0)');
-    grad.addColorStop(0.3, 'rgba(255, 170, 40, 0.8)');
-    grad.addColorStop(0.7, 'rgba(255, 50, 0, 0.3)');
-    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    dctx.fillStyle = grad;
-    dctx.fillRect(0, 0, 64, 64);
-    const dotTex = new THREE.CanvasTexture(dotCanvas);
-
-    const particleMat = new THREE.PointsMaterial({
-      size: this.sunRadiusInAu * 0.12,
-      map: dotTex,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    });
-
-    this.flareParticles = new THREE.Points(particleGeom, particleMat);
-    this.group.add(this.flareParticles);
-
-    // =========================================================================
-    // 5. BLINDING ANAMORPHIC SOLAR LENS FLARE (Vệt Lóa Quang Học Điện Ảnh)
-    // =========================================================================
+    // 4. Flare Particles & Lens Flare - Kept as empty groups to preserve API without casting visual artifacts in deep space
+    this.flareParticles = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ visible: false }));
     this.lensFlareGroup = new THREE.Object3D();
-
-    // Anamorphic horizontal streak
-    const streakCanvas = document.createElement('canvas');
-    streakCanvas.width = 512;
-    streakCanvas.height = 64;
-    const sctx = streakCanvas.getContext('2d')!;
-    const sGrad = sctx.createLinearGradient(0, 32, 512, 32);
-    sGrad.addColorStop(0, 'rgba(0, 200, 255, 0)');
-    sGrad.addColorStop(0.35, 'rgba(255, 180, 50, 0.4)');
-    sGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.95)');
-    sGrad.addColorStop(0.65, 'rgba(255, 180, 50, 0.4)');
-    sGrad.addColorStop(1, 'rgba(0, 200, 255, 0)');
-    sctx.fillStyle = sGrad;
-    sctx.fillRect(0, 0, 512, 64);
-    const streakTex = new THREE.CanvasTexture(streakCanvas);
-
-    const streakGeom = new THREE.PlaneGeometry(this.sunRadiusInAu * 8.5, this.sunRadiusInAu * 0.65);
-    const streakMat = new THREE.MeshBasicMaterial({
-      map: streakTex,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide,
-      depthWrite: false
-    });
-    const streakMesh = new THREE.Mesh(streakGeom, streakMat);
-    this.lensFlareGroup.add(streakMesh);
-
-    // Central blinding glare disc
-    const glareGeom = new THREE.PlaneGeometry(this.sunRadiusInAu * 3.2, this.sunRadiusInAu * 3.2);
-    const glareMat = new THREE.MeshBasicMaterial({
-      map: dotTex,
-      transparent: true,
-      opacity: 0.75,
-      blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide,
-      depthWrite: false
-    });
-    const glareMesh = new THREE.Mesh(glareGeom, glareMat);
-    this.lensFlareGroup.add(glareMesh);
-
-    this.group.add(this.lensFlareGroup);
   }
 
   public update(deltaTime: number, camera: THREE.Camera) {
@@ -494,41 +402,5 @@ export class SunVisuals {
     this.innerCoronaMesh.scale.setScalar(this.sunRadiusInAu * 1.18 * coronaPulse);
     const outerPulse = 1.0 + Math.sin(t * 1.2 + 1.0) * 0.08;
     this.outerCoronaMesh.scale.setScalar(this.sunRadiusInAu * 1.58 * outerPulse);
-
-    // 4. Propagate Solar Flare Particles outwards
-    const posAttr = this.flareParticles.geometry.getAttribute('position') as THREE.BufferAttribute;
-    const maxR = this.sunRadiusInAu * 2.6;
-    const minR = this.sunRadiusInAu * 1.02;
-
-    for (let i = 0; i < this.flareParticleDirections.length; i++) {
-      let x = this.flareParticlePositions[i * 3];
-      let y = this.flareParticlePositions[i * 3 + 1];
-      let z = this.flareParticlePositions[i * 3 + 2];
-
-      const dir = this.flareParticleDirections[i];
-      const speed = this.flareParticleSpeeds[i];
-
-      x += dir.x * speed;
-      y += dir.y * speed;
-      z += dir.z * speed;
-
-      const currentR = Math.sqrt(x * x + y * y + z * z);
-      if (currentR > maxR) {
-        // Reset to solar surface
-        x = dir.x * minR;
-        y = dir.y * minR;
-        z = dir.z * minR;
-      }
-
-      this.flareParticlePositions[i * 3] = x;
-      this.flareParticlePositions[i * 3 + 1] = y;
-      this.flareParticlePositions[i * 3 + 2] = z;
-    }
-    posAttr.needsUpdate = true;
-
-    // 5. Orient Lens Flare to always face Camera
-    if (camera) {
-      this.lensFlareGroup.quaternion.copy(camera.quaternion);
-    }
   }
 }
