@@ -510,11 +510,11 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     milano: { name: 'The Milano (Tàu trinh sát nhẹ)', badge: '🪐 TRINH SÁT', desc: 'Thân tàu hư cấu rất nhẹ (120 kg khô), cơ động cao, lắp tối đa 2 thiết bị đo.' },
     benatar: { name: 'The Benatar (Tàu tuần dương)', badge: '🚀 TUẦN DƯƠNG', desc: 'Thân tàu hư cấu cỡ lớn đi không gian sâu, lắp tối đa 5 thiết bị đo.' },
     sanctuary: { name: 'Sanctuary Flagship (Tàu hạng nặng)', badge: '👑 HẠNG NẶNG', desc: 'Thân tàu hư cấu bọc giáp nặng, mang được tối đa 6 thiết bị đo.' },
-    hyperion: { name: 'Hyperion Exploration Flagship', badge: '🌌 SOÁI HẠM', desc: 'Thân tàu thám hiểm cỡ lớn với 6 khoang lắp thiết bị khoa học.' },
-    ghostwing: { name: 'Ghostwing Recon Interceptor', badge: '⚡ TRINH SÁT', desc: 'Thân tàu trinh sát nhẹ cánh vát ngược, lắp tối đa 3 thiết bị đo.' },
-    shuttle: { name: 'Tàu con thoi NASA Discovery (OV-103)', badge: '🚀 NASA ORBITER', desc: 'Mô hình tàu con thoi chính thức của NASA với cánh delta và gạch chịu nhiệt (5 khoang).' },
+    hyperion: { name: 'Soái hạm thám hiểm Hyperion', badge: '🌌 SOÁI HẠM', desc: 'Thân tàu thám hiểm cỡ lớn với 6 khoang lắp thiết bị khoa học.' },
+    ghostwing: { name: 'Tàu đánh chặn trinh sát Ghostwing', badge: '⚡ TRINH SÁT', desc: 'Thân tàu trinh sát nhẹ cánh vát ngược, lắp tối đa 3 thiết bị đo.' },
+    shuttle: { name: 'Tàu con thoi NASA Discovery (OV-103)', badge: '🚀 TÀU CON THOI NASA', desc: 'Mô hình tàu con thoi chính thức của NASA với cánh delta và gạch chịu nhiệt (5 khoang).' },
     apollo_lm: { name: 'Tàu đổ bộ Mặt Trăng NASA Apollo 11 (Eagle)', badge: '🌙 APOLLO 11', desc: 'Mô-đun đổ bộ lịch sử với chân đáp giảm chấn và lớp chắn nhiệt vàng (4 khoang).' },
-    voyager: { name: 'Tàu thám hiểm NASA Voyager 1', badge: '📡 NASA PROBE', desc: 'Tàu thăm dò không gian sâu với ăng-ten parabol lớn và Đĩa Vàng (3 khoang).' }
+    voyager: { name: 'Tàu thám hiểm NASA Voyager 1', badge: '📡 TÀU THĂM DÒ NASA', desc: 'Tàu thăm dò không gian sâu với ăng-ten parabol lớn và Đĩa Vàng (3 khoang).' }
   },
   en_uk: {
     quinjet: { name: 'Quinjet Mk-VII (Stealth Concept)', badge: '🛡️ STEALTH', desc: 'Fictional stealth VTOL hull with folding delta wings. Balanced mass and 4 instrument bays.' },
@@ -534,9 +534,9 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     sanctuary: { name: 'Sanctuary Flagship（重装甲艦）', badge: '👑 重型', desc: '最大6基の科学観測機器を搭載できる大型の架空船体。' },
     hyperion: { name: 'Hyperion 探査旗艦', badge: '🌌 旗艦', desc: '6基の観測機器スロットを備えた大型深宇宙探査船体。' },
     ghostwing: { name: 'Ghostwing 偵察迎撃機', badge: '⚡ 偵察', desc: '前進翼を備えた軽量の偵察船体。最大3基の観測機器を搭載可能。' },
-    shuttle: { name: 'NASA スペースシャトル Discovery (OV-103)', badge: '🚀 NASA ORBITER', desc: 'デルタ翼と耐熱タイルを備えたNASA公式オービターモデル（最大5基）。' },
+    shuttle: { name: 'NASA スペースシャトル Discovery (OV-103)', badge: '🚀 NASA シャトル', desc: 'デルタ翼と耐熱タイルを備えたNASA公式オービターモデル（最大5基）。' },
     apollo_lm: { name: 'NASA アポロ11号 月着陸船 (Eagle)', badge: '🌙 APOLLO 11', desc: '着陸脚と金色の断熱材を備えた歴史的な月着陸船（最大4基）。' },
-    voyager: { name: 'NASA ボイジャー1号 探査機', badge: '📡 NASA PROBE', desc: '大型パラボラアンテナとゴールデンレコードを備えた深宇宙探査機（最大3基）。' }
+    voyager: { name: 'NASA ボイジャー1号 探査機', badge: '📡 NASA 探査機', desc: '大型パラボラアンテナとゴールデンレコードを備えた深宇宙探査機（最大3基）。' }
   },
   ko: {
     quinjet: { name: 'Quinjet Mk-VII (스텔스 콘셉트)', badge: '🛡️ 스텔스', desc: '접이식 델타 날개를 갖춘 가상 선체. 균형 잡힌 질량과 최대 4개 장비 슬롯.' },
@@ -545,53 +545,53 @@ export const SPACECRAFT_I18N: Record<SupportedLang, Record<string, LocalizedItem
     sanctuary: { name: 'Sanctuary Flagship (중장갑 기함)', badge: '👑 대형', desc: '최대 6개의 과학 관측 장비를 지원하는 대형 가상 선체.' },
     hyperion: { name: 'Hyperion 탐사 기함', badge: '🌌 기함', desc: '6개 장비 슬롯을 갖춘 대형 심우주 탐사 선체.' },
     ghostwing: { name: 'Ghostwing 정찰 요격선', badge: '⚡ 정찰', desc: '최대 3개의 장비를 탑재하는 경량 정찰 선체.' },
-    shuttle: { name: 'NASA 우주왕복선 Discovery (OV-103)', badge: '🚀 NASA ORBITER', desc: '델타 날개와 내열 타일을 갖춘 공식 NASA 우주왕복선 모델 (최대 5슬롯).' },
+    shuttle: { name: 'NASA 우주왕복선 Discovery (OV-103)', badge: '🚀 NASA 왕복선', desc: '델타 날개와 내열 타일을 갖춘 공식 NASA 우주왕복선 모델 (최대 5슬롯).' },
     apollo_lm: { name: 'NASA 아폴로 11호 달 착륙선 (Eagle)', badge: '🌙 APOLLO 11', desc: '충격 흡수 다리와 금박 단열재를 갖춘 역사적인 달 착륙선 (최대 4슬롯).' },
-    voyager: { name: 'NASA 보이저 1호 성간 탐사선', badge: '📡 NASA PROBE', desc: '대형 파라볼라 안테나와 골든 레코드를 탑재한 심우주 탐사선 (최대 3슬롯).' }
+    voyager: { name: 'NASA 보이저 1호 성간 탐사선', badge: '📡 NASA 탐사선', desc: '대형 파라볼라 안테나와 골든 레코드를 탑재한 심우주 탐사선 (최대 3슬롯).' }
   },
   fr: {
     quinjet: { name: 'Quinjet Mk-VII (Concept furtif)', badge: '🛡️ FURTIF', desc: 'Coque fictive à ailes delta repliables. Masse équilibrée et 4 baies d’instruments.' },
     milano: { name: 'The Milano (Éclaireur léger)', badge: '🪐 ÉCLAIREUR', desc: 'Coque fictive très légère (120 kg à sec) avec 2 baies d’instruments.' },
     benatar: { name: 'The Benatar (Croiseur lourd)', badge: '🚀 CROISEUR', desc: 'Croiseur fictif pour l’espace profond doté de 5 baies d’instruments.' },
     sanctuary: { name: 'Sanctuary Flagship (Cuirassé)', badge: '👑 LOURD', desc: 'Immense coque fictive blindée pouvant accueillir jusqu’à 6 instruments.' },
-    hyperion: { name: 'Hyperion (Vaisseau amiral)', badge: '🌌 AMIRAL', desc: 'Coque d’exploration lourde dotée de 6 emplacements scientifiques.' },
-    ghostwing: { name: 'Ghostwing (Intercepteur)', badge: '⚡ RECON', desc: 'Coque légère de reconnaissance à 3 baies d’instruments.' },
-    shuttle: { name: 'Navette spatiale NASA Discovery (OV-103)', badge: '🚀 NASA ORBITER', desc: 'Modèle officiel de navette NASA avec ailes delta et tuiles thermiques (5 baies).' },
+    hyperion: { name: 'Vaisseau amiral d’exploration Hyperion', badge: '🌌 AMIRAL', desc: 'Coque d’exploration lourde dotée de 6 emplacements scientifiques.' },
+    ghostwing: { name: 'Intercepteur de reconnaissance Ghostwing', badge: '⚡ RECON', desc: 'Coque légère de reconnaissance à 3 baies d’instruments.' },
+    shuttle: { name: 'Navette spatiale NASA Discovery (OV-103)', badge: '🚀 NAVETTE NASA', desc: 'Modèle officiel de navette NASA avec ailes delta et tuiles thermiques (5 baies).' },
     apollo_lm: { name: 'Module lunaire NASA Apollo 11 (Eagle)', badge: '🌙 APOLLO 11', desc: 'Atterrisseur lunaire historique avec trains amortisseurs et feuille d’or (4 baies).' },
-    voyager: { name: 'Sonde interstellaire NASA Voyager 1', badge: '📡 NASA PROBE', desc: 'Sonde lointaine avec antenne parabolique et Disque d’or (3 baies).' }
+    voyager: { name: 'Sonde interstellaire NASA Voyager 1', badge: '📡 SONDE NASA', desc: 'Sonde lointaine avec antenne parabolique et Disque d’or (3 baies).' }
   },
   de: {
     quinjet: { name: 'Quinjet Mk-VII (Tarnkappen-Konzept)', badge: '🛡️ STEALTH', desc: 'Fiktiver Rumpf mit klappbaren Deltaflügeln. Ausgewogene Masse und 4 Geräteplätze.' },
     milano: { name: 'The Milano (Leichter Aufklärer)', badge: '🪐 SPÄHER', desc: 'Sehr leichter fiktiver Rumpf (120 kg trocken) mit 2 Geräteplätzen.' },
     benatar: { name: 'The Benatar (Schwerer Kreuzer)', badge: '🚀 KREUZER', desc: 'Schwerer fiktiver Tiefraumkreuzer mit 5 Geräteplätzen.' },
     sanctuary: { name: 'Sanctuary Flagship (Großschiff)', badge: '👑 SCHWER', desc: 'Massiver fiktiver Rumpf für bis zu 6 wissenschaftliche Instrumente.' },
-    hyperion: { name: 'Hyperion Forschungsschiff', badge: '🌌 FLAGGSCHIFF', desc: 'Schweres Tiefraumschiff mit 6 Plätzen für Messgeräte.' },
-    ghostwing: { name: 'Ghostwing Aufklärer', badge: '⚡ AUFKLÄRUNG', desc: 'Leichter Aufklärer mit 3 Geräteplätzen.' },
-    shuttle: { name: 'NASA Space Shuttle Discovery (OV-103)', badge: '🚀 NASA ORBITER', desc: 'Offizielles NASA-Orbiter-Modell mit Deltaflügeln und Hitzeschutzkacheln (5 Plätze).' },
+    hyperion: { name: 'Hyperion Forschungs-Flaggschiff', badge: '🌌 FLAGGSCHIFF', desc: 'Schweres Tiefraumschiff mit 6 Plätzen für Messgeräte.' },
+    ghostwing: { name: 'Ghostwing Aufklärungs-Abfangjäger', badge: '⚡ AUFKLÄRUNG', desc: 'Leichter Aufklärer mit 3 Geräteplätzen.' },
+    shuttle: { name: 'NASA Space Shuttle Discovery (OV-103)', badge: '🚀 NASA SHUTTLE', desc: 'Offizielles NASA-Orbiter-Modell mit Deltaflügeln und Hitzeschutzkacheln (5 Plätze).' },
     apollo_lm: { name: 'NASA Apollo 11 Mondlandefähre (Eagle)', badge: '🌙 APOLLO 11', desc: 'Historische Mondfähre mit Landebeinen und Goldfolie (4 Plätze).' },
-    voyager: { name: 'NASA Voyager 1 Raumsonde', badge: '📡 NASA PROBE', desc: 'Tiefraumsonde mit Parabolantenne und Golden Record (3 Plätze).' }
+    voyager: { name: 'NASA Voyager 1 Raumsonde', badge: '📡 NASA SONDE', desc: 'Tiefraumsonde mit Parabolantenne und Golden Record (3 Plätze).' }
   },
   it: {
     quinjet: { name: 'Quinjet Mk-VII (Concetto stealth)', badge: '🛡️ STEALTH', desc: 'Scafo fittizio con ali a delta pieghevoli. Massa bilanciata e 4 vani strumenti.' },
     milano: { name: 'The Milano (Ricognitore leggero)', badge: '🪐 RICOGNITORE', desc: 'Scafo leggero (120 kg a secco) con 2 vani strumenti.' },
     benatar: { name: 'The Benatar (Incrociatore pesante)', badge: '🚀 INCROCIATORE', desc: 'Incrociatore fittizio per spazio profondo con 5 vani strumenti.' },
-    sanctuary: { name: 'Sanctuary Flagship (Corazzata)', badge: '👑 PESANTE', desc: 'Grande scafo fittizio corazzato con supporto fino a 6 strumenti.' },
-    hyperion: { name: 'Nave ammiraglia Hyperion', badge: '🌌 AMMIRAGLIA', desc: 'Scafo da esplorazione pesante con 6 vani per sensori.' },
-    ghostwing: { name: 'Intercettore Ghostwing', badge: '⚡ RICOGNIZIONE', desc: 'Scafo leggero da ricognizione con 3 vani strumenti.' },
-    shuttle: { name: 'Space Shuttle NASA Discovery (OV-103)', badge: '🚀 NASA ORBITER', desc: 'Modello ufficiale NASA con ali a delta e piastrelle termiche (5 vani).' },
+    sanctuary: { name: 'Nave ammiraglia Sanctuary (Corazzata)', badge: '👑 PESANTE', desc: 'Grande scafo fittizio corazzato con supporto fino a 6 strumenti.' },
+    hyperion: { name: 'Nave ammiraglia da esplorazione Hyperion', badge: '🌌 AMMIRAGLIA', desc: 'Scafo da esplorazione pesante con 6 vani per sensori.' },
+    ghostwing: { name: 'Intercettore di ricognizione Ghostwing', badge: '⚡ RICOGNIZIONE', desc: 'Scafo leggero da ricognizione con 3 vani strumenti.' },
+    shuttle: { name: 'Navetta Spaziale NASA Discovery (OV-103)', badge: '🚀 NAVETTA NASA', desc: 'Modello ufficiale NASA con ali a delta e piastrelle termiche (5 vani).' },
     apollo_lm: { name: 'Modulo Lunare NASA Apollo 11 (Eagle)', badge: '🌙 APOLLO 11', desc: 'Storico lander lunare con gambe ammortizzate e lamina d’oro (4 vani).' },
-    voyager: { name: 'Sonda NASA Voyager 1', badge: '📡 NASA PROBE', desc: 'Sonda per lo spazio profondo con antenna parabolica e Golden Record (3 vani).' }
+    voyager: { name: 'Sonda interstellare NASA Voyager 1', badge: '📡 SONDA NASA', desc: 'Sonda per lo spazio profondo con antenna parabolica e Golden Record (3 vani).' }
   },
   es: {
     quinjet: { name: 'Quinjet Mk-VII (Diseño furtivo)', badge: '🛡️ FURTIVO', desc: 'Casco ficticio con alas delta plegables. Masa equilibrada y 4 bahías de instrumentos.' },
     milano: { name: 'The Milano (Explorador ligero)', badge: '🪐 EXPLORADOR', desc: 'Casco ligero (120 kg en seco) con 2 bahías de instrumentos.' },
     benatar: { name: 'The Benatar (Crucero pesado)', badge: '🚀 CRUCERO', desc: 'Crucero ficticio de espacio profundo con 5 bahías de instrumentos.' },
     sanctuary: { name: 'Sanctuary Flagship (Acorazado)', badge: '👑 PESADO', desc: 'Enorme casco ficticio blindado con capacidad para 6 instrumentos.' },
-    hyperion: { name: 'Buque insignia Hyperion', badge: '🌌 INSIGNIA', desc: 'Casco pesado de exploración con 6 bahías científicas.' },
-    ghostwing: { name: 'Interceptor Ghostwing', badge: '⚡ RECON', desc: 'Nave ligera de reconocimiento con 3 bahías de instrumentos.' },
-    shuttle: { name: 'Transbordador NASA Discovery (OV-103)', badge: '🚀 NASA ORBITER', desc: 'Modelo oficial de la NASA con alas delta y losetas térmicas (5 bahías).' },
+    hyperion: { name: 'Buque insignia de exploración Hyperion', badge: '🌌 INSIGNIA', desc: 'Casco pesado de exploración con 6 bahías científicas.' },
+    ghostwing: { name: 'Interceptor de reconocimiento Ghostwing', badge: '⚡ RECON', desc: 'Nave ligera de reconocimiento con 3 bahías de instrumentos.' },
+    shuttle: { name: 'Transbordador Espacial NASA Discovery (OV-103)', badge: '🚀 TRANSBORDADOR NASA', desc: 'Modelo oficial de la NASA con alas delta y losetas térmicas (5 bahías).' },
     apollo_lm: { name: 'Módulo Lunar NASA Apolo 11 (Eagle)', badge: '🌙 APOLLO 11', desc: 'Histórico módulo lunar con patas amortiguadoras y lámina dorada (4 bahías).' },
-    voyager: { name: 'Sonda NASA Voyager 1', badge: '📡 NASA PROBE', desc: 'Sonda interestelar con antena parabólica y Disco de Oro (3 bahías).' }
+    voyager: { name: 'Sonda interstellare NASA Voyager 1', badge: '📡 SONDA NASA', desc: 'Sonda interestelar con antena parabólica y Disco de Oro (3 bahías).' }
   }
 };
 
