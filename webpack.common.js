@@ -46,6 +46,10 @@ module.exports = {
   },
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ],
+    alias: {
+      'three/src/Three': path.resolve(__dirname, 'node_modules/three/build/three.module.js'),
+      'three$': path.resolve(__dirname, 'node_modules/three/build/three.module.js'),
+    },
   },
   output: {
     filename: 'bundle.js',

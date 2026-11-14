@@ -1,6 +1,7 @@
 import settingsIconUrl from './images/settingsIcon.png';
 
-import { getControlTexts, onLangChange } from './i18n';
+import { getControlTexts, getTexts, onLangChange, SupportedLang } from './i18n';
+import { getStoredQuality, setStoredQuality, onQualityChange, GraphicsQuality } from './QualityManager';
 
 export function rightTitleSetSize(title: HTMLElement, icon: HTMLElement){
     const r = title.getBoundingClientRect();
@@ -96,12 +97,51 @@ export class SettingsControl{
             this.valueElement.appendChild(lineElement);
         }
 
+        const qualityRow = document.createElement('div');
+        qualityRow.style.marginTop = '4px';
+        qualityRow.style.borderTop = '1px solid rgba(255,255,255,0.2)';
+        qualityRow.style.paddingTop = '4px';
+
+        const qualitySelect = document.createElement('select');
+        qualitySelect.id = 'settings_quality_select';
+        qualitySelect.style.background = '#0a101c';
+        qualitySelect.style.color = '#00f0ff';
+        qualitySelect.style.border = '1px solid #00f0ff';
+        qualitySelect.style.borderRadius = '3px';
+        qualitySelect.style.fontSize = '11px';
+        qualitySelect.style.padding = '2px 4px';
+        qualitySelect.style.width = '100%';
+
+        const updateQualityOptions = (lang?: SupportedLang) => {
+            const t = getTexts(lang);
+            qualitySelect.title = t.qualityTitle;
+            qualitySelect.innerHTML = `
+                <option value="low">${t.qualityLow}</option>
+                <option value="balanced">${t.qualityBalanced}</option>
+                <option value="high">${t.qualityHigh}</option>
+            `;
+            qualitySelect.value = getStoredQuality();
+        };
+        updateQualityOptions();
+
+        qualitySelect.addEventListener('change', () => {
+            setStoredQuality(qualitySelect.value as GraphicsQuality);
+        });
+
+        onQualityChange((q) => {
+            qualitySelect.value = q;
+        });
+
+        qualityRow.appendChild(qualitySelect);
+        this.valueElement.appendChild(qualityRow);
+
         onLangChange((lang) => {
             const ct = getControlTexts(lang);
             title.textContent = ct.settingsTitle;
             labelElements.forEach((lbl, idx) => {
                 if (ct.settingsLabels[idx]) lbl.textContent = ct.settingsLabels[idx];
             });
+            updateQualityOptions(lang);
         });
 
         setSize();
