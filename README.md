@@ -21,6 +21,7 @@
 
 ---
 
+<a id="overview--mission-scope"></a>
 ## 🌌 Overview & Mission Scope
 
 **NASA WebGL-Orbiter** is an advanced aerospace flight simulator, planetary reconnaissance platform, and astrodynamics laboratory running directly in the browser. Powered by **Three.js** and high-precision **Newtonian N-body gravitational mechanics**, it simulates the Solar System in true physical scale ($1\text{ AU} = 149,597,870.7\text{ km}$), rendering high-resolution **4K planetary bodies**, authentic atmospheric Rayleigh scattering, real-time Keplerian orbital elements, and official **NASA / CSA mission profiles** (Apollo 11, Artemis, DART, OSIRIS-REx Bennu Sample Return, Voyager, New Horizons).
@@ -29,22 +30,24 @@ Whether conducting orbital insertion around Jupiter, scanning celestial bodies w
 
 ---
 
+<a id="table-of-contents"></a>
 ## 📑 Table of Contents
 
-1. [Key Features & Capabilities](#-key-features--capabilities)
-2. [NASA Space Apps Challenge: Flagship Mission Modules](#-nasa-space-apps-challenge-flagship-mission-modules)
+1. [Key Features & Capabilities](#key-features--capabilities)
+2. [NASA Space Apps Challenge: Flagship Mission Modules](#nasa-space-apps-challenge-flagship-mission-modules)
    - [2.1 Mission 1: 2D Cartographic Reconnaissance & Science Q&A Quiz Engine](#21-mission-1-2d-cartographic-reconnaissance--science-qa-quiz-engine)
    - [2.2 Mission 2: Surface Touchdown & OSIRIS-REx Geological Sample Return](#22-mission-2-surface-touchdown--osiris-rex-geological-sample-return)
    - [2.3 Optical Reconnaissance Magnifying Scope & Dark Landing Crater Detection](#23-optical-reconnaissance-magnifying-scope--dark-landing-crater-detection)
    - [2.4 Mandatory Lander Hull Architecture & Fleet Rules](#24-mandatory-lander-hull-architecture--fleet-rules)
    - [2.5 Congressional Discovery & New Frontiers Budget Dynamics](#25-congressional-discovery--new-frontiers-budget-dynamics)
-3. [Representative Celestial Body Profiles & 3D Visual Gallery](#-representative-celestial-body-profiles--3d-visual-gallery)
+3. [Representative Celestial Body Profiles & 3D Visual Gallery](#representative-celestial-body-profiles--3d-visual-gallery)
    - [3.1 The Earth (Terra)](#31-the-earth-terra)
    - [3.2 The Moon (Luna)](#32-the-moon-luna)
-   - [3.3 Saturn (Cronus)](#33-saturn-cronus)
-   - [3.4 The Sun (Sol)](#34-the-sun-sol)
-   - [3.5 Asteroid 101955 Bennu](#35-asteroid-101955-bennu)
-4. [Astrodynamics & Mathematical Formulations](#-astrodynamics--mathematical-formulations)
+   - [3.3 Mars (Ares)](#33-mars-ares)
+   - [3.4 Saturn (Cronus)](#34-saturn-cronus)
+   - [3.5 The Sun (Sol)](#35-the-sun-sol)
+   - [3.6 Asteroid 101955 Bennu](#36-asteroid-101955-bennu)
+4. [Astrodynamics & Mathematical Formulations](#astrodynamics--mathematical-formulations)
    - [4.1 Newtonian Universal Gravitation & N-Body Perturbations](#41-newtonian-universal-gravitation--n-body-perturbations)
    - [4.2 Runge-Kutta 4th Order (RK4) Numerical Integration](#42-runge-kutta-4th-order-rk4-numerical-integration)
    - [4.3 Vis-Viva Equation & Orbital Velocities](#43-vis-viva-equation--orbital-velocities)
@@ -52,31 +55,32 @@ Whether conducting orbital insertion around Jupiter, scanning celestial bodies w
    - [4.5 Hohmann Transfer & Orbital Insertion](#45-hohmann-transfer--orbital-insertion)
    - [4.6 Gyroscopic Stability Assist (SAS) & Reaction Wheels](#46-gyroscopic-stability-assist-sas--reaction-wheels)
    - [4.7 Spherical Galactic Coordinate Mapping for 4K Deep Space](#47-spherical-galactic-coordinate-mapping-for-4k-deep-space)
-5. [NASA Scientific Datasets & Planetary Ephemerides](#-nasa-scientific-datasets--planetary-ephemerides)
-6. [Unified Aerospace Flight Deck & Controls](#-unified-aerospace-flight-deck--controls)
-7. [Architecture & Project Structure](#-architecture--project-structure)
-8. [Building & Running Locally](#-building--running-locally)
-9. [License & Acknowledgments](#-license--acknowledgments)
+5. [NASA Scientific Datasets & Planetary Ephemerides](#nasa-scientific-datasets--planetary-ephemerides)
+6. [Unified Aerospace Flight Deck & Controls](#unified-aerospace-flight-deck--controls)
+7. [Architecture & Project Structure](#architecture--project-structure)
+8. [Building & Running Locally](#building--running-locally)
+9. [License & Acknowledgments](#license--acknowledgments)
 
 ---
 
+<a id="key-features--capabilities"></a>
 ## 🌟 Key Features & Capabilities
 
 * **Authentic 4K Photorealistic Celestial Sphere**:
-  - Custom $4096 \times 2048$ deep-space background synthesized from the Harvard Spectral Classification catalog ($65,000+$ stars with B-V color temperatures: O/B, A, F, G, K, M).
+  - Custom 4096 × 2048 deep-space background synthesized from the Harvard Spectral Classification catalog (65,000+ stars with B-V color temperatures: O/B, A, F, G, K, M).
   - Inclined Milky Way galactic plane with dense Sagittarius core and intricate dark dust absorption rifts (Great Rift, Coalsack).
   - Deep-sky astronomical landmarks: Andromeda Galaxy (M31), Large and Small Magellanic Clouds (LMC/SMC), and stellar nurseries.
 * **Interactive 3D Planet Reconnaissance Photography**:
   - Full 360° mouse-drag rotation for all 11 Solar System bodies with true physical spherical mapping, realistic axial tilt, and real-time atmospheric shaders.
 * **OSIRIS-REx Laser Altimeter (OLA) Optical Scope**:
-  - Interactive $1.85\times$ magnification lens with sweeping radar line to scout terrain and locate safe dark landing crater depressions free of lethal boulders.
+  - Interactive 1.85× magnification lens with sweeping radar line to scout terrain and locate safe dark landing crater depressions free of lethal boulders.
 * **TAGSAM Touchdown Physics Engine**:
-  - Real-time animated descent simulation with controllable retro/lateral thrusters, nitrogen ($N_2$) gas blast particle emission, and hermetic canister sample capture.
+  - Real-time animated descent simulation with controllable retro/lateral thrusters, nitrogen (N₂) gas blast particle emission, and hermetic canister sample capture.
 * **Planetary Geological Specimen Harvesting**:
   - Scientifically authentic rock, mineral, and volatile samples across Earth, Moon, Mars, and Asteroid Bennu with detailed planetary geology descriptions.
 * **Unified Aerospace Flight Deck**:
-  - Interactive plasma thrust slider with instant $100\%$ `[Z]`, $50\%$, and `CUT [X]` engine presets.
-  - High-visibility 3D Navball with live orbital velocity telemetry ($\text{m/s}$ or $\text{km/s}$).
+  - Interactive plasma thrust slider with instant 100% `[Z]`, 50%, and `CUT [X]` engine presets.
+  - High-visibility 3D Navball with live orbital velocity telemetry (m/s or km/s).
   - 6-DOF RCS tactile attitude controls (`Pitch`, `Yaw`, `Roll`) synchronized with physical keyboard inputs (`W/A/S/D/Q/E`).
   - Comprehensive **SAS Autopilot**: `STAB LOCK` (gyro active damping), `PROGRADE` ($V^+$ boost), `RETROGRADE` ($V^-$ brake), and `MANUAL`.
 * **NASA Mission Designer & Custom Fleet Hangar**:
@@ -89,8 +93,10 @@ Whether conducting orbital insertion around Jupiter, scanning celestial bodies w
 
 ---
 
+<a id="nasa-space-apps-challenge-flagship-mission-modules"></a>
 ## 🎯 NASA Space Apps Challenge: Flagship Mission Modules
 
+<a id="21-mission-1-2d-cartographic-reconnaissance--science-qa-quiz-engine"></a>
 ### 2.1 Mission 1: 2D Cartographic Reconnaissance & Science Q&A Quiz Engine
 
 Mission 1 transforms passive orbital flight into an active quest for scientific discovery. When surveying any celestial body, astronauts can activate the high-resolution **Reconnaissance Camera** to inspect the target in 3D photorealistic fidelity, save captured imagery to the Mission Log, and validate their planetary science knowledge through a 4-choice Q&A quiz.
@@ -101,11 +107,12 @@ Mission 1 transforms passive orbital flight into an active quest for scientific 
 </div>
 
 * **Scientific Coverage**: Sun, Mercury, Venus, Earth, Moon, Mars, Asteroid Belt, Jupiter, Saturn, Uranus, Neptune, and Asteroid 101955 Bennu.
-* **Physical Telemetry Breakdown**: Mean Diameter ($\text{km}$), Total Mass ($\text{kg}$), Surface Temperature range ($\text{^\circ C}$), and Surface Gravity ($g$).
-* **Educational Q&A Bank**: Rigorous questions authored around planetary composition, greenhouse mechanisms, orbital resonance, and space mission milestones. Correct answers grant $+50$ Science Points.
+* **Physical Telemetry Breakdown**: Mean Diameter (km), Total Mass (kg), Surface Temperature range (°C), and Surface Gravity (g).
+* **Educational Q&A Bank**: Rigorous questions authored around planetary composition, greenhouse mechanisms, orbital resonance, and space mission milestones. Correct answers grant +50 Science Points.
 
 ---
 
+<a id="22-mission-2-surface-touchdown--osiris-rex-geological-sample-return"></a>
 ### 2.2 Mission 2: Surface Touchdown & OSIRIS-REx Geological Sample Return
 
 Sample return missions represent the gold standard of modern planetary science (Apollo 11 lunar basalt, OSIRIS-REx Bennu carbonaceous regolith, Perseverance Mars sample caching). Mission 2 challenges players to perform soft touchdown descents on landable bodies and harvest at least 3 distinct geological specimens to achieve mission certification.
@@ -117,23 +124,24 @@ Sample return missions represent the gold standard of modern planetary science (
 
 #### Authentic Geological Specimen Catalogue:
 * **Earth (Crustal Geology)**:
-  - *Granite Rock* ($285\text{g}$, Plutonic Igneous) — Slow-cooling magma crystallization.
-  - *Basalt Rock* ($310\text{g}$, Extrusive Volcanic) — Rapidly cooled oceanic plate basalt.
-  - *Sandstone Rock* ($195\text{g}$, Clastic Sedimentary) — Fluid and wind grain deposition.
+  - *Granite Rock* (285g, Plutonic Igneous) — Slow-cooling magma crystallization.
+  - *Basalt Rock* (310g, Extrusive Volcanic) — Rapidly cooled oceanic plate basalt.
+  - *Sandstone Rock* (195g, Clastic Sedimentary) — Fluid and wind grain deposition.
 * **The Moon (Lunar Regolith & Volatiles)**:
-  - *Lunar Highlands Rock* ($180\text{g}$, Pristine Anorthosite) — Relic of the ancient magma ocean.
-  - *Polar Water Ice* ($240\text{g}$, Cryogenic Volatile) — Trapped in permanently shadowed polar craters (Artemis target).
-  - *Lunar Regolith Dust* ($150\text{g}$, Impact Breccia) — Pulverized by billions of years of micrometeorite bombardment.
+  - *Lunar Highlands Rock* (180g, Pristine Anorthosite) — Relic of the ancient magma ocean.
+  - *Polar Water Ice* (240g, Cryogenic Volatile) — Trapped in permanently shadowed polar craters (Artemis target).
+  - *Lunar Regolith Dust* (150g, Impact Breccia) — Pulverized by billions of years of micrometeorite bombardment.
 * **Mars (Red Planet Stratigraphy)**:
-  - *Martian Basaltic Rock* ($220\text{g}$, Ferric Volcanic) — Oxidized iron basalt recording past surface water.
-  - *Atmospheric Gas Sample* ($65\text{g}$, Rarefied $95\%\text{ CO}_2$) — Clues to Martian greenhouse stripping.
+  - *Martian Basaltic Rock* (220g, Ferric Volcanic) — Oxidized iron basalt recording past surface water.
+  - *Atmospheric Gas Sample* (65g, Rarefied 95% CO₂) — Clues to Martian greenhouse stripping.
 * **Asteroid 101955 Bennu (OSIRIS-REx Target)**:
-  - *Bennu Carbonaceous Regolith* ($121.6\text{g}$, Organic-rich) — Primitive solar nebula material $> 4.5\text{ Gyr}$.
-  - *Hydrothermal Magnetite Nodules* ($64.2\text{g}$, Aqueous Alteration) — Conclusive proof of ancient liquid water.
-  - *Prebiotic Breccia Clast* ($88.4\text{g}$, Amino Acid Carrier) — Meteoritic shock breccia.
+  - *Bennu Carbonaceous Regolith* (121.6g, Organic-rich) — Primitive solar nebula material > 4.5 Gyr.
+  - *Hydrothermal Magnetite Nodules* (64.2g, Aqueous Alteration) — Conclusive proof of ancient liquid water.
+  - *Prebiotic Breccia Clast* (88.4g, Amino Acid Carrier) — Meteoritic shock breccia.
 
 ---
 
+<a id="23-optical-reconnaissance-magnifying-scope--dark-landing-crater-detection"></a>
 ### 2.3 Optical Reconnaissance Magnifying Scope & Dark Landing Crater Detection
 
 Inspired directly by the Canadian Space Agency (CSA) OSIRIS-REx Laser Altimeter (OLA) mission game ([CSA OLA Challenge](https://www.asc-csa.gc.ca/eng/satellites/osiris-rex/activities/game.asp)), WebGL-Orbiter incorporates a tactile, draggable **Optical Reconnaissance Scope**:
@@ -143,13 +151,14 @@ Inspired directly by the Canadian Space Agency (CSA) OSIRIS-REx Laser Altimeter 
   <p><em>Figure 3: Canadian Space Agency (CSA) OSIRIS-REx OLA LIDAR topographic mapping reference.</em></p>
 </div>
 
-1. **Magnification & Sweep**: Users grab and drag the scope handle across the terrain. The lens applies a $1.85\times$ optical zoom and continuous radial radar sweep line.
+1. **Magnification & Sweep**: Users grab and drag the scope handle across the terrain. The lens applies a 1.85× optical zoom and continuous radial radar sweep line.
 2. **Safe Dark Landing Crater ("Chấm đen bãi đáp")**: Boulders and steep ridges pose catastrophic hazard to landers. Sweeping over candidate sites reveals the flat, safe dark crater basin inside the lens.
 3. **Target Lock**: Once centered over a safe crater depression, the scope locks coordinates (`🎯 TARGET LOCKED`), turns the reticle green, displays latitude/longitude telemetry, and unlocks the corresponding geological specimen.
-4. **TAGSAM Touch-And-Go Descent**: Switching to TAGSAM mode initiates descent. Players use Retro (`▲`), Left (`◀`), and Right (`▶`) thrusters to steer down safely. At contact altitude ($0\text{ m}$), high-pressure $N_2$ gas blast particles burst, collecting dust into the hermetically sealed canister.
+4. **TAGSAM Touch-And-Go Descent**: Switching to TAGSAM mode initiates descent. Players use Retro (`▲`), Left (`◀`), and Right (`▶`) thrusters to steer down safely. At contact altitude (0 m), high-pressure N₂ gas blast particles burst, collecting dust into the hermetically sealed canister.
 
 ---
 
+<a id="24-mandatory-lander-hull-architecture--fleet-rules"></a>
 ### 2.4 Mandatory Lander Hull Architecture & Fleet Rules
 
 In real NASA missions, mission requirements dictate spacecraft architecture. A space telescope or orbital satellite cannot perform planetary landings.
@@ -163,24 +172,27 @@ In real NASA missions, mission requirements dictate spacecraft architecture. A s
 
 ---
 
+<a id="25-congressional-discovery--new-frontiers-budget-dynamics"></a>
 ### 2.5 Congressional Discovery & New Frontiers Budget Dynamics
 
-Simulating realistic NASA program economics (Discovery Program $\le \$680\text{M}$, New Frontiers $\le \$850\text{M}$):
+Simulating realistic NASA program economics (Discovery Program ≤ $680M, New Frontiers ≤ $850M):
 
-$$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \text{Cost}_{\text{equipment}} \ge \$0\text{M}$$
+$$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \text{Cost}_{\text{equipment}} \ge 0$$
 
 * Players must balance hull choice, engine efficiency, and payload costs against travel reserves.
 * Interplanetary Hohmann transfers between celestial bodies deduct travel budget based on destination distance and gravitational well depth:
-  - Moon Transfer: $-\$5\text{M}$ (M1) / $-\$28\text{M}$ (M2)
-  - Mars Transfer: $-\$9\text{M}$ (M1) / $-\$44\text{M}$ (M2)
-  - Asteroid Bennu: $-\$12\text{M}$ (M1) / $-\$32\text{M}$ (M2)
-  - Outer Planets (Jupiter/Saturn): $-\$17\text{M}$ to $-\$23\text{M}$
+  - Moon Transfer: **-$5M** (M1) / **-$28M** (M2)
+  - Mars Transfer: **-$9M** (M1) / **-$44M** (M2)
+  - Asteroid Bennu: **-$12M** (M1) / **-$32M** (M2)
+  - Outer Planets (Jupiter/Saturn): **-$17M** to **-$23M**
 * If funds are depleted below transfer thresholds, the mission concludes and triggers the comprehensive debrief evaluation.
 
 ---
 
+<a id="representative-celestial-body-profiles--3d-visual-gallery"></a>
 ## 🪐 Representative Celestial Body Profiles & 3D Visual Gallery
 
+<a id="31-the-earth-terra"></a>
 ### 3.1 The Earth (Terra)
 *The planetary cradle of life, featuring 4K dynamic Rayleigh atmospheric scattering and real-time cloud animation.*
 
@@ -197,6 +209,7 @@ $$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \
 
 ---
 
+<a id="32-the-moon-luna"></a>
 ### 3.2 The Moon (Luna)
 *Earth's sole natural satellite, tidally locked with basaltic volcanic maria and permanently shadowed polar ice traps.*
 
@@ -213,7 +226,25 @@ $$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \
 
 ---
 
-### 3.3 Saturn (Cronus)
+<a id="33-mars-ares"></a>
+### 3.3 Mars (Ares)
+*The Red Planet, sculpted by ancient river deltas, colossal shield volcanoes, and global dust storms.*
+
+<div align="center">
+  <img src="docs/images/recon_mars.jpg" alt="Mars 4K Reconnaissance" width="680" style="border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.4);" />
+</div>
+
+| Parameter | Value | Scientific Significance |
+| :--- | :--- | :--- |
+| **Mean Diameter** | $6,779\text{ km}$ ($0.53\times$ Earth) | Hosts Olympus Mons, the largest volcano in the Solar System |
+| **Total Mass** | $6.417 \times 10^{23}\text{ kg}$ ($0.107\times$ Earth) | Lower gravity facilitated ancient atmospheric hydrodynamic escape |
+| **Surface Temperature** | $-63\text{^\circ C}$ (Mean: $-140\text{^\circ C}$ to $+20\text{^\circ C}$) | Subsurface permafrost and polar water/dry-ice ice caps |
+| **Surface Gravity** | $3.72\text{ m/s}^2$ ($0.379g$) | Prime target for human interplanetary colonization & sample return |
+
+---
+
+<a id="34-saturn-cronus"></a>
+### 3.4 Saturn (Cronus)
 *The ringed jewel of our Solar System, rendered with authentic 3D ring geometry and self-shadowing.*
 
 <div align="center">
@@ -229,7 +260,8 @@ $$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \
 
 ---
 
-### 3.4 The Sun (Sol)
+<a id="35-the-sun-sol"></a>
+### 3.5 The Sun (Sol)
 *The central thermonuclear powerplant of the Solar System, rendered with a custom GLSL dynamic noise shader.*
 
 <div align="center">
@@ -245,16 +277,24 @@ $$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \
 
 ---
 
-### 3.5 Asteroid 101955 Bennu
+<a id="36-asteroid-101955-bennu"></a>
+### 3.6 Asteroid 101955 Bennu
 *Carbonaceous near-Earth rubble pile asteroid sampled by NASA OSIRIS-REx and CSA Canada.*
 
-* **Mean Diameter**: $492\text{ m}$ (Rubble-pile spinning top morphology).
-* **Mass**: $7.329 \times 10^{10}\text{ kg}$.
-* **Primary Science Value**: Pristine primordial solar nebula chemistry, amino acids, and hydrated clay minerals dating back over 4.5 billion years.
-* **Touchdown Site**: Nightingale Crater (low boulder density, fine grain regolith).
+<div align="center">
+  <img src="docs/images/csa_osiris_rex_game.jpg" alt="Asteroid 101955 Bennu OSIRIS-REx OLA" width="680" style="border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.4);" />
+</div>
+
+| Parameter | Value | Scientific Significance |
+| :--- | :--- | :--- |
+| **Mean Diameter** | $492\text{ m}$ (Spinning top rubble-pile) | Low bulk density ($1,190\text{ kg/m}^3$) indicating $50\%$ porosity |
+| **Total Mass** | $7.329 \times 10^{10}\text{ kg}$ | Microgravity regime ($8 \times 10^{-6} g$) with regolith particle ejection |
+| **Spectral Class** | B-type carbonaceous chondrite | Untouched primitive volatile reservoir from early Solar Nebula |
+| **Touchdown Site** | Nightingale Crater | Targeted for low boulder density and fine-grained regolith beds |
 
 ---
 
+<a id="astrodynamics--mathematical-formulations"></a>
 ## 📐 Astrodynamics & Mathematical Formulations
 
 ```
@@ -273,6 +313,7 @@ $$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \
                  X (Radial / Outward)
 ```
 
+<a id="41-newtonian-universal-gravitation--n-body-perturbations"></a>
 ### 4.1 Newtonian Universal Gravitation & N-Body Perturbations
 The acceleration $\mathbf{a}_i$ acting on an astronomical body or spacecraft $i$ with mass $m_i$ exerted by all other gravitating bodies $j$ is governed by Newton's law of universal gravitation:
 
@@ -284,8 +325,9 @@ $$\mathbf{a}_i = \sum_{j \neq i} \mu_j \frac{\mathbf{r}_j - \mathbf{r}_i}{\|\mat
 
 ---
 
+<a id="42-runge-kutta-4th-order-rk4-numerical-integration"></a>
 ### 4.2 Runge-Kutta 4th Order (RK4) Numerical Integration
-To preserve high numerical stability across variable timewarp scales ($1\times$ to $1,000,000\times$), positions and velocities are integrated using the 4th-order Runge-Kutta method:
+To preserve high numerical stability across variable timewarp scales (1× to 1,000,000×), positions and velocities are integrated using the 4th-order Runge-Kutta method:
 
 Given the state vector $\mathbf{y} = [\mathbf{r}, \mathbf{v}]^T$ and $\frac{d\mathbf{y}}{dt} = f(t, \mathbf{y}) = [\mathbf{v}, \mathbf{a}(t, \mathbf{r})]^T$:
 
@@ -301,6 +343,7 @@ $$\begin{aligned}
 
 ---
 
+<a id="43-vis-viva-equation--orbital-velocities"></a>
 ### 4.3 Vis-Viva Equation & Orbital Velocities
 For any two-body Keplerian system with mass $M \gg m$, the instantaneous orbital speed $v$ at distance $r$ is:
 
@@ -315,36 +358,32 @@ $$v^2 = \mu \left( \frac{2}{r} - \frac{1}{a} \right)$$
 
 ---
 
+<a id="44-state-vectors-to-keplerian-orbital-elements"></a>
 ### 4.4 State Vectors to Keplerian Orbital Elements
 The live telemetry HUD transforms position $\mathbf{r} = (x, y, z)$ and velocity $\mathbf{v} = (v_x, v_y, v_z)$ into the six classical orbital elements:
 
-1. **Specific Angular Momentum**:
-   $$\mathbf{h} = \mathbf{r} \times \mathbf{v}, \qquad h = \|\mathbf{h}\|$$
-2. **Node Vector**:
-   $$\mathbf{n} = \hat{\mathbf{k}} \times \mathbf{h} = (-h_y, h_x, 0)$$
-3. **Eccentricity Vector & Magnitude**:
-   $$\mathbf{e} = \frac{1}{\mu} \left[ \left( v^2 - \frac{\mu}{r} \right) \mathbf{r} - (\mathbf{r} \cdot \mathbf{v}) \mathbf{v} \right], \qquad e = \|\mathbf{e}\|$$
-4. **Specific Orbital Energy & Semi-Major Axis ($a$)**:
-   $$\varepsilon = \frac{v^2}{2} - \frac{\mu}{r}, \qquad a = -\frac{\mu}{2\varepsilon}$$
-5. **Inclination ($i$)**:
-   $$i = \arccos \left( \frac{h_z}{h} \right)$$
-6. **Longitude of the Ascending Node ($\Omega$)**:
-   $$\Omega = \begin{cases} \arccos\left(\frac{n_x}{\|\mathbf{n}\|}\right) & n_y \ge 0 \\ 2\pi - \arccos\left(\frac{n_x}{\|\mathbf{n}\|}\right) & n_y < 0 \end{cases}$$
-7. **Argument of Periapsis ($\omega$)**:
-   $$\omega = \begin{cases} \arccos\left(\frac{\mathbf{n} \cdot \mathbf{e}}{\|\mathbf{n}\| e}\right) & e_z \ge 0 \\ 2\pi - \arccos\left(\frac{\mathbf{n} \cdot \mathbf{e}}{\|\mathbf{n}\| e}\right) & e_z < 0 \end{cases}$$
-8. **True Anomaly ($\nu$)**:
-   $$\nu = \begin{cases} \arccos\left(\frac{\mathbf{e} \cdot \mathbf{r}}{e r}\right) & \mathbf{r} \cdot \mathbf{v} \ge 0 \\ 2\pi - \arccos\left(\frac{\mathbf{e} \cdot \mathbf{r}}{e r}\right) & \mathbf{r} \cdot \mathbf{v} < 0 \end{cases}$$
+* **Specific Angular Momentum**: $\mathbf{h} = \mathbf{r} \times \mathbf{v}, \quad h = \|\mathbf{h}\|$
+* **Node Vector**: $\mathbf{n} = \hat{\mathbf{k}} \times \mathbf{h} = (-h_y, h_x, 0)$
+* **Eccentricity Vector & Magnitude**: $\mathbf{e} = \frac{1}{\mu} \left[ \left( v^2 - \frac{\mu}{r} \right) \mathbf{r} - (\mathbf{r} \cdot \mathbf{v}) \mathbf{v} \right], \quad e = \|\mathbf{e}\|$
+* **Specific Orbital Energy & Semi-Major Axis ($a$)**: $\varepsilon = \frac{v^2}{2} - \frac{\mu}{r}, \quad a = -\frac{\mu}{2\varepsilon}$
+* **Inclination ($i$)**: $i = \arccos \left( \frac{h_z}{h} \right)$
+* **Longitude of Ascending Node ($\Omega$)**: $\Omega = \arccos\left(\frac{n_x}{\|\mathbf{n}\|}\right)$ (if $n_y \ge 0$, else $2\pi - \Omega$)
+* **Argument of Periapsis ($\omega$)**: $\omega = \arccos\left(\frac{\mathbf{n} \cdot \mathbf{e}}{\|\mathbf{n}\| e}\right)$ (if $e_z \ge 0$, else $2\pi - \omega$)
+* **True Anomaly ($\nu$)**: $\nu = \arccos\left(\frac{\mathbf{e} \cdot \mathbf{r}}{e r}\right)$ (if $\mathbf{r} \cdot \mathbf{v} \ge 0$, else $2\pi - \nu$)
 
 ---
 
+<a id="45-hohmann-transfer--orbital-insertion"></a>
 ### 4.5 Hohmann Transfer & Orbital Insertion
 Interplanetary travel calculations rely on coplanar Hohmann transfer trajectories:
 
 $$\Delta v_1 = \sqrt{\frac{\mu}{r_1}} \left( \sqrt{\frac{2 r_2}{r_1 + r_2}} - 1 \right), \qquad \Delta v_2 = \sqrt{\frac{\mu}{r_2}} \left( 1 - \sqrt{\frac{2 r_1}{r_1 + r_2}} \right)$$
+
 $$\Delta v_{\text{total}} = \Delta v_1 + \Delta v_2$$
 
 ---
 
+<a id="46-gyroscopic-stability-assist-sas--reaction-wheels"></a>
 ### 4.6 Gyroscopic Stability Assist (SAS) & Reaction Wheels
 In microgravity, zero-damping rotation causes persistent tumbling. The SAS autopilot active dampening algorithm models internal reaction wheel torque:
 
@@ -353,10 +392,28 @@ $$\mathbf{\omega}(t + \Delta t) = \mathbf{\omega}(t) \cdot \max\left(0, 1.0 - k_
 When `PROGRADE` ($V^+$) or `RETROGRADE` ($V^-$) mode is engaged, the ship dynamically aligns its forward axis $\hat{\mathbf{u}}_{\text{fwd}} = (1, 0, 0)$ with target velocity unit vector $\hat{\mathbf{v}} = \pm \frac{\mathbf{v}}{\|\mathbf{v}\|}$:
 
 $$\mathbf{q}_{\text{align}} = \text{Quaternion.fromUnitVectors}(\hat{\mathbf{u}}_{\text{fwd}}, \hat{\mathbf{v}})$$
+
 $$\mathbf{q}_{\text{ship}}(t + \Delta t) = \text{Slerp}\left(\mathbf{q}_{\text{ship}}(t), \mathbf{q}_{\text{align}}, \alpha \cdot \Delta t\right)$$
 
 ---
 
+<a id="47-spherical-galactic-coordinate-mapping-for-4k-deep-space"></a>
+### 4.7 Spherical Galactic Coordinate Mapping for 4K Deep Space
+To project the $4096 \times 2048$ deep-space celestial vault onto the simulation skybox without polar seam artifacts, astronomical equatorial coordinates (Right Ascension $\alpha$, Declination $\delta$) are transformed into 3D Cartesian coordinates on a sphere of radius $R_{\text{vault}} = 10^{12}\text{ m}$:
+
+$$\begin{aligned}
+x &= R_{\text{vault}} \cos(\delta) \cos(\alpha) \\
+y &= R_{\text{vault}} \sin(\delta) \\
+z &= R_{\text{vault}} \cos(\delta) \sin(\alpha)
+\end{aligned}$$
+
+Equirectangular texture UV coordinates for the custom background shader are given by:
+
+$$u = \frac{\alpha}{2\pi} + 0.5, \qquad v = \frac{\delta}{\pi} + 0.5$$
+
+---
+
+<a id="nasa-scientific-datasets--planetary-ephemerides"></a>
 ## 🛰️ NASA Scientific Datasets & Planetary Ephemerides
 
 All planetary ephemerides, radii, and gravitational constants are calibrated against official NASA Jet Propulsion Laboratory (JPL) astrodynamic tables:
@@ -376,6 +433,7 @@ All planetary ephemerides, radii, and gravitational constants are calibrated aga
 
 ---
 
+<a id="unified-aerospace-flight-deck--controls"></a>
 ## 🕹️ Unified Aerospace Flight Deck & Controls
 
 ```
@@ -390,14 +448,15 @@ All planetary ephemerides, radii, and gravitational constants are calibrated aga
 +---------------------------------------------------------------------------------------+
 ```
 
+<a id="hotkey-mappings"></a>
 ### Hotkey Mappings
 
 | Control / Input | Primary Key | Description |
 | :--- | :---: | :--- |
-| **Throttle Maximum** | `Z` | Sets main engine thrust immediately to $100\%$ |
-| **Throttle Cutoff** | `X` | Halts engine instantly ($0\%$ thrust) to conserve propellant |
-| **Throttle Up (Fine)** | `Shift` / `+10%` | Increments engine throttle by $+10\%$ |
-| **Throttle Down (Fine)** | `Ctrl` / `-10%` | Decrements engine throttle by $-10\%$ |
+| **Throttle Maximum** | `Z` | Sets main engine thrust immediately to 100% |
+| **Throttle Cutoff** | `X` | Halts engine instantly (0% thrust) to conserve propellant |
+| **Throttle Up (Fine)** | `Shift` / `+10%` | Increments engine throttle by +10% |
+| **Throttle Down (Fine)** | `Ctrl` / `-10%` | Decrements engine throttle by -10% |
 | **Pitch Down** | `W` | Noses spacecraft downwards |
 | **Pitch Up** | `S` | Noses spacecraft upwards |
 | **Yaw Left** | `A` | Turns spacecraft nose left |
@@ -407,7 +466,7 @@ All planetary ephemerides, radii, and gravitational constants are calibrated aga
 | **TAGSAM Thruster Left** | `Arrow Left` | Fires port RCS thruster during planetary touchdown |
 | **TAGSAM Thruster Right** | `Arrow Right` | Fires starboard RCS thruster during touchdown |
 | **TAGSAM Thruster Retro** | `Arrow Up` | Fires braking thrusters to soften descent speed |
-| **Timewarp Acceleration** | `+` / `=` | Speeds up physics simulation ($1\times \to 1,000,000\times$) |
+| **Timewarp Acceleration** | `+` / `=` | Speeds up physics simulation (1× to 1,000,000×) |
 | **Timewarp Deceleration** | `-` | Slows down physics simulation to real-time |
 | **Toggle Ecliptic Grids** | `G` | Toggles astronomical coordinate reference planes |
 | **Toggle Chase Camera** | `H` | Locks camera view along velocity vector |
@@ -415,6 +474,7 @@ All planetary ephemerides, radii, and gravitational constants are calibrated aga
 
 ---
 
+<a id="architecture--project-structure"></a>
 ## 🏗️ Architecture & Project Structure
 
 ```
@@ -423,9 +483,10 @@ WebGL-Orbiter/
 │   └── images/                    # High-resolution documentation screenshots & badges
 │       ├── is_space_brand.jpg     # IS Space branding identity
 │       ├── recon_earth.png        # Earth 3D recon photography & quiz modal
+│       ├── recon_moon.jpg         # Moon surface cartography
+│       ├── recon_mars.jpg         # Mars surface cartography & Viking mosaic
 │       ├── recon_saturn.png       # Saturn 3D rings & telemetry
 │       ├── recon_sun.png          # Sun thermonuclear dynamic shader
-│       ├── recon_moon.jpg         # Moon surface cartography
 │       ├── landing_recon_scope.jpg# Touchdown console & OLA recon scope
 │       └── csa_osiris_rex_game.jpg# Canadian Space Agency OLA reference
 ├── src/
@@ -453,12 +514,15 @@ WebGL-Orbiter/
 
 ---
 
+<a id="building--running-locally"></a>
 ## 🛠️ Building & Running Locally
 
+<a id="prerequisites"></a>
 ### Prerequisites
 * [Node.js](https://nodejs.org/) (v16+ recommended)
 * `npm` package manager
 
+<a id="installation--execution"></a>
 ### Installation & Execution
 
 1. **Clone the repository**:
@@ -491,6 +555,7 @@ WebGL-Orbiter/
 
 ---
 
+<a id="license--acknowledgments"></a>
 ## 📜 License & Acknowledgments
 
 * **Codebase License**: Released under the [MIT License](LICENSE).
