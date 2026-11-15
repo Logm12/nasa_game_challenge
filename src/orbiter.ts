@@ -23,6 +23,7 @@ import { MessageControl } from './MessageControl';
 import { ScenarioSelectorControl } from './ScenarioSelectorControl';
 import { SaveControl } from './SaveControl';
 import { LoadControl } from './LoadControl';
+import { MissionHistoryControl } from './MissionHistoryControl';
 import Overlay from './Overlay';
 import GameState from './GameState';
 
@@ -50,6 +51,7 @@ let grids: THREE.Object3D;
 let scenarioSelectorControl: ScenarioSelectorControl;
 let saveControl: SaveControl;
 let loadControl: LoadControl;
+let historyControl: MissionHistoryControl;
 let nasaDesigner: NasaMissionDesigner;
 let isFlightMode = false;
 
@@ -268,7 +270,7 @@ function init() {
         function(){ gameState.resetTime(); },
         function(msg){ messageControl.setText(msg); },
         function(){
-            [saveControl, loadControl].map(function(control){ control.setVisible(false); }); // Mutually exclusive
+            [saveControl, loadControl, historyControl].filter(Boolean).map(function(control){ control.setVisible(false); }); // Mutually exclusive
         }
     );
     container.appendChild( scenarioSelectorControl.domElement );
@@ -358,7 +360,7 @@ function init() {
         function(){ return gameState.serializeState(); },
         function(msg){ messageControl.setText(msg); },
         function(){
-            [scenarioSelectorControl, loadControl].map(function(control){ control.setVisible(false); }); // Mutually exclusive
+            [scenarioSelectorControl, loadControl, historyControl].filter(Boolean).map(function(control){ control.setVisible(false); }); // Mutually exclusive
         }
     );
     container.appendChild( saveControl.domElement );
@@ -369,10 +371,17 @@ function init() {
         function(state){ gameState.loadState(state) },
         function(msg){ messageControl.setText(msg); },
         function(){
-            [scenarioSelectorControl, saveControl].map(function(control){ control.setVisible(false); }); // Mutually exclusive
+            [scenarioSelectorControl, saveControl, historyControl].filter(Boolean).map(function(control){ control.setVisible(false); }); // Mutually exclusive
         }
     );
     container.appendChild( loadControl.domElement );
+
+    historyControl = new MissionHistoryControl(
+        function(){
+            [scenarioSelectorControl, saveControl, loadControl].filter(Boolean).map(function(control){ control.setVisible(false); }); // Mutually exclusive
+        }
+    );
+    container.appendChild( historyControl.domElement );
 
     window.addEventListener( 'resize', onWindowResize, false );
     window.addEventListener( 'keydown', onKeyDown, false );
