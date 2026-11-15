@@ -160,12 +160,15 @@ export class CelestialBody{
     }
 
     deserialize(json: any){
+        if (!json) return;
         this.name = json.name;
-        this.setParent(CelestialBody.celestialBodies.get(json.parent));
-        this.position = deserializeVector3(json.position);
-        this.velocity = deserializeVector3(json.velocity);
-        this.quaternion = deserializeQuaternion(json.quaternion);
-        this.angularVelocity = deserializeVector3(json.angularVelocity);
+        if(json.parent && CelestialBody.celestialBodies.has(json.parent)){
+            this.setParent(CelestialBody.celestialBodies.get(json.parent));
+        }
+        if(json.position && !isNaN(json.position.x)) this.position = deserializeVector3(json.position);
+        if(json.velocity && !isNaN(json.velocity.x)) this.velocity = deserializeVector3(json.velocity);
+        if(json.quaternion && (!isNaN(json.quaternion._x) || !isNaN(json.quaternion.x))) this.quaternion = deserializeQuaternion(json.quaternion);
+        if(json.angularVelocity && !isNaN(json.angularVelocity.x)) this.angularVelocity = deserializeVector3(json.angularVelocity);
         this.totalDeltaV = json.totalDeltaV || 0;
         this.ignitionCount = json.ignitionCount || 0;
     }
@@ -421,6 +424,10 @@ export class CelestialBody{
         const children = this.children;
         for(let i = 0; i < children.length;){
             const a = children[i];
+            if(!a || !a.parent){
+                i++;
+                continue;
+            }
             const sl = a.position.lengthSq();
             if(sl !== 0){
                 const angleAcceleration = 1.6e-0;

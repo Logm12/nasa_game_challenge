@@ -38,6 +38,68 @@ import constellationXUrl from './models/spacecraft/constellation_x.glb';
 import ares1Url from './models/spacecraft/ares_1.glb';
 import kenneyBattleshipUrl from './models/spacecraft/kenney_battleship.glb';
 import kenneyInterceptorUrl from './models/spacecraft/kenney_interceptor.glb';
+import isSpaceLogoUrl from './images/is_space_logo.jpg';
+import earthGraniteImg from './images/samples/earth_granite.png';
+import earthBasaltImg from './images/samples/earth_basalt.png';
+import earthSandstoneImg from './images/samples/earth_sandstone.png';
+import moonRockImg from './images/samples/moon_rock.png';
+import moonIceImg from './images/samples/moon_ice.png';
+import moonRegolithImg from './images/samples/moon_regolith.png';
+import marsRockImg from './images/samples/mars_rock.png';
+import marsGasImg from './images/samples/mars_gas.png';
+import osirisBennuBgImg from './images/samples/osiris_bennu_bg.jpg';
+import moonPlanetUrl from './images/moon.png';
+import earthPlanetUrl from './images/land_ocean_ice_cloud_2048.jpg';
+import marsPlanetUrl from './images/mars.jpg';
+import jupiterPlanetUrl from './images/jupiter.jpg';
+import saturnPlanetUrl from './images/saturn.jpg';
+import saturnRingPlanetUrl from './images/saturnringcolor.jpg';
+import venusPlanetUrl from './images/venus.jpg';
+import mercuryPlanetUrl from './images/mercury.jpg';
+import { SunVisuals } from './SunVisuals';
+
+export const PLANET_ICONS: Record<string, string> = {
+  sun: '☀️',
+  mercury: '☿',
+  venus: '♀',
+  earth: '🌍',
+  moon: '🌙',
+  mars: '♂',
+  jupiter: '♃',
+  saturn: '♄',
+  uranus: '⛢',
+  neptune: '♆',
+  bennu: '☄️',
+  asteroids: '🪐'
+};
+
+export const SAMPLE_IMAGES_MAP: Record<string, string> = {
+  earth_granite: earthGraniteImg,
+  earth_basalt: earthBasaltImg,
+  earth_sandstone: earthSandstoneImg,
+  moon_rock: moonRockImg,
+  moon_ice: moonIceImg,
+  moon_regolith: moonRegolithImg,
+  mars_rock: marsRockImg,
+  mars_gas: marsGasImg,
+  bennu_regolith: moonRockImg,
+  bennu_magnetite: earthBasaltImg,
+  bennu_breccia: marsRockImg,
+  asteroid_chondrite: earthSandstoneImg
+};
+import {
+  CELESTIAL_QUIZ_DATA,
+  GEOLOGICAL_SAMPLES_BY_BODY,
+  TRAVEL_COST_MISSION_1,
+  TRAVEL_COST_MISSION_2,
+  LANDING_CAPABLE_SHIPS_M2,
+  LANDABLE_BODIES_M2,
+  getTravelCost,
+  CelestialQuizItem,
+  GeologicalSample,
+  LandingSite,
+  LANDING_SITES_BY_BODY
+} from './nasa_mission_quiz_data';
 
 export interface SpacecraftDefinition {
   id: string;
@@ -173,9 +235,39 @@ export interface NasaMission {
   minSciencePoints: number;
   description: string;
   badge: string;
+  missionType?: 'photo_quiz' | 'sample_return' | 'standard';
+  travelBudget?: number;
 }
 
 export const NASA_MISSIONS: NasaMission[] = [
+  {
+    id: 'mission_1_survey',
+    title: 'Mission 1: Planetary Exploration & Quiz',
+    destination: 'Solar System (12 Celestial Bodies)',
+    scenarioName: 'Earth orbit',
+    distanceAU: 1.0,
+    budgetCredits: 680,
+    reqDeltaV: 2800,
+    minSciencePoints: 150,
+    description: 'Planet exploration, capture images, and answer quizzes to learn about their features. Earn science intel and manage your travel budget across the Solar System.',
+    badge: '📸 RECON & QUIZ',
+    missionType: 'photo_quiz',
+    travelBudget: 150
+  },
+  {
+    id: 'mission_2_samples',
+    title: 'Mission 2: Sample Return Mission',
+    destination: 'Earth, Moon & Mars Geology Sites',
+    scenarioName: 'Moon orbit',
+    distanceAU: 1.002,
+    budgetCredits: 850,
+    reqDeltaV: 3500,
+    minSciencePoints: 200,
+    description: 'Sample collection: Land on suitable celestial bodies with solid surfaces (Earth, Moon, Mars) and collect at least 3 different geological specimens. Requires landing-gear hulls!',
+    badge: '🪨 SAMPLE RETURN',
+    missionType: 'sample_return',
+    travelBudget: 220
+  },
   {
     id: 'nasa_dart',
     title: 'NASA DART: Kinetic Impactor',
@@ -415,6 +507,206 @@ export class NasaMissionDesigner {
   private missionTimer = 0;
   private isInitialized = false;
 
+  // NASA Space Apps 2026: Mission 1 & 2 Game State
+  private travelBudget = 120;
+  private initialTravelBudget = 120;
+  private currentCelestialLocation = 'earth';
+  private currentReconBodyId = 'earth';
+  private surveyedPlanets: Set<string> = new Set();
+  private quizAnsweredCount = 0;
+  private quizCorrectCount = 0;
+  private collectedSamples: Set<string> = new Set();
+  private solarExplorerRef: any = null;
+  private calculatedRemainingBudget = 120;
+  private calculatedTotalCost = 150;
+
+  // OSIRIS-REx OLA & TAGSAM Interactive Simulator State
+  private tagsamCanvas: HTMLCanvasElement | null = null;
+  private tagsamCtx: CanvasRenderingContext2D | null = null;
+  private tagsamAnimId: number | null = null;
+  private tagsamSimRunning = false;
+  private tagsamState: {
+    phase: 'standby' | 'descending' | 'contact' | 'sampling' | 'ascending';
+    alt: number; // 50m to 0m
+    vz: number;
+    shipX: number; // horizontal offset in px
+    vx: number;
+    armExtended: number; // 0 to 1
+    n2BurstTimer: number;
+    terrainPoints: Array<{ x: number, y: number }>;
+    boulders: Array<{ x: number, y: number, r: number, color: string }>;
+    dustParticles: Array<{ x: number, y: number, vx: number, vy: number, alpha: number, size: number, color: string }>;
+    flameParticles: Array<{ x: number, y: number, vx: number, vy: number, alpha: number, size: number, color: string }>;
+    activeSite: LandingSite;
+    targetSample: GeologicalSample | null;
+    laserSweepAngle: number;
+    onCompleteCallback?: () => void;
+  } | null = null;
+
+  // OSIRIS-REx OLA Draggable Scanner State
+  private olaTabletX = 310;
+  private olaTabletY = 90;
+  private isOlaDragging = false;
+  private olaDragStartX = 0;
+  private olaDragStartY = 0;
+  private olaTabletInitX = 0;
+  private olaTabletInitY = 0;
+  private scoutedSites: Set<string> = new Set();
+  private olaDialogueIndex = 0;
+  private olaHeatmapCanvas: HTMLCanvasElement | null = null;
+  private olaHeatmapCtx: CanvasRenderingContext2D | null = null;
+  private offscreenHeatmapCanvas: HTMLCanvasElement | null = null;
+  private olaActiveMode: 'scanner' | 'tagsam' = 'scanner';
+  private olaScannerRunning = false;
+  private olaAnimId: number | null = null;
+  private olaRadarAngle = 0;
+
+  // 3D Planet Reconnaissance Viewport State
+  private reconScene: THREE.Scene | null = null;
+  private reconCamera: THREE.PerspectiveCamera | null = null;
+  private reconRenderer: THREE.WebGLRenderer | null = null;
+  private reconBodyMesh: THREE.Mesh | null = null;
+  private reconRingMesh: THREE.Mesh | null = null;
+  private reconAtmosphereMesh: THREE.Mesh | null = null;
+  private reconAnimId: number | null = null;
+  private reconTextureCache: Map<string, THREE.Texture> = new Map();
+  private reconSunVisuals: SunVisuals | null = null;
+  private reconCleanup: (() => void) | null = null;
+
+  public setSolarExplorer(se: any) {
+    this.solarExplorerRef = se;
+  }
+
+  public getCurrentLanguage(): SupportedLang {
+    return this.currentLanguage;
+  }
+
+  public playSuccessSound() {
+    if (!this.audioCtx) return;
+    try {
+      if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+      const t = this.audioCtx.currentTime;
+      [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+        const osc = this.audioCtx!.createOscillator();
+        const gain = this.audioCtx!.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, t + idx * 0.08);
+        gain.gain.setValueAtTime(0.14, t + idx * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.08 + 0.25);
+        osc.connect(gain);
+        gain.connect(this.audioCtx!.destination);
+        osc.start(t + idx * 0.08);
+        osc.stop(t + idx * 0.08 + 0.26);
+      });
+    } catch (e) {}
+  }
+
+  public playFailureSound() {
+    if (!this.audioCtx) return;
+    try {
+      if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+      const t = this.audioCtx.currentTime;
+      [311.13, 277.18, 233.08].forEach((freq, idx) => {
+        const osc = this.audioCtx!.createOscillator();
+        const gain = this.audioCtx!.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, t + idx * 0.1);
+        gain.gain.setValueAtTime(0.12, t + idx * 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.1 + 0.22);
+        osc.connect(gain);
+        gain.connect(this.audioCtx!.destination);
+        osc.start(t + idx * 0.1);
+        osc.stop(t + idx * 0.1 + 0.23);
+      });
+    } catch (e) {}
+  }
+
+  public playSampleCollectSound() {
+    if (!this.audioCtx) return;
+    try {
+      if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+      const t = this.audioCtx.currentTime;
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(440, t);
+      osc.frequency.exponentialRampToValueAtTime(880, t + 0.12);
+      gain.gain.setValueAtTime(0.15, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+      osc.connect(gain);
+      gain.connect(this.audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 0.19);
+      setTimeout(() => this.playSuccessSound(), 200);
+    } catch (e) {}
+  }
+
+  public playTagsamN2BlastSound() {
+    if (!this.audioCtx) return;
+    try {
+      if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+      const bufferSize = this.audioCtx.sampleRate * 0.4;
+      const buffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+      const whiteNoise = this.audioCtx.createBufferSource();
+      whiteNoise.buffer = buffer;
+      const filter = this.audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(800, this.audioCtx.currentTime);
+      filter.frequency.exponentialRampToValueAtTime(200, this.audioCtx.currentTime + 0.35);
+
+      const gain = this.audioCtx.createGain();
+      gain.gain.setValueAtTime(0.25, this.audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.38);
+
+      whiteNoise.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.audioCtx.destination);
+      whiteNoise.start();
+    } catch (e) {}
+  }
+
+  public playLaserPingSound() {
+    if (!this.audioCtx) return;
+    try {
+      if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+      const t = this.audioCtx.currentTime;
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1400, t);
+      osc.frequency.exponentialRampToValueAtTime(700, t + 0.08);
+      gain.gain.setValueAtTime(0.08, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+      osc.connect(gain);
+      gain.connect(this.audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 0.09);
+    } catch (e) {}
+  }
+
+  public playThrusterBurnSound() {
+    if (!this.audioCtx) return;
+    try {
+      if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+      const t = this.audioCtx.currentTime;
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(90, t);
+      osc.frequency.linearRampToValueAtTime(60, t + 0.15);
+      gain.gain.setValueAtTime(0.12, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+      osc.connect(gain);
+      gain.connect(this.audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 0.16);
+    } catch (e) {}
+  }
+
   constructor(
     private onLaunchCallback: (mission: NasaMission, telemetry: any) => void,
     private onShipChangedCallback?: () => void
@@ -565,9 +857,11 @@ export class NasaMissionDesigner {
         <!-- Top Aerospace Header -->
         <header class="aaa-topbar">
           <div class="topbar-left">
-            <div class="brand-monogram" style="background: linear-gradient(135deg, #0b3d91 0%, #1e3a8a 100%); border-color: rgba(56, 189, 248, 0.4); font-size: 0.85rem; font-weight: 800; letter-spacing: 0.5px;">NASA</div>
+            <div class="brand-logo-wrap">
+              <img src="${isSpaceLogoUrl}" alt="IS-SPACE - NASA Space Apps Challenge 2026" class="brand-logo-img" />
+            </div>
             <div class="brand-titles">
-              <div class="brand-name">NASA <span>MISSION-VIZ</span> <span id="brand-tag" class="tag-sword" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-weight: 700;">${t.brandTag}</span></div>
+              <div class="brand-name">NASA <span>SPACE APPS CHALLENGE 2026</span> <span id="brand-tag" class="tag-sword" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-weight: 700;">${t.brandTag}</span></div>
               <div class="brand-sub">${t.brandSub}</div>
             </div>
           </div>
@@ -857,6 +1151,30 @@ export class NasaMissionDesigner {
             </div>
           </div>
 
+          <!-- In-Flight Travel Budget & Special Action Controls -->
+          <div class="hud-travel-budget-section" id="hud-travel-budget-section">
+            <div class="hud-row">
+              <span id="hud-lbl-budget-title">💰 FLIGHT BUDGET:</span>
+              <strong id="hud-travel-budget-val" style="color: #00f0ff; font-family: monospace;">$120.0M</strong>
+            </div>
+            <div class="travel-budget-bar">
+              <div class="travel-budget-fill" id="hud-travel-budget-fill" style="width: 100%;"></div>
+            </div>
+            <div class="hud-row" style="margin-top: 6px;">
+              <span id="hud-lbl-objective">🎯 OBJECTIVE:</span>
+              <strong id="hud-mission-obj-val" style="color: var(--stark-gold); font-size: 0.8rem;">0 / 3</strong>
+            </div>
+          </div>
+
+          <div class="hud-special-actions" id="hud-special-actions">
+            <button id="hud-btn-recon-quiz" class="hud-action-recon-btn" title="Open 2D Cartographic Recon & Q&A Quiz">
+              📸 2D RECON & QUIZ
+            </button>
+            <button id="hud-btn-surface-landing" class="hud-action-land-btn" style="display: none;" title="Land on Surface & Collect Geological Samples">
+              🛬 LAND & SAMPLE
+            </button>
+          </div>
+
           <div class="hud-btn-group">
             <button id="hud-btn-debrief" class="hud-btn">📊 INTEL DEBRIEF</button>
             <button id="hud-btn-reconfigure" class="hud-btn">⚙️ HANGAR ARMORY</button>
@@ -865,6 +1183,19 @@ export class NasaMissionDesigner {
       </div>
     `;
     document.body.appendChild(hud);
+
+    // Floating Recon/Camera Button matching image1.png (chỗ nút chụp khoanh đỏ ở góc dưới bên phải)
+    const floatingCamBtn = document.createElement('button');
+    floatingCamBtn.id = 'hud-floating-camera-btn';
+    floatingCamBtn.className = 'hud-floating-camera-btn';
+    floatingCamBtn.style.display = 'none';
+    floatingCamBtn.innerHTML = `<span>📸</span> <span>CHỤP ẢNH (2D RECON)</span>`;
+    floatingCamBtn.title = 'Chụp ảnh trinh sát 2D & Hệ thống Câu hỏi Q&A';
+    floatingCamBtn.onclick = () => {
+      this.playClickSound();
+      this.openReconPhotoModal(this.currentReconBodyId);
+    };
+    document.body.appendChild(floatingCamBtn);
 
     // Create Debrief Modal
     const debrief = document.createElement('div');
@@ -901,7 +1232,276 @@ export class NasaMissionDesigner {
     `;
     document.body.appendChild(debrief);
 
+    this.createMissionExtensionModals();
     this.bindDOMEvents();
+  }
+
+  private createMissionExtensionModals() {
+    // 1. Mission Briefing Modal (ℹ info button)
+    const briefingModal = document.createElement('div');
+    briefingModal.id = 'mission-briefing-modal';
+    briefingModal.className = 'nasa-interactive-modal';
+    briefingModal.style.display = 'none';
+    briefingModal.innerHTML = `
+      <div class="briefing-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span id="briefing-badge" style="font-size: 0.8rem; padding: 3px 8px; border-radius: 4px; background: rgba(245, 158, 11, 0.2); color: var(--stark-gold); font-weight: 700; font-family: monospace;">🎯 MISSION BRIEFING</span>
+            <h3 id="briefing-title" style="margin: 0; font-family: var(--font-tech); font-size: 1.25rem; color: #fff;">NASA MISSION</h3>
+          </div>
+          <button id="briefing-btn-close" class="hud-mini-btn" style="font-size: 1.1rem; width: 28px; height: 28px;">✕</button>
+        </div>
+        <div class="briefing-section">
+          <h4 id="briefing-lbl-overview">📋 TỔNG QUAN SỨ MỆNH (MISSION OVERVIEW)</h4>
+          <p id="briefing-desc"></p>
+        </div>
+        <div class="briefing-section" id="briefing-ship-req-section">
+          <h4 id="briefing-lbl-craft">🚀 YÊU CẦU THIẾT KẾ PHI THUYỀN (SPACECRAFT REQUIREMENTS)</h4>
+          <div id="briefing-craft-req"></div>
+        </div>
+        <div class="briefing-section">
+          <h4 id="briefing-lbl-budget">💰 CƠ CHẾ NGÂN SÁCH & DI CHUYỂN (BUDGET DYNAMICS)</h4>
+          <div id="briefing-budget-rules"></div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+          <button id="briefing-btn-proceed" class="spotlight-btn-primary" style="padding: 10px 24px; font-size: 0.85rem;">
+            ĐÃ HIỂU / PROCEED
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(briefingModal);
+
+    // 2. 2D Recon Cartography & Photo Capture Modal (Mission 1)
+    const reconModal = document.createElement('div');
+    reconModal.id = 'recon-photo-modal';
+    reconModal.className = 'nasa-interactive-modal';
+    reconModal.style.display = 'none';
+    reconModal.innerHTML = `
+      <div class="recon-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="recon-planet-icon" style="font-size: 2.2rem;">☀️</span>
+            <div>
+              <h2 id="recon-planet-name" style="margin: 0; font-family: var(--font-tech); font-size: 1.45rem; color: #fff; letter-spacing: 1px;">THE SUN</h2>
+              <div id="recon-planet-subtitle" style="font-size: 0.8rem; color: var(--stark-cyan); font-family: var(--font-tech);">CENTRAL STAR OF SOLAR SYSTEM</div>
+            </div>
+          </div>
+          <button id="recon-btn-close" class="hud-mini-btn" style="font-size: 1.2rem; width: 32px; height: 32px;">✕</button>
+        </div>
+
+        <div class="recon-body-selector-bar" id="recon-body-selector-bar"></div>
+
+        <div class="recon-canvas-container">
+          <canvas id="recon-canvas" width="960" height="380"></canvas>
+          <div class="recon-hud-overlay-tag" id="recon-sensor-tag">NASA OPTICAL CARTOGRAPHY • 4K ULTRA HD SENSOR</div>
+          <div class="recon-hud-drag-tag" id="recon-drag-hint-tag">✥ KÉO XOAY 3D 360° (DRAG TO ROTATE)</div>
+          <div class="recon-hud-coords-tag" id="recon-coords-tag">LAT: 00°00'00" | LON: 00°00'00" | RES: 0.25 m/px</div>
+        </div>
+
+        <div class="recon-desc-box" id="recon-desc-text"></div>
+
+        <div class="recon-metrics-grid">
+          <div class="recon-metric-cell">
+            <span class="recon-metric-label" id="recon-lbl-diameter">MEAN DIAMETER</span>
+            <span class="recon-metric-value" id="recon-val-diameter">--</span>
+          </div>
+          <div class="recon-metric-cell">
+            <span class="recon-metric-label" id="recon-lbl-mass">TOTAL MASS</span>
+            <span class="recon-metric-value" id="recon-val-mass">--</span>
+          </div>
+          <div class="recon-metric-cell">
+            <span class="recon-metric-label" id="recon-lbl-temp">SURFACE TEMP</span>
+            <span class="recon-metric-value" id="recon-val-temp" style="color: var(--stark-gold);">--</span>
+          </div>
+          <div class="recon-metric-cell">
+            <span class="recon-metric-label" id="recon-lbl-gravity">SURFACE GRAVITY</span>
+            <span class="recon-metric-value" id="recon-val-gravity">--</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+          <button id="recon-btn-save-photo" class="hud-btn" style="padding: 10px 18px; font-size: 0.82rem; background: rgba(56, 189, 248, 0.15); border-color: #38bdf8;">
+            📸 LƯU ẢNH VÀO NHẬT KÝ (SAVE PHOTO)
+          </button>
+          <button id="recon-btn-quiz" class="spotlight-btn-primary" style="padding: 10px 22px; font-size: 0.85rem; background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);">
+            ❯ NEXT QUESTION: TRẮC NGHIỆM Q&A
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(reconModal);
+
+    // 3. Interactive Q&A Quiz Modal
+    const quizModal = document.createElement('div');
+    quizModal.id = 'quiz-modal';
+    quizModal.className = 'nasa-interactive-modal';
+    quizModal.style.display = 'none';
+    quizModal.innerHTML = `
+      <div class="quiz-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.8rem;" id="quiz-planet-icon">☀️</span>
+            <div>
+              <span style="font-size: 0.72rem; color: var(--stark-gold); font-family: var(--font-tech); font-weight: 700;">NASA EDUCATIONAL KNOWLEDGE VALIDATION</span>
+              <h3 id="quiz-planet-title" style="margin: 0; font-family: var(--font-tech); color: #fff; font-size: 1.15rem;">THE SUN</h3>
+            </div>
+          </div>
+          <button id="quiz-btn-close" class="hud-mini-btn" style="font-size: 1.1rem; width: 28px; height: 28px;">✕</button>
+        </div>
+
+        <div class="quiz-question-text" id="quiz-question-text"></div>
+        <div class="quiz-options-grid" id="quiz-options-container"></div>
+        <div id="quiz-feedback-box" class="quiz-feedback-box" style="display: none;"></div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+          <button id="quiz-btn-continue" class="spotlight-btn-primary" style="display: none; padding: 10px 24px; font-size: 0.85rem;">
+            TIẾP TỤC KHÁM PHÁ (CONTINUE) ❯
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(quizModal);
+
+    // 4. Surface Touchdown & OSIRIS-REx Geological Sampling Modal (Mission 2)
+    const landingModal = document.createElement('div');
+    landingModal.id = 'surface-landing-modal';
+    landingModal.className = 'nasa-interactive-modal';
+    landingModal.style.display = 'none';
+    landingModal.innerHTML = `
+      <div class="landing-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="landing-body-icon" style="font-size: 2.2rem;">🌑</span>
+            <div>
+              <h2 id="landing-body-name" style="margin: 0; font-family: var(--font-tech); font-size: 1.4rem; color: #fff;">THE MOON</h2>
+              <div id="landing-site-tag" style="font-size: 0.8rem; color: var(--stark-gold); font-family: var(--font-tech);">SURFACE TOUCHDOWN CONFIRMED</div>
+            </div>
+          </div>
+          <button id="landing-btn-close" class="hud-mini-btn" style="font-size: 1.2rem; width: 32px; height: 32px;">✕</button>
+        </div>
+
+        <div class="landing-radar-telemetry">
+          <div>
+            <span style="font-size: 0.72rem; color: #94a3b8; font-family: var(--font-tech);">RADAR ALTIMETER:</span>
+            <strong id="landing-altimeter-hud" style="color: #22c55e; margin-left: 6px; font-family: monospace;">50.0 m (STANDBY)</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.72rem; color: #94a3b8; font-family: var(--font-tech);">LANDER HULL:</span>
+            <strong id="landing-hull-name" style="color: #00f0ff; margin-left: 6px; font-family: monospace;">APOLLO LM EAGLE</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.72rem; color: #94a3b8; font-family: var(--font-tech);">HERMETIC CANISTER:</span>
+            <strong id="landing-canister-status" style="color: var(--stark-gold); margin-left: 6px; font-family: monospace;">0 / 3 SAMPLES</strong>
+          </div>
+        </div>
+
+        <!-- OSIRIS-REx Recon Magnifying Scope & TAGSAM Touchdown Stage -->
+        <div class="ola-scanner-stage">
+          <div class="ola-scanner-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="ola-pulse-dot"></span>
+              <span class="ola-header-title">🔍 KÍNH LÚP TRINH SÁT BÃI ĐÁP (OSIRIS-REx RECON SCOPE)</span>
+            </div>
+            <div class="ola-header-mode-toggle">
+              <button id="ola-mode-btn-scanner" class="ola-mode-btn active">🔍 KÍNH LÚP SOI BÃI ĐÁP (RECON LENS)</button>
+              <button id="ola-mode-btn-tagsam" class="ola-mode-btn">🚀 CHU KỲ TIẾP ĐẤT (TAGSAM)</button>
+            </div>
+          </div>
+
+          <!-- 1. Draggable Recon Scope Viewport -->
+          <div class="ola-viewport-container" id="ola-scanner-container">
+            <div class="ola-base-surface" id="ola-base-surface">
+              <canvas id="ola-surface-canvas" width="900" height="380" style="width: 100%; height: 100%; display: block;"></canvas>
+              <div class="ola-hotspots-layer" id="ola-hotspots-layer"></div>
+            </div>
+
+            <!-- Draggable Optical Recon Scope -->
+            <div class="ola-draggable-tablet" id="ola-draggable-tablet">
+              <div class="ola-tablet-handle" id="ola-tablet-handle">
+                <span class="ola-tablet-title">🔍 Kính lúp trinh sát (Recon Scope)</span>
+                <span class="ola-drag-hint">✥ GIỮ KÉO RÊ ĐỂ SOI CHẤM ĐEN (DRAG)</span>
+              </div>
+              <div class="ola-tablet-lens-viewport">
+                <canvas id="ola-heatmap-canvas" width="280" height="180" style="display: block; width: 100%; height: 100%;"></canvas>
+                <div class="ola-lens-reticle">
+                  <div class="ola-lens-crosshair"></div>
+                  <div class="ola-lens-coords" id="ola-lens-coords">LAT: +02°15' | LON: -44°30' | ELEV: -12.4m</div>
+                  <div class="ola-lock-badge" id="ola-lock-badge" style="display: none;">🎯 TARGET LOCKED</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mission Specialist Dialogue Guide -->
+            <div class="ola-specialist-dialogue" id="ola-specialist-dialogue">
+              <div class="ola-dialogue-avatar-wrap">
+                <div class="ola-dialogue-avatar">👩‍🚀</div>
+                <div class="ola-dialogue-badge">NASA/CSA</div>
+              </div>
+              <div class="ola-dialogue-content">
+                <div class="ola-dialogue-text" id="ola-dialogue-text">
+                  Hãy kéo kính lúp để soi tìm các "chấm đen" bãi đáp an toàn trên bề mặt, tránh các vùng đá gồ ghề hiểm trở!
+                </div>
+                <div class="ola-dialogue-controls">
+                  <button id="ola-dialogue-prev" class="ola-dialogue-btn" title="Previous Hint">❮</button>
+                  <span id="ola-dialogue-counter" class="ola-dialogue-counter">1 / 3</span>
+                  <button id="ola-dialogue-next" class="ola-dialogue-btn" title="Next Hint">❯</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Reconnaissance Guidance Bar -->
+            <div class="ola-elevation-legend" style="padding: 9px 18px; justify-content: center; background: rgba(10, 20, 36, 0.95); border: 1px solid rgba(0, 240, 255, 0.35);">
+              <div style="font-family: var(--font-tech); font-size: 0.82rem; color: #38bdf8; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;">
+                <span style="font-size: 1.1rem;">🔍</span>
+                <span style="letter-spacing: 0.5px;">RÊ KÍNH LÚP KHẮP BỀ MẶT ĐỂ SOI TÌM <strong>"CHẤM ĐEN"</strong> (BÃI ĐÁP BẰNG PHẲNG AN TOÀN KHÔNG CÓ ĐÁ TẢNG)!</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Animated Touchdown Descent Stage (TAGSAM) -->
+          <div id="tagsam-sim-stage" style="display: none; position: relative; width: 100%; height: 260px; background: #030712; border-radius: 8px; overflow: hidden; border: 1px solid rgba(56, 189, 248, 0.25);">
+            <canvas id="tagsam-canvas" width="900" height="260" style="width: 100%; height: 100%; display: block;"></canvas>
+            <div id="tagsam-telemetry-overlay" class="tagsam-canvas-overlay">
+              <div id="tagsam-alt-readout" class="tagsam-hud-readout">ALT: 50.0 m | Vz: 0.0 m/s</div>
+              <div id="tagsam-site-readout" class="tagsam-hud-site">TARGET: NIGHTINGALE CRATER</div>
+            </div>
+            <div id="tagsam-contact-alert" class="tagsam-hud-alert" style="display: none;">💥 TOUCHDOWN! N2 GAS PURGE COMPLETE • SAMPLE CAPTURED!</div>
+          </div>
+
+          <div class="tagsam-controls-bar" style="margin-top: 14px;">
+            <div>
+              <div style="font-size: 0.72rem; color: #94a3b8; font-family: var(--font-tech); margin-bottom: 6px;">BÃI ĐÁP KHẢO SÁT / CANDIDATE SITES (CSA OLA LIDAR):</div>
+              <div class="tagsam-site-tabs" id="tagsam-site-buttons"></div>
+            </div>
+            <div class="tagsam-action-buttons">
+              <button id="tagsam-btn-thrust-left" class="tagsam-control-btn" title="Thrust Left (Arrow Left)">◀ L</button>
+              <button id="tagsam-btn-thrust-retro" class="tagsam-control-btn" title="Retro Thruster (Arrow Up)">▲ RETRO</button>
+              <button id="tagsam-btn-thrust-right" class="tagsam-control-btn" title="Thrust Right (Arrow Right)">R ▶</button>
+              <button id="btn-initiate-tagsam" class="spotlight-btn-primary" style="padding: 9px 20px; font-size: 0.82rem; background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);">
+                🚀 BẮT ĐẦU CHU KỲ TAGSAM (INITIATE TAG)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size: 0.92rem; color: #cbd5e1; margin-bottom: 14px; line-height: 1.5;">
+          💡 <strong style="color: #fff;">OSIRIS-REx & Geological Sample Return:</strong> Cầm bảng quét laser OLA rê khắp bề mặt thiên thể để dò tìm bãi đáp trũng an toàn. Khi phát hiện mẫu vật thực tế bên dưới, bấm nút thu thập để kích hoạt chu trình tiếp đất Touch-And-Go, bắn khí N2 thu bụi đá vào khoang kín khí (thu thập đủ ít nhất 3 mẫu để hoàn thành sứ mệnh)!
+        </div>
+
+        <div class="sample-cards-grid" id="landing-samples-grid"></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; flex-wrap: wrap; gap: 10px;">
+          <div id="landing-goal-banner" style="font-family: var(--font-tech); font-size: 0.85rem; color: #94a3b8;">
+            MỤC TIÊU: Thu thập tối thiểu 3 mẫu vật địa chất từ các hành tinh khác nhau.
+          </div>
+          <button id="landing-btn-ascend" class="spotlight-btn-primary" style="padding: 10px 24px; font-size: 0.85rem;">
+            🚀 TRỞ LẠI QUỸ ĐẠO (RETURN TO ORBIT)
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(landingModal);
   }
 
   /**
@@ -2710,7 +3310,10 @@ export class NasaMissionDesigner {
       item.className = `nasa-mission-item ${m.id === this.selectedMission.id ? 'active' : ''}`;
       item.title = desc;
       item.innerHTML = `
-        <div style="font-size: 0.72rem; color: var(--stark-gold); font-weight: 700; margin-bottom: 2px;">${badge}</div>
+        <div class="mission-item-header">
+          <span style="font-size: 0.72rem; color: var(--stark-gold); font-weight: 700;">${badge}</span>
+          <button class="btn-mission-info" title="${this.currentLanguage === 'vi' ? 'Xem chi tiết & quy định nhiệm vụ' : 'View Mission Briefing & Guidelines'}">ℹ</button>
+        </div>
         <div class="mission-name">${title}</div>
         <div class="mission-dest">📍 ${dest}</div>
         <div class="mission-meta">
@@ -2718,10 +3321,26 @@ export class NasaMissionDesigner {
           <span>${formatTpl(t.reqDeltaVMeta, { req: `<strong>${reqText}</strong>` })}</span>
         </div>
       `;
+
+      item.querySelector('.btn-mission-info')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.showMissionBriefingModal(m);
+      });
+
       item.onclick = () => {
         this.selectedMission = m;
+        if (m.id === 'mission_2_samples') {
+          if (!LANDING_CAPABLE_SHIPS_M2.includes(this.selectedChassisId)) {
+            this.selectedChassisId = 'apollo_lm';
+            this.isCustomModelLoaded = false;
+            this.rebuild3DShipModel();
+            this.updateHeaderShipInfo();
+            this.onShipChangedCallback?.();
+          }
+        }
         this.playClickSound();
         this.renderMissions();
+        this.renderArmoryGrid();
         this.updateLiveTelemetry();
       };
       list.appendChild(item);
@@ -2741,24 +3360,44 @@ export class NasaMissionDesigner {
     if (this.activeTab === 'chassis') {
       SPACECRAFT_FLEET.forEach(it => {
         const isEq = it.id === this.selectedChassisId;
+        const isM2 = this.selectedMission.id === 'mission_2_samples';
+        const isLandingCapable = LANDING_CAPABLE_SHIPS_M2.includes(it.id);
+        const isIncompatible = isM2 && !isLandingCapable;
+
         const loc = getSpacecraftText(it.id, this.currentLanguage);
         const name = loc ? loc.name : it.name;
         const badge = (loc && loc.badge) ? loc.badge : it.badge;
         const desc = loc ? loc.desc : it.desc;
         const card = document.createElement('div');
-        card.className = `armory-card ${it.rarity} ${isEq ? 'equipped' : ''}`;
+        card.className = `armory-card ${it.rarity} ${isEq ? 'equipped' : ''} ${isIncompatible ? 'incompatible-landing' : ''}`;
+
+        let perkText = isEq ? t.equipped : t.clickToEquip;
+        if (isIncompatible) {
+          perkText = this.currentLanguage === 'vi' ? '⚠️ KHÔNG CÓ CHÂN ĐÁP' : '⚠️ NO LANDING GEAR';
+        } else if (isM2 && isLandingCapable) {
+          perkText = isEq ? `✓ ${t.equipped} (LANDER)` : (this.currentLanguage === 'vi' ? '🛬 CHỌN TÀU ĐÁP' : '🛬 SELECT LANDER');
+        }
+
         card.innerHTML = `
           <div>
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;">
               <span class="armory-item-name">${name}</span>
-              <span class="armory-item-badge" style="font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #00f0ff; font-family: monospace; font-weight: 700;">${badge}</span>
+              <span class="armory-item-badge" style="font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: ${isIncompatible ? 'rgba(239, 68, 68, 0.2)' : 'rgba(56, 189, 248, 0.15)'}; color: ${isIncompatible ? '#ef4444' : '#00f0ff'}; font-family: monospace; font-weight: 700;">${isIncompatible ? '⛔ NO LANDER' : badge}</span>
             </div>
             <div class="armory-item-stats">${formatTpl(t.cardChassisStats, { mass: formatNum(it.mass, this.currentLanguage), cost: formatNum(it.cost, this.currentLanguage), cap: it.cap })}</div>
             <div style="font-size: 0.7rem; color: #a0b5d0; margin-top: 4px;">${desc}</div>
+            ${isIncompatible ? `<div style="font-size: 0.68rem; color: #f87171; margin-top: 4px; font-weight: bold;">${this.currentLanguage === 'vi' ? '⚠️ Không có chân đáp – Vô hiệu hóa trong Nhiệm vụ 2' : '⚠️ Lacks landing legs – Incompatible with Mission 2'}</div>` : ''}
           </div>
-          <div class="armory-item-perk">${isEq ? t.equipped : t.clickToEquip}</div>
+          <div class="armory-item-perk" style="${isIncompatible ? 'color: #ef4444; border-color: rgba(239, 68, 68, 0.4);' : ''}">${perkText}</div>
         `;
         card.onclick = () => {
+          if (isIncompatible) {
+            this.playFailureSound();
+            alert(this.currentLanguage === 'vi' 
+              ? '⚠️ TÀU KHÔNG PHÙ HỢP:\nNhiệm vụ 2 là nhiệm vụ đáp đất lấy mẫu địa chất, do đó chỉ những tàu có chân đáp hoặc khả năng hạ cánh mới được sử dụng:\n• Nasa Apollo 11 Lunar Module (Eagle)\n• NASA Space Shuttle Orbiter (Discovery OV-103)\n• Quinjet Mk-VII (Stealth Concept)\n• The Milano (Light Scout)'
+              : '⚠️ SHIP INCOMPATIBLE:\nMission 2 is a surface sample return mission. Only landing-capable hulls with descent gear or VTOL capability can be selected:\n• Nasa Apollo 11 Lunar Module (Eagle)\n• NASA Space Shuttle Orbiter (Discovery OV-103)\n• Quinjet Mk-VII (Stealth Concept)\n• The Milano (Light Scout)');
+            return;
+          }
           this.isCustomModelLoaded = false;
           this.selectedChassisId = it.id;
           this.playEquipSound();
@@ -3009,6 +3648,8 @@ export class NasaMissionDesigner {
 
     const totalCost = chassis.cost + power.cost + engine.cost + techCost + carrier.cost;
     const remainingBudget = this.selectedMission.budgetCredits - totalCost;
+    this.calculatedTotalCost = totalCost;
+    this.calculatedRemainingBudget = remainingBudget;
 
     let powerGenerated = power.basePower;
     if (power.isSolar) {
@@ -3212,6 +3853,61 @@ export class NasaMissionDesigner {
     document.getElementById('debrief-btn-restart')?.addEventListener('click', () => {
       document.getElementById('nasa-debrief-modal')!.style.display = 'none';
       this.showLobby();
+    });
+
+    // Special In-Flight Action Buttons
+    document.getElementById('hud-btn-recon-quiz')?.addEventListener('click', () => {
+      this.playClickSound();
+      this.openReconPhotoModal(this.currentReconBodyId);
+    });
+
+    document.getElementById('hud-btn-surface-landing')?.addEventListener('click', () => {
+      this.playClickSound();
+      this.openSurfaceLandingModal(this.currentCelestialLocation);
+    });
+
+    // Modal Close & Navigation Handlers
+    document.getElementById('briefing-btn-close')?.addEventListener('click', () => {
+      const modal = document.getElementById('mission-briefing-modal');
+      if (modal) modal.style.display = 'none';
+    });
+    document.getElementById('briefing-btn-proceed')?.addEventListener('click', () => {
+      const modal = document.getElementById('mission-briefing-modal');
+      if (modal) modal.style.display = 'none';
+    });
+
+    document.getElementById('recon-btn-close')?.addEventListener('click', () => {
+      const modal = document.getElementById('recon-photo-modal');
+      if (modal) modal.style.display = 'none';
+      this.stop3DReconViewport();
+      const floatCam = document.getElementById('hud-floating-camera-btn');
+      if (floatCam && this.isMissionActive) floatCam.style.display = 'flex';
+    });
+
+    document.getElementById('quiz-btn-close')?.addEventListener('click', () => {
+      const modal = document.getElementById('quiz-modal');
+      if (modal) modal.style.display = 'none';
+      const floatCam = document.getElementById('hud-floating-camera-btn');
+      if (floatCam && this.isMissionActive) floatCam.style.display = 'flex';
+    });
+
+    document.getElementById('landing-btn-close')?.addEventListener('click', () => {
+      const modal = document.getElementById('surface-landing-modal');
+      if (modal) modal.style.display = 'none';
+      this.stopTagsamSimulation();
+      if ((this as any)._olaCleanup) (this as any)._olaCleanup();
+      const floatCam = document.getElementById('hud-floating-camera-btn');
+      if (floatCam && this.isMissionActive) floatCam.style.display = 'flex';
+    });
+
+    document.getElementById('landing-btn-ascend')?.addEventListener('click', () => {
+      const modal = document.getElementById('surface-landing-modal');
+      if (modal) modal.style.display = 'none';
+      this.stopTagsamSimulation();
+      if ((this as any)._olaCleanup) (this as any)._olaCleanup();
+      this.playLaunchSound();
+      const floatCam = document.getElementById('hud-floating-camera-btn');
+      if (floatCam && this.isMissionActive) floatCam.style.display = 'flex';
     });
 
     // Language Selector
@@ -4347,6 +5043,9 @@ export class NasaMissionDesigner {
     const hud = document.getElementById('nasa-flight-hud');
     if (hud) hud.style.display = 'flex';
 
+    const floatCam = document.getElementById('hud-floating-camera-btn');
+    if (floatCam) floatCam.style.display = 'flex';
+
     document.getElementById('hud-mission-name')!.textContent = (missionLoc ? missionLoc.title : this.selectedMission.title).toUpperCase();
     document.getElementById('hud-target-name')!.textContent = missionLoc ? missionLoc.destination : this.selectedMission.destination;
 
@@ -4359,6 +5058,28 @@ export class NasaMissionDesigner {
     this.isTrajectoryLocked = false;
     this.currentScienceCollected = 0;
     this.missionTimer = 0;
+
+    // Initialize Mission 1 & 2 specific state
+    if (this.selectedMission.id === 'mission_1_survey') {
+      this.travelBudget = Math.max(50, Math.round(this.calculatedRemainingBudget) || 120);
+      this.initialTravelBudget = this.travelBudget;
+      this.currentCelestialLocation = 'earth';
+      this.currentReconBodyId = 'earth';
+      this.surveyedPlanets.clear();
+      this.quizAnsweredCount = 0;
+      this.quizCorrectCount = 0;
+    } else if (this.selectedMission.id === 'mission_2_samples') {
+      this.travelBudget = Math.max(60, Math.round(this.calculatedRemainingBudget) || 180);
+      this.initialTravelBudget = this.travelBudget;
+      this.currentCelestialLocation = 'moon';
+      this.currentReconBodyId = 'moon';
+      this.collectedSamples.clear();
+    } else {
+      this.travelBudget = Math.max(50, Math.round(this.calculatedRemainingBudget) || 100);
+      this.initialTravelBudget = this.travelBudget;
+      this.currentCelestialLocation = 'earth';
+    }
+    this.updateFlightHudBudget();
 
     const liveScoreInit = document.getElementById('hud-science-live');
     if (liveScoreInit) liveScoreInit.textContent = `0 pts`;
@@ -4398,21 +5119,2231 @@ export class NasaMissionDesigner {
     this.isMissionActive = false;
     document.getElementById('nasa-mission-modal')!.style.display = 'flex';
     document.getElementById('nasa-flight-hud')!.style.display = 'none';
+    const floatCam = document.getElementById('hud-floating-camera-btn');
+    if (floatCam) floatCam.style.display = 'none';
   }
 
-  private showDebrief() {
+  public showDebrief() {
     this.isMissionActive = false;
+    const floatCam = document.getElementById('hud-floating-camera-btn');
+    if (floatCam) floatCam.style.display = 'none';
     const debrief = document.getElementById('nasa-debrief-modal');
     if (!debrief) return;
 
     debrief.style.display = 'flex';
-    document.getElementById('debrief-score-science')!.textContent = `${formatNum(this.currentScienceCollected, this.currentLanguage)} pts`;
-    document.getElementById('debrief-score-budget')!.textContent = document.getElementById('metric-budget')!.textContent || '$0M';
-    this.updateDebriefLanguage();
+    const isVi = this.currentLanguage === 'vi';
+    const missionId = this.selectedMission.id;
+
+    // Remaining Travel Budget
+    const budgetEl = document.getElementById('debrief-score-budget');
+    if (budgetEl) {
+      budgetEl.textContent = `$${this.travelBudget.toFixed(1)}M`;
+      budgetEl.style.color = this.travelBudget < 5 ? '#ef4444' : '#00f0ff';
+    }
+
+    // Science Points
+    const sciEl = document.getElementById('debrief-score-science');
+    if (sciEl) {
+      sciEl.textContent = `${formatNum(this.currentScienceCollected, this.currentLanguage)} pts`;
+    }
+
+    // Elapsed Time (MET)
+    const relEl = document.getElementById('debrief-score-reliability');
+    const lblRel = document.getElementById('debrief-lbl-reliability');
+    if (lblRel) lblRel.textContent = isVi ? 'Thời Gian Mô Phỏng' : 'Mission Elapsed Time (MET)';
+    if (relEl) {
+      const mins = Math.floor(this.missionTimer / 60);
+      const secs = this.missionTimer % 60;
+      relEl.textContent = `${mins}m ${secs}s`;
+    }
+
+    // Goal Achieved Status
+    const rankEl = document.getElementById('debrief-rank');
+    const summaryEl = document.getElementById('debrief-summary');
+
+    let passed = false;
+    let summaryText = '';
+
+    if (missionId === 'mission_1_survey') {
+      passed = this.surveyedPlanets.size >= 3;
+      if (rankEl) {
+        rankEl.textContent = passed 
+          ? (isVi ? '🏆 SỨ MỆNH THÀNH CÔNG (PASSED)' : '🏆 MISSION ACCOMPLISHED')
+          : (isVi ? '⚠️ SỨ MỆNH CHƯA ĐẠT (INCOMPLETE)' : '⚠️ MISSION INCOMPLETE');
+        rankEl.style.color = passed ? '#22c55e' : '#ef4444';
+      }
+      summaryText = isVi
+        ? `Đã chụp ảnh & lập bản đồ 2D cho ${this.surveyedPlanets.size}/12 thiên thể. Trả lời đúng ${this.quizCorrectCount}/${this.quizAnsweredCount} câu hỏi trắc nghiệm thiên văn. Ngân sách còn lại: $${this.travelBudget.toFixed(1)}M.`
+        : `Surveyed ${this.surveyedPlanets.size}/12 celestial bodies with 2D recon cartography. Answered ${this.quizCorrectCount}/${this.quizAnsweredCount} quiz questions correctly. Remaining travel budget: $${this.travelBudget.toFixed(1)}M.`;
+    } else if (missionId === 'mission_2_samples') {
+      passed = this.collectedSamples.size >= 3;
+      if (rankEl) {
+        rankEl.textContent = passed 
+          ? (isVi ? '🏆 SỨ MỆNH THÀNH CÔNG (PASSED)' : '🏆 MISSION ACCOMPLISHED')
+          : (isVi ? '⚠️ THẤT BẠI - CHƯA ĐỦ MẪU' : '⚠️ MISSION FAILED');
+        rankEl.style.color = passed ? '#22c55e' : '#ef4444';
+      }
+      summaryText = isVi
+        ? `Đã hạ cánh và thu thập thành công ${this.collectedSamples.size}/3 mẫu vật địa chất hành tinh (Mục tiêu tối thiểu: 3 mẫu). Khoang chứa mẫu vật hermetic an toàn. Ngân sách còn lại: $${this.travelBudget.toFixed(1)}M.`
+        : `Landed and secured ${this.collectedSamples.size}/3 distinct planetary geological specimens in the hermetic return canister (Requirement: ≥ 3). Remaining travel budget: $${this.travelBudget.toFixed(1)}M.`;
+    } else {
+      passed = this.currentScienceCollected >= this.selectedMission.minSciencePoints;
+      if (rankEl) {
+        rankEl.textContent = passed ? 'NASA FLIGHT DIRECTOR' : 'MISSION SPECIALIST';
+      }
+      this.updateDebriefLanguage();
+      return;
+    }
+
+    if (summaryEl) {
+      summaryEl.textContent = summaryText;
+    }
+  }
+
+  public updateFlightHudBudget() {
+    const budgetValEl = document.getElementById('hud-travel-budget-val');
+    const budgetFillEl = document.getElementById('hud-travel-budget-fill');
+    const objValEl = document.getElementById('hud-mission-obj-val');
+    const reconBtn = document.getElementById('hud-btn-recon-quiz');
+    const landBtn = document.getElementById('hud-btn-surface-landing');
+
+    if (budgetValEl) {
+      budgetValEl.textContent = `$${this.travelBudget.toFixed(1)}M`;
+      if (this.travelBudget < 15) {
+        budgetValEl.style.color = '#ef4444';
+      } else if (this.travelBudget < 35) {
+        budgetValEl.style.color = '#f59e0b';
+      } else {
+        budgetValEl.style.color = '#00f0ff';
+      }
+    }
+    if (budgetFillEl) {
+      const pct = Math.max(0, Math.min(100, (this.travelBudget / (this.initialTravelBudget || 100)) * 100));
+      budgetFillEl.style.width = `${pct}%`;
+      budgetFillEl.style.background = this.travelBudget < 15 ? '#ef4444' : (this.travelBudget < 35 ? '#f59e0b' : '#00f0ff');
+    }
+
+    if (objValEl) {
+      if (this.selectedMission.id === 'mission_1_survey') {
+        objValEl.textContent = `${this.surveyedPlanets.size} / 12 (Quiz: ${this.quizCorrectCount})`;
+      } else if (this.selectedMission.id === 'mission_2_samples') {
+        objValEl.textContent = `${this.collectedSamples.size} / 3 Samples`;
+      } else {
+        objValEl.textContent = `${this.currentScienceCollected} / ${this.selectedMission.minSciencePoints} pts`;
+      }
+    }
+
+    if (reconBtn) {
+      reconBtn.style.display = this.selectedMission.id === 'mission_1_survey' ? 'flex' : 'none';
+    }
+    if (landBtn) {
+      const isM2 = this.selectedMission.id === 'mission_2_samples';
+      const isLandable = LANDABLE_BODIES_M2.includes(this.currentCelestialLocation.toLowerCase());
+      landBtn.style.display = isM2 ? 'flex' : 'none';
+      if (isM2) {
+        landBtn.style.opacity = isLandable ? '1' : '0.4';
+        landBtn.textContent = isLandable 
+          ? (this.currentLanguage === 'vi' ? '🛬 ĐÁP ĐẤT & LẤY MẪU' : '🛬 LAND & SAMPLE')
+          : (this.currentLanguage === 'vi' ? '⚠️ KHÔNG THỂ ĐÁP' : '⚠️ UNLANDABLE');
+      }
+    }
+  }
+
+  public handlePlanetaryTravel(targetName: string): boolean {
+    if (!this.isMissionActive) return true;
+
+    let bodyId = targetName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (bodyId.includes('earth')) bodyId = 'earth';
+    else if (bodyId.includes('moon')) bodyId = 'moon';
+    else if (bodyId.includes('sun') || bodyId.includes('sol')) bodyId = 'sun';
+    else if (bodyId.includes('mercury')) bodyId = 'mercury';
+    else if (bodyId.includes('venus')) bodyId = 'venus';
+    else if (bodyId.includes('mars')) bodyId = 'mars';
+    else if (bodyId.includes('jupiter')) bodyId = 'jupiter';
+    else if (bodyId.includes('saturn')) bodyId = 'saturn';
+    else if (bodyId.includes('uranus')) bodyId = 'uranus';
+    else if (bodyId.includes('neptune')) bodyId = 'neptune';
+    else if (bodyId.includes('halley')) bodyId = 'halley';
+    else if (bodyId.includes('bennu')) bodyId = 'bennu';
+    else if (bodyId.includes('ceres') || bodyId.includes('asteroid') || bodyId.includes('apophis')) bodyId = 'asteroids';
+
+    if (bodyId === this.currentCelestialLocation) {
+      return true;
+    }
+
+    const cost = getTravelCost(this.selectedMission.id, bodyId);
+
+    if (this.travelBudget < cost) {
+      this.playFailureSound();
+      const isVi = this.currentLanguage === 'vi';
+      alert(isVi 
+        ? `⚠️ NGÂN SÁCH KHÔNG ĐỦ!\nChi phí hành trình tới ${targetName} là $${cost}M, nhưng phi thuyền chỉ còn $${this.travelBudget.toFixed(1)}M.\nHãy chọn điểm đến gần hơn hoặc xem báo cáo tổng kết sứ mệnh.`
+        : `⚠️ INSUFFICIENT TRAVEL BUDGET!\nTravel to ${targetName} requires $${cost}M, but only $${this.travelBudget.toFixed(1)}M remains in mission reserves.\nChoose a closer celestial body or conclude the mission.`);
+      return false;
+    }
+
+    // Deduct cost
+    this.travelBudget -= cost;
+    this.currentCelestialLocation = bodyId;
+    this.currentReconBodyId = bodyId;
+    this.playEquipSound();
+    this.updateFlightHudBudget();
+
+    const targetEl = document.getElementById('hud-target-name');
+    if (targetEl) targetEl.textContent = `${bodyId.toUpperCase()} (ORBIT)`;
+
+    // Check if budget is depleted below minimum transfer
+    const minTransferCost = this.selectedMission.id === 'mission_2_samples' ? 28 : 5;
+    if (this.travelBudget < minTransferCost) {
+      setTimeout(() => {
+        this.checkMissionEndCondition();
+      }, 1800);
+    }
+
+    return true;
+  }
+
+  private checkMissionEndCondition() {
+    if (!this.isMissionActive) return;
+    const isVi = this.currentLanguage === 'vi';
+    if (this.selectedMission.id === 'mission_1_survey') {
+      if (this.surveyedPlanets.size >= 3) {
+        alert(isVi
+          ? `🏆 SỨ MỆNH HOÀN THÀNH!\nBạn đã hoàn thành khảo sát ${this.surveyedPlanets.size} thiên thể và trả lời trắc nghiệm với ngân sách còn lại $${this.travelBudget.toFixed(1)}M.`
+          : `🏆 MISSION ACCOMPLISHED!\nYou surveyed ${this.surveyedPlanets.size} celestial bodies and completed Q&A quizzes with $${this.travelBudget.toFixed(1)}M remaining.`);
+        this.showDebrief();
+      } else {
+        alert(isVi
+          ? `⚠️ NGÂN SÁCH CẠN KIỆT - DỪNG CHUYẾN ĐI!\nNgân sách còn lại ($${this.travelBudget.toFixed(1)}M) không đủ để bay tới hành tinh tiếp theo. Bạn chỉ mới khảo sát ${this.surveyedPlanets.size}/3 thiên thể yêu cầu.`
+          : `⚠️ BUDGET EXHAUSTED - MISSION ABORTED!\nRemaining funds ($${this.travelBudget.toFixed(1)}M) are insufficient for interplanetary transfer. You surveyed ${this.surveyedPlanets.size}/3 required bodies.`);
+        this.showDebrief();
+      }
+    } else if (this.selectedMission.id === 'mission_2_samples') {
+      if (this.collectedSamples.size >= 3) {
+        alert(isVi
+          ? `🏆 SỨ MỆNH THẾ KỶ HOÀN THÀNH!\nBạn đã thu thập thành công ${this.collectedSamples.size} mẫu vật địa chất và bảo quản nguyên vẹn trong khoang chứa hermetic.`
+          : `🏆 MISSION ACCOMPLISHED!\nYou secured ${this.collectedSamples.size} geological samples in the hermetic return canister.`);
+        this.showDebrief();
+      } else {
+        alert(isVi
+          ? `⚠️ NGÂN SÁCH CẠN KIỆT - DỪNG CHUYẾN ĐI!\nNgân sách không còn đủ để di chuyển giữa các hành tinh. Bạn thu thập được ${this.collectedSamples.size}/3 mẫu vật yêu cầu.`
+          : `⚠️ BUDGET EXHAUSTED - MISSION ABORTED!\nFunds depleted below landing transfer threshold. You secured ${this.collectedSamples.size}/3 required samples.`);
+        this.showDebrief();
+      }
+    }
+  }
+
+  public showMissionBriefingModal(mission: NasaMission) {
+    const modal = document.getElementById('mission-briefing-modal');
+    if (!modal) return;
+    const isVi = this.currentLanguage === 'vi';
+    const loc = getMissionText(mission.id, this.currentLanguage);
+    const title = loc ? loc.title : mission.title;
+    const badge = loc ? loc.badge : mission.badge;
+    const desc = loc ? loc.description : mission.description;
+
+    document.getElementById('briefing-title')!.textContent = title;
+    document.getElementById('briefing-badge')!.textContent = badge;
+    document.getElementById('briefing-desc')!.textContent = desc;
+
+    const craftReqEl = document.getElementById('briefing-craft-req');
+    const budgetRulesEl = document.getElementById('briefing-budget-rules');
+    const shipSection = document.getElementById('briefing-ship-req-section');
+
+    if (mission.id === 'mission_1_survey') {
+      if (shipSection) shipSection.className = 'briefing-section';
+      if (craftReqEl) {
+        craftReqEl.innerHTML = isVi
+          ? '• <strong>Trang bị bắt buộc:</strong> Nên trang bị Radar hoặc Cảm biến quang học (Deep Space Optics / Sonic Radar) để kích hoạt nút chụp ảnh bản đồ 2D.<br>• <strong>Khám phá 12 thiên thể:</strong> Mặt Trời, Sao Thủy, Sao Kim, Trái Đất, Mặt Trăng, Sao Hỏa, Vành đai tiểu hành tinh, Sao Mộc, Sao Thổ, Sao Thiên Vương, Sao Hải Vương, Sao chổi Halley.'
+          : '• <strong>Recommended Equipment:</strong> Install radar or optical imaging sensors to enable 2D recon cartography.<br>• <strong>Explore 12 Bodies:</strong> Sun, Mercury, Venus, Earth, Moon, Mars, Asteroid Belt, Jupiter, Saturn, Uranus, Neptune, Halley\'s Comet.';
+      }
+      if (budgetRulesEl) {
+        budgetRulesEl.innerHTML = isVi
+          ? '• Ngân sách ban đầu: <strong>$280M</strong>. Sau khi trang bị tàu, số dư ngân sách sẽ được dùng để trả chi phí bay giữa các hành tinh ($5M đến $37M).<br>• <strong>Điều kiện thắng:</strong> Khảo sát ít nhất 3 hành tinh và trả lời đúng câu hỏi Q&A mà ngân sách không bị âm.'
+          : '• Starting Budget: <strong>$280M</strong>. Equipment surplus funds interplanetary transfers ($5M to $37M).<br>• <strong>Win Condition:</strong> Survey at least 3 bodies and complete Q&A quizzes without running out of budget.';
+      }
+    } else if (mission.id === 'mission_2_samples') {
+      if (shipSection) shipSection.className = 'briefing-section warning';
+      if (craftReqEl) {
+        craftReqEl.innerHTML = isVi
+          ? '🚨 <strong>QUY TẮC BẮT BUỘC VỀ LOẠI TÀU:</strong><br>Nhiệm vụ này là đáp đất (Sample Return), do đó <strong>chỉ những tàu có chân đáp hoặc khả năng hạ cánh mới được dùng</strong>:<br>• Nasa Apollo 11 Lunar Module (Eagle)<br>• NASA Space Shuttle Orbiter (Discovery OV-103)<br>• Quinjet Mk-VII (Stealth Concept)<br>• The Milano (Light Scout)<br><em>(Các tàu khác không có chân đáp sẽ bị bôi đỏ và vô hiệu hóa không cho chọn).</em>'
+          : '🚨 <strong>MANDATORY HULL RESTRICTION:</strong><br>This is a surface landing mission. <strong>Only landing-gear hulls or VTOL craft are authorized:</strong><br>• NASA Apollo 11 Lunar Module (Eagle)<br>• NASA Space Shuttle Orbiter (Discovery OV-103)<br>• Quinjet Mk-VII (Stealth Concept)<br>• The Milano (Light Scout)<br><em>(All other ships lack landing gear and are locked/disabled).</em>';
+      }
+      if (budgetRulesEl) {
+        budgetRulesEl.innerHTML = isVi
+          ? '• <strong>Thiên thể đáp được:</strong> Chỉ có Trái Đất, Mặt Trăng, Sao Hỏa có bề mặt rắn cho phép hạ cánh. Các thiên thể khác (Mặt Trời, Sao Kim, Sao Thủy, các hành tinh khí) quá nóng hoặc không có bề mặt rắn.<br>• <strong>Mục tiêu:</strong> Thu thập ít nhất <strong>3 mẫu vật địa chất khác nhau</strong> (Granite, Basalt, Sa thạch, Đá Mặt Trăng, Băng cực, Regolith, Đá Sao Hỏa, Khí quyển Sao Hỏa).'
+          : '• <strong>Landable Bodies:</strong> Only Earth, Moon, and Mars have suitable solid surfaces. Other bodies are lethally hot or lack solid crust.<br>• <strong>Objective:</strong> Collect at least <strong>3 distinct geological specimens</strong> in the return canister before budget is exhausted.';
+      }
+    } else {
+      if (shipSection) shipSection.className = 'briefing-section';
+      if (craftReqEl) {
+        craftReqEl.innerHTML = isVi
+          ? `• Vận tốc Delta-V tối thiểu: <strong>${mission.reqDeltaV} m/s</strong>.<br>• Điểm khoa học tối thiểu: <strong>${mission.minSciencePoints} pts</strong>.`
+          : `• Required Delta-V: <strong>${mission.reqDeltaV} m/s</strong>.<br>• Min Science Points: <strong>${mission.minSciencePoints} pts</strong>.`;
+      }
+      if (budgetRulesEl) {
+        budgetRulesEl.innerHTML = isVi
+          ? `• Ngân sách nhiệm vụ: <strong>$${mission.budgetCredits}M</strong>.`
+          : `• Mission Budget Allocation: <strong>$${mission.budgetCredits}M</strong>.`;
+      }
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  public openReconPhotoModal(targetBodyId?: string) {
+    const floatCam = document.getElementById('hud-floating-camera-btn');
+    if (floatCam) floatCam.style.display = 'none';
+
+    const bodyId = (targetBodyId || this.currentCelestialLocation || this.currentReconBodyId || 'earth').toLowerCase();
+    this.currentReconBodyId = bodyId;
+    const quizItem = CELESTIAL_QUIZ_DATA[bodyId] || CELESTIAL_QUIZ_DATA['earth'] || CELESTIAL_QUIZ_DATA['sun'];
+    const isVi = this.currentLanguage === 'vi';
+
+    const modal = document.getElementById('recon-photo-modal');
+    if (!modal) return;
+
+    const iconEl = document.getElementById('recon-planet-icon');
+    if (iconEl) iconEl.textContent = PLANET_ICONS[bodyId] || '🪐';
+
+    const dragHint = document.getElementById('recon-drag-hint-tag');
+    if (dragHint) {
+      dragHint.textContent = isVi ? '✥ KÉO CHUỘT XOAY 3D 360°' : '✥ DRAG TO ROTATE 360°';
+    }
+
+    document.getElementById('recon-planet-name')!.textContent = (isVi ? quizItem.nameVi : quizItem.nameEn).toUpperCase();
+    document.getElementById('recon-planet-subtitle')!.textContent = isVi ? quizItem.titleVi : quizItem.titleEn;
+    document.getElementById('recon-desc-text')!.textContent = isVi ? quizItem.descVi : quizItem.descEn;
+
+    document.getElementById('recon-val-diameter')!.textContent = quizItem.diameter;
+    document.getElementById('recon-val-mass')!.textContent = quizItem.mass;
+    document.getElementById('recon-val-temp')!.textContent = quizItem.temperature;
+    document.getElementById('recon-val-gravity')!.textContent = quizItem.gravity;
+
+    // Render interactive planet selector pills
+    const selectorBar = document.getElementById('recon-body-selector-bar');
+    if (selectorBar) {
+      selectorBar.innerHTML = '';
+      const bodiesList = ['sun', 'mercury', 'venus', 'earth', 'moon', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'bennu'];
+      bodiesList.forEach(bid => {
+        const itemData = CELESTIAL_QUIZ_DATA[bid];
+        if (!itemData) return;
+        const btn = document.createElement('button');
+        btn.className = `recon-selector-pill ${bid === bodyId ? 'active' : ''}`;
+        const name = isVi ? itemData.nameVi : itemData.nameEn;
+        const icon = PLANET_ICONS[bid] || '🪐';
+        btn.innerHTML = `<span>${icon}</span> <span>${name}</span>`;
+        btn.onclick = () => {
+          this.playClickSound();
+          this.openReconPhotoModal(bid);
+        };
+        selectorBar.appendChild(btn);
+      });
+    }
+
+    const canvas = document.getElementById('recon-canvas') as HTMLCanvasElement;
+    if (canvas) {
+      this.init3DReconViewport(canvas, bodyId);
+    }
+
+    const btnSave = document.getElementById('recon-btn-save-photo') as HTMLButtonElement;
+    if (btnSave) {
+      const isSaved = this.surveyedPlanets.has(bodyId);
+      btnSave.textContent = isSaved 
+        ? (isVi ? '✓ ĐÃ LƯU VÀO NHẬT KÝ SỨ MỆNH' : '✓ PHOTO SAVED IN MISSION LOG')
+        : (isVi ? '📸 LƯU ẢNH VÀO NHẬT KÝ' : '📸 SAVE PHOTO TO MISSION LOG');
+      btnSave.disabled = isSaved;
+      btnSave.onclick = () => {
+        this.surveyedPlanets.add(bodyId);
+        this.currentScienceCollected += 30;
+        this.playSuccessSound();
+        btnSave.textContent = isVi ? '✓ ĐÃ LƯU VÀO NHẬT KÝ SỨ MỆNH' : '✓ PHOTO SAVED IN MISSION LOG';
+        btnSave.disabled = true;
+        this.updateFlightHudBudget();
+      };
+    }
+
+    const btnQuiz = document.getElementById('recon-btn-quiz');
+    if (btnQuiz) {
+      btnQuiz.onclick = () => {
+        modal.style.display = 'none';
+        this.stop3DReconViewport();
+        this.openQuizModal(bodyId);
+      };
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  public openQuizModal(bodyId: string) {
+    const quizItem = CELESTIAL_QUIZ_DATA[bodyId] || CELESTIAL_QUIZ_DATA['sun'];
+    const isVi = this.currentLanguage === 'vi';
+    const modal = document.getElementById('quiz-modal');
+    if (!modal) return;
+
+    document.getElementById('quiz-planet-title')!.textContent = `${isVi ? quizItem.nameVi : quizItem.nameEn} (${quizItem.id.toUpperCase()})`;
+    document.getElementById('quiz-question-text')!.textContent = isVi ? quizItem.questionVi : quizItem.questionEn;
+
+    const optionsContainer = document.getElementById('quiz-options-container');
+    const feedbackBox = document.getElementById('quiz-feedback-box');
+    const btnContinue = document.getElementById('quiz-btn-continue');
+
+    if (feedbackBox) feedbackBox.style.display = 'none';
+    if (btnContinue) btnContinue.style.display = 'none';
+
+    if (optionsContainer) {
+      optionsContainer.innerHTML = '';
+      const options = isVi ? quizItem.optionsVi : quizItem.optionsEn;
+      options.forEach((optText, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-opt-btn';
+        btn.innerHTML = `<span>${optText}</span><span class="quiz-check-badge"></span>`;
+        btn.onclick = () => {
+          const allBtns = optionsContainer.querySelectorAll('.quiz-opt-btn') as NodeListOf<HTMLButtonElement>;
+          allBtns.forEach(b => b.disabled = true);
+
+          this.quizAnsweredCount++;
+          if (idx === quizItem.answerIndex) {
+            btn.classList.add('quiz-opt-correct');
+            btn.querySelector('.quiz-check-badge')!.textContent = '✓';
+            this.playSuccessSound();
+            this.quizCorrectCount++;
+            this.currentScienceCollected += 50;
+
+            if (feedbackBox) {
+              feedbackBox.className = 'quiz-feedback-box correct';
+              feedbackBox.innerHTML = `<strong>🎉 ${isVi ? 'CHÍNH XÁC! (+50 ĐIỂM KHOA HỌC)' : 'CORRECT! (+50 SCIENCE POINTS)'}</strong><br>${isVi ? quizItem.explanationVi : quizItem.explanationEn}`;
+              feedbackBox.style.display = 'block';
+            }
+          } else {
+            btn.classList.add('quiz-opt-wrong');
+            btn.querySelector('.quiz-check-badge')!.textContent = '✕';
+            allBtns[quizItem.answerIndex].classList.add('quiz-opt-correct');
+            allBtns[quizItem.answerIndex].querySelector('.quiz-check-badge')!.textContent = '✓';
+            this.playFailureSound();
+
+            if (feedbackBox) {
+              feedbackBox.className = 'quiz-feedback-box wrong';
+              feedbackBox.innerHTML = `<strong>❌ ${isVi ? 'CHƯA CHÍNH XÁC' : 'INCORRECT'}</strong><br>${isVi ? quizItem.explanationVi : quizItem.explanationEn}`;
+              feedbackBox.style.display = 'block';
+            }
+          }
+
+          this.surveyedPlanets.add(bodyId);
+          this.updateFlightHudBudget();
+
+          if (btnContinue) {
+            btnContinue.style.display = 'inline-block';
+            btnContinue.onclick = () => {
+              modal.style.display = 'none';
+            };
+          }
+        };
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  public openSurfaceLandingModal(targetBodyId?: string) {
+    const bodyId = (targetBodyId || this.currentCelestialLocation || 'moon').toLowerCase();
+    const isVi = this.currentLanguage === 'vi';
+
+    if (!LANDABLE_BODIES_M2.includes(bodyId)) {
+      this.playFailureSound();
+      alert(isVi 
+        ? `⚠️ MÔI TRƯỜNG TỬ THẦN - KHÔNG THỂ HẠ CÁNH!\nThiên thể ${bodyId.toUpperCase()} có nhiệt độ hoặc áp suất hủy diệt (hoặc là hành tinh khí không có bề mặt rắn). Không thể đặt chân xuống.\nHãy chọn hạ cánh tại: Trái Đất (Earth), Mặt Trăng (Moon), Sao Hỏa (Mars) hoặc Tiểu hành tinh Bennu.`
+        : `⚠️ LETHAL ENVIRONMENT - LANDING IMPOSSIBLE!\n${bodyId.toUpperCase()} has crushing atmospheric pressures, lethal heat, or lacks a solid surface. Landing is only possible on: Earth, Moon, Mars, or Asteroid Bennu.`);
+      return;
+    }
+
+    const floatCam = document.getElementById('hud-floating-camera-btn');
+    if (floatCam) floatCam.style.display = 'none';
+
+    const modal = document.getElementById('surface-landing-modal');
+    if (!modal) return;
+
+    const samples = GEOLOGICAL_SAMPLES_BY_BODY[bodyId] || [];
+    const bodyTitles: Record<string, { vi: string, en: string, siteVi: string, siteEn: string, icon: string }> = {
+      earth: { vi: 'TRÁI ĐẤT (EARTH CRUST)', en: 'EARTH CRUSTAL GEOLOGY', siteVi: 'TRẠM KHẢO SÁT ĐỊA CHẤT LỤC ĐỊA', siteEn: 'CONTINENTAL CRUST SURFACE STATION', icon: '🌍' },
+      moon: { vi: 'MẶT TRĂNG (THE MOON)', en: 'THE MOON (LUNAR SURFACE)', siteVi: 'CĂN CỨ HẠ CÁNH BIỂN BÌNH YÊN (MARE TRANQUILLITATIS)', siteEn: 'TOUCHDOWN SITE: MARE TRANQUILLITATIS', icon: '🌑' },
+      mars: { vi: 'SAO HỎA (MARS SURFACE)', en: 'MARS (RED PLANET SURFACE)', siteVi: 'MIỆNG HỐ JEZERO & THUNG LŨNG MARINERIS', siteEn: 'TOUCHDOWN SITE: JEZERO CRATER DELTA', icon: '🔴' },
+      bennu: { vi: 'TIỂU HÀNH TINH BENNU (101955 BENNU)', en: 'ASTEROID 101955 BENNU (CARBONACEOUS)', siteVi: 'MỤC TIÊU SỨ MỆNH OSIRIS-REx & CSA CANADA', siteEn: 'OSIRIS-REx & CSA SAMPLE RETURN TARGET', icon: '☄️' },
+      asteroids: { vi: 'VÀNH ĐAI TIỂU HÀNH TINH (ASTEROID BELT)', en: 'MAIN ASTEROID BELT', siteVi: 'TIỂU HÀNH TINH NGUYÊN THỦY (CHONDRITE)', siteEn: 'PRIMITIVE CHONDRITE FIELD', icon: '🪐' }
+    };
+
+    const bInfo = bodyTitles[bodyId] || bodyTitles['moon'];
+    document.getElementById('landing-body-name')!.textContent = isVi ? bInfo.vi : bInfo.en;
+    document.getElementById('landing-site-tag')!.textContent = isVi ? bInfo.siteVi : bInfo.siteEn;
+    document.getElementById('landing-body-icon')!.textContent = bInfo.icon;
+
+    const craft = SPACECRAFT_FLEET.find(c => c.id === this.selectedChassisId);
+    document.getElementById('landing-hull-name')!.textContent = (craft?.name || 'APOLLO LM EAGLE').toUpperCase();
+
+    const updateCanisterUI = () => {
+      const statusEl = document.getElementById('landing-canister-status');
+      const bannerEl = document.getElementById('landing-goal-banner');
+      if (statusEl) {
+        statusEl.textContent = `${this.collectedSamples.size} / 3 SAMPLES`;
+        statusEl.style.color = this.collectedSamples.size >= 3 ? '#22c55e' : 'var(--stark-gold)';
+      }
+      if (bannerEl) {
+        if (this.collectedSamples.size >= 3) {
+          bannerEl.innerHTML = `<span style="color: #22c55e; font-weight: 700;">🎉 ${isVi ? 'ĐÃ HOÀN THÀNH MỤC TIÊU SỨ MỆNH: ≥ 3 MẪU ĐÃ ĐƯỢC BẢO QUẢN AN TOÀN!' : 'MISSION GOAL ACCOMPLISHED: ≥ 3 SAMPLES SECURED!'}</span>`;
+        } else {
+          bannerEl.innerHTML = isVi 
+            ? `MỤC TIÊU: Thu thập ít nhất 3 mẫu vật khác nhau (Hiện có: <strong>${this.collectedSamples.size}/3</strong>).`
+            : `OBJECTIVE: Collect at least 3 distinct geological samples (Current: <strong>${this.collectedSamples.size}/3</strong>).`;
+        }
+      }
+    };
+    updateCanisterUI();
+
+    const grid = document.getElementById('landing-samples-grid');
+    if (grid) {
+      grid.innerHTML = '';
+      samples.forEach(sample => {
+        const isCollected = this.collectedSamples.has(sample.id);
+        const isScouted = this.scoutedSites.has(sample.id);
+        const card = document.createElement('div');
+        card.id = `sample-card-${sample.id}`;
+        card.className = `sample-card ${isCollected ? 'collected' : ''} ${isScouted ? 'scouted' : ''}`;
+        const photoUrl = SAMPLE_IMAGES_MAP[sample.id] || '';
+        card.innerHTML = `
+          <div>
+            <div class="sample-image-wrap">
+              <img src="${photoUrl}" alt="${sample.nameEn}" class="sample-thumbnail-photo" />
+              <div class="sample-icon-tag" style="color: ${sample.color};">${sample.icon}</div>
+              <div class="sample-scouted-badge ${isScouted ? 'unlocked' : ''}">
+                ${isScouted ? (isVi ? '✓ ĐÃ DÒ THẤY' : '✓ SCOUTED') : (isVi ? '🔒 CHƯA DÒ' : '🔒 UNSCOUTED')}
+              </div>
+            </div>
+            <div class="sample-header">
+              <div>
+                <div class="sample-title">${isVi ? sample.nameVi : sample.nameEn}</div>
+                <div class="sample-type">${isVi ? sample.typeVi : sample.typeEn} • ${sample.massGrams}g</div>
+              </div>
+            </div>
+            <div class="sample-desc">${isVi ? sample.descVi : sample.descEn}</div>
+          </div>
+          <button class="btn-collect-sample" ${isCollected ? 'disabled' : ''}>
+            ${isCollected ? (isVi ? '✓ ĐÃ LẤY MẪU VẬT' : '✓ SPECIMEN SECURED') : (isVi ? '🔬 THU THẬP MẪU NÀY' : '🔬 COLLECT SPECIMEN')}
+          </button>
+        `;
+        const btn = card.querySelector('.btn-collect-sample') as HTMLButtonElement;
+        btn.onclick = () => {
+          if (this.tagsamState && this.tagsamState.phase === 'standby') {
+            const btnTagsam = document.getElementById('ola-mode-btn-tagsam');
+            if (btnTagsam) btnTagsam.click();
+            this.runTagsamTouchdown(sample, () => {
+              card.classList.add('collected');
+              btn.disabled = true;
+              btn.textContent = isVi ? '✓ ĐÃ LẤY MẪU VẬT' : '✓ SPECIMEN SECURED';
+              updateCanisterUI();
+              this.updateFlightHudBudget();
+            });
+          } else {
+            this.collectedSamples.add(sample.id);
+            this.currentScienceCollected += 80;
+            this.playSampleCollectSound();
+            card.classList.add('collected');
+            btn.disabled = true;
+            btn.textContent = isVi ? '✓ ĐÃ LẤY MẪU VẬT' : '✓ SPECIMEN SECURED';
+            updateCanisterUI();
+            this.updateFlightHudBudget();
+          }
+        };
+        grid.appendChild(card);
+      });
+    }
+
+    // Wire up mode switchers
+    const btnScanner = document.getElementById('ola-mode-btn-scanner');
+    const btnTagsam = document.getElementById('ola-mode-btn-tagsam');
+    const scannerStage = document.getElementById('ola-scanner-container');
+    const tagsamStage = document.getElementById('tagsam-sim-stage');
+
+    if (btnScanner && btnTagsam && scannerStage && tagsamStage) {
+      btnScanner.onclick = () => {
+        btnScanner.classList.add('active');
+        btnTagsam.classList.remove('active');
+        scannerStage.style.display = 'block';
+        tagsamStage.style.display = 'none';
+        this.olaActiveMode = 'scanner';
+        this.playClickSound();
+      };
+      btnTagsam.onclick = () => {
+        btnTagsam.classList.add('active');
+        btnScanner.classList.remove('active');
+        scannerStage.style.display = 'none';
+        tagsamStage.style.display = 'block';
+        this.olaActiveMode = 'tagsam';
+        this.playClickSound();
+      };
+    }
+
+    modal.style.display = 'flex';
+    this.initOlaScanner(bodyId);
+    this.initTagsamSimulation(bodyId);
+  }
+
+  private getHotspotsForBody(bodyId: string): Array<{
+    id: string;
+    siteId: string;
+    sampleId: string;
+    nameVi: string;
+    nameEn: string;
+    x: number;
+    y: number;
+    radius: number;
+    elev: number;
+    latStr: string;
+    lonStr: string;
+  }> {
+    const b = bodyId.toLowerCase();
+    if (b === 'bennu') {
+      return [
+        {
+          id: 'bennu_hs_1',
+          siteId: 'nightingale',
+          sampleId: 'bennu_regolith',
+          nameVi: 'Miệng Hố Nightingale (Bãi Đáp Số 1 CSA/NASA)',
+          nameEn: 'Nightingale Crater (Primary Site)',
+          x: 460,
+          y: 130,
+          radius: 55,
+          elev: -24.5,
+          latStr: "+56°12'",
+          lonStr: "-42°05'"
+        },
+        {
+          id: 'bennu_hs_2',
+          siteId: 'osprey',
+          sampleId: 'bennu_magnetite',
+          nameVi: 'Miệng Hố Osprey (Bãi Dự Phòng)',
+          nameEn: 'Osprey Crater (Backup Site)',
+          x: 230,
+          y: 220,
+          radius: 50,
+          elev: -12.3,
+          latStr: "+11°48'",
+          lonStr: "-88°14'"
+        },
+        {
+          id: 'bennu_hs_3',
+          siteId: 'kingfisher',
+          sampleId: 'bennu_breccia',
+          nameVi: 'Miệng Hố Kingfisher',
+          nameEn: 'Kingfisher Crater',
+          x: 690,
+          y: 230,
+          radius: 50,
+          elev: +8.2,
+          latStr: "-15°30'",
+          lonStr: "+54°22'"
+        },
+        {
+          id: 'bennu_hs_4',
+          siteId: 'sandpiper',
+          sampleId: 'bennu_regolith',
+          nameVi: 'Miệng Hố Sandpiper',
+          nameEn: 'Sandpiper Crater',
+          x: 440,
+          y: 310,
+          radius: 45,
+          elev: +18.7,
+          latStr: "-47°10'",
+          lonStr: "-12°00'"
+        }
+      ];
+    } else if (b === 'moon') {
+      return [
+        {
+          id: 'moon_hs_1',
+          siteId: 'tranquillitatis',
+          sampleId: 'moon_rock',
+          nameVi: 'Biển Bình Yên (Apollo 11 Base)',
+          nameEn: 'Mare Tranquillitatis (Apollo 11)',
+          x: 520,
+          y: 150,
+          radius: 55,
+          elev: -18.2,
+          latStr: "+08°30'",
+          lonStr: "+31°24'"
+        },
+        {
+          id: 'moon_hs_2',
+          siteId: 'oceanus',
+          sampleId: 'moon_regolith',
+          nameVi: 'Đại Dương Bão Tố (Oceanus Procellarum)',
+          nameEn: 'Oceanus Procellarum',
+          x: 260,
+          y: 200,
+          radius: 50,
+          elev: -14.1,
+          latStr: "+18°24'",
+          lonStr: "-57°29'"
+        },
+        {
+          id: 'moon_hs_3',
+          siteId: 'aitken',
+          sampleId: 'moon_ice',
+          nameVi: 'Lòng Chảo Cực Nam Aitken (Băng Nước)',
+          nameEn: 'South Pole-Aitken Basin (Water Ice)',
+          x: 460,
+          y: 310,
+          radius: 50,
+          elev: -32.8,
+          latStr: "-70°15'",
+          lonStr: "+18°00'"
+        }
+      ];
+    } else if (b === 'mars') {
+      return [
+        {
+          id: 'mars_hs_1',
+          siteId: 'jezero',
+          sampleId: 'mars_rock',
+          nameVi: 'Châu Thổ Miệng Hố Jezero (Perseverance)',
+          nameEn: 'Jezero Crater Delta (Perseverance)',
+          x: 510,
+          y: 140,
+          radius: 55,
+          elev: -22.4,
+          latStr: "+18°23'",
+          lonStr: "+77°35'"
+        },
+        {
+          id: 'mars_hs_2',
+          siteId: 'gale',
+          sampleId: 'mars_gas',
+          nameVi: 'Miệng Hố Gale (Curiosity Station)',
+          nameEn: 'Gale Crater (Curiosity Station)',
+          x: 650,
+          y: 220,
+          radius: 50,
+          elev: -15.1,
+          latStr: "-05°24'",
+          lonStr: "+137°48'"
+        },
+        {
+          id: 'mars_hs_3',
+          siteId: 'marineris',
+          sampleId: 'mars_rock',
+          nameVi: 'Đại Hẻm Núi Valles Marineris',
+          nameEn: 'Valles Marineris Chasm',
+          x: 310,
+          y: 250,
+          radius: 55,
+          elev: -45.0,
+          latStr: "-13°54'",
+          lonStr: "-59°12'"
+        }
+      ];
+    } else {
+      return [
+        {
+          id: 'earth_hs_1',
+          siteId: 'continental_shield',
+          sampleId: 'earth_granite',
+          nameVi: 'Mảng Lục Địa Cổ (Granite Shield)',
+          nameEn: 'Continental Craton Shield',
+          x: 380,
+          y: 140,
+          radius: 55,
+          elev: +120.0,
+          latStr: "+45°10'",
+          lonStr: "-75°40'"
+        },
+        {
+          id: 'earth_hs_2',
+          siteId: 'basalt_plateau',
+          sampleId: 'earth_basalt',
+          nameVi: 'Cao Nguyên Đá Bazan Núi Lửa',
+          nameEn: 'Volcanic Basalt Plateau',
+          x: 580,
+          y: 210,
+          radius: 50,
+          elev: +85.0,
+          latStr: "+19°30'",
+          lonStr: "-155°30'"
+        },
+        {
+          id: 'earth_hs_3',
+          siteId: 'sandstone_canyon',
+          sampleId: 'earth_sandstone',
+          nameVi: 'Hẻm Núi Sa Thạch Trầm Tích',
+          nameEn: 'Sedimentary Sandstone Canyon',
+          x: 250,
+          y: 260,
+          radius: 50,
+          elev: +45.0,
+          latStr: "+36°05'",
+          lonStr: "-112°08'"
+        }
+      ];
+    }
+  }
+
+  private initOlaScanner(bodyId: string) {
+    const tablet = document.getElementById('ola-draggable-tablet');
+    const handle = document.getElementById('ola-tablet-handle');
+    const heatmapCanvas = document.getElementById('ola-heatmap-canvas') as HTMLCanvasElement | null;
+    const surfaceCanvas = document.getElementById('ola-surface-canvas') as HTMLCanvasElement | null;
+
+    if (!tablet || !heatmapCanvas || !surfaceCanvas) return;
+
+    this.olaHeatmapCanvas = heatmapCanvas;
+    this.olaHeatmapCtx = heatmapCanvas.getContext('2d');
+
+    // Reset tablet position
+    this.olaTabletX = 310;
+    this.olaTabletY = 90;
+    tablet.style.left = `${this.olaTabletX}px`;
+    tablet.style.top = `${this.olaTabletY}px`;
+
+    // Render surface background
+    this.renderOlaBaseSurface(bodyId);
+
+    // Setup dialogue
+    this.setupOlaDialogue(bodyId);
+
+    // Mouse drag handlers
+    const onMouseDown = (e: MouseEvent) => {
+      this.isOlaDragging = true;
+      this.olaDragStartX = e.clientX;
+      this.olaDragStartY = e.clientY;
+      this.olaTabletInitX = this.olaTabletX;
+      this.olaTabletInitY = this.olaTabletY;
+      tablet.style.cursor = 'grabbing';
+      e.preventDefault();
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!this.isOlaDragging) return;
+      const dx = e.clientX - this.olaDragStartX;
+      const dy = e.clientY - this.olaDragStartY;
+      const maxX = 900 - 280;
+      const maxY = 380 - 180;
+      this.olaTabletX = Math.max(0, Math.min(maxX, this.olaTabletInitX + dx));
+      this.olaTabletY = Math.max(0, Math.min(maxY, this.olaTabletInitY + dy));
+      tablet.style.left = `${this.olaTabletX}px`;
+      tablet.style.top = `${this.olaTabletY}px`;
+      this.updateOlaHeatmap(bodyId);
+    };
+
+    const onMouseUp = () => {
+      if (this.isOlaDragging) {
+        this.isOlaDragging = false;
+        tablet.style.cursor = 'grab';
+      }
+    };
+
+    // Touch drag handlers
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 0) return;
+      this.isOlaDragging = true;
+      const touch = e.touches[0];
+      this.olaDragStartX = touch.clientX;
+      this.olaDragStartY = touch.clientY;
+      this.olaTabletInitX = this.olaTabletX;
+      this.olaTabletInitY = this.olaTabletY;
+      e.preventDefault();
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!this.isOlaDragging || e.touches.length === 0) return;
+      const touch = e.touches[0];
+      const dx = touch.clientX - this.olaDragStartX;
+      const dy = touch.clientY - this.olaDragStartY;
+      const maxX = 900 - 280;
+      const maxY = 380 - 180;
+      this.olaTabletX = Math.max(0, Math.min(maxX, this.olaTabletInitX + dx));
+      this.olaTabletY = Math.max(0, Math.min(maxY, this.olaTabletInitY + dy));
+      tablet.style.left = `${this.olaTabletX}px`;
+      tablet.style.top = `${this.olaTabletY}px`;
+      this.updateOlaHeatmap(bodyId);
+      e.preventDefault();
+    };
+
+    const onTouchEnd = () => {
+      this.isOlaDragging = false;
+    };
+
+    if ((this as any)._olaCleanup) {
+      (this as any)._olaCleanup();
+    }
+
+    handle?.addEventListener('mousedown', onMouseDown);
+    tablet.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+
+    handle?.addEventListener('touchstart', onTouchStart, { passive: false });
+    tablet.addEventListener('touchstart', onTouchStart, { passive: false });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd);
+
+    // Continuous 60fps radar sweep & optical update
+    this.olaScannerRunning = true;
+    const loop = () => {
+      if (!this.olaScannerRunning) return;
+      this.olaRadarAngle += 0.04;
+      this.updateOlaHeatmap(bodyId);
+      this.olaAnimId = requestAnimationFrame(loop);
+    };
+    if (this.olaAnimId) cancelAnimationFrame(this.olaAnimId);
+    this.olaAnimId = requestAnimationFrame(loop);
+
+    (this as any)._olaCleanup = () => {
+      this.olaScannerRunning = false;
+      if (this.olaAnimId) {
+        cancelAnimationFrame(this.olaAnimId);
+        this.olaAnimId = null;
+      }
+      handle?.removeEventListener('mousedown', onMouseDown);
+      tablet.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+
+      handle?.removeEventListener('touchstart', onTouchStart);
+      tablet.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+
+    this.updateOlaHeatmap(bodyId);
+  }
+
+  private renderOlaBaseSurface(bodyId: string) {
+    const surfaceCanvas = document.getElementById('ola-surface-canvas') as HTMLCanvasElement | null;
+    if (!surfaceCanvas) return;
+    const ctx = surfaceCanvas.getContext('2d');
+    if (!ctx) return;
+
+    const w = 900;
+    const h = 380;
+    ctx.clearRect(0, 0, w, h);
+
+    const hotspots = this.getHotspotsForBody(bodyId);
+
+    if (bodyId === 'bennu') {
+      const img = new Image();
+      img.src = osirisBennuBgImg;
+      const drawBennu = () => {
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, w, h);
+        const imgAspect = img.width / (img.height || 1);
+        const targetH = 380;
+        const targetW = targetH * imgAspect;
+        const offsetX = (w - targetW) / 2;
+        ctx.drawImage(img, offsetX, 0, targetW, targetH);
+        this.renderHotspotsMarkers(bodyId, hotspots);
+      };
+      if (img.complete && img.naturalWidth !== 0) {
+        drawBennu();
+      } else {
+        img.onload = () => drawBennu();
+      }
+    } else {
+      this.drawProceduralSurface(ctx, bodyId, w, h);
+      this.renderHotspotsMarkers(bodyId, hotspots);
+    }
+  }
+
+  private drawProceduralSurface(ctx: CanvasRenderingContext2D, bodyId: string, w: number, h: number) {
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    for (let i = 0; i < 60; i++) {
+      const sx = (i * 137.5) % w;
+      const sy = (i * 71.3) % h;
+      ctx.fillRect(sx, sy, 1.2, 1.2);
+    }
+
+    const surfaceGrad = ctx.createLinearGradient(0, 50, 0, h);
+    if (bodyId === 'moon') {
+      surfaceGrad.addColorStop(0, '#334155');
+      surfaceGrad.addColorStop(0.5, '#1e293b');
+      surfaceGrad.addColorStop(1, '#0f172a');
+    } else if (bodyId === 'mars') {
+      surfaceGrad.addColorStop(0, '#9a3412');
+      surfaceGrad.addColorStop(0.5, '#7c2d12');
+      surfaceGrad.addColorStop(1, '#431407');
+    } else {
+      surfaceGrad.addColorStop(0, '#1e3a8a');
+      surfaceGrad.addColorStop(0.5, '#155e75');
+      surfaceGrad.addColorStop(1, '#064e3b');
+    }
+    ctx.fillStyle = surfaceGrad;
+    ctx.fillRect(0, 50, w, h - 50);
+
+    ctx.save();
+    for (let c = 0; c < 16; c++) {
+      const cx = ((c * 231) % (w - 100)) + 50;
+      const cy = ((c * 97) % (h - 150)) + 90;
+      const cr = 18 + (c % 5) * 12;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, cr, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.fill();
+
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  private renderHotspotsMarkers(bodyId: string, hotspots: any[]) {
+    const layer = document.getElementById('ola-hotspots-layer');
+    if (!layer) return;
+    const isVi = this.currentLanguage === 'vi';
+    layer.innerHTML = '';
+
+    hotspots.forEach(hs => {
+      const pin = document.createElement('div');
+      const isScouted = this.scoutedSites.has(hs.siteId);
+      pin.className = `ola-hotspot-pin ${isScouted ? 'discovered' : ''}`;
+      pin.style.left = `${hs.x}px`;
+      pin.style.top = `${hs.y}px`;
+      pin.title = isVi ? hs.nameVi : hs.nameEn;
+      pin.textContent = isScouted ? '✓' : '🔍';
+      layer.appendChild(pin);
+    });
+  }
+
+  private updateOlaHeatmap(bodyId: string) {
+    if (!this.olaHeatmapCtx) return;
+    const surfaceCanvas = document.getElementById('ola-surface-canvas') as HTMLCanvasElement | null;
+    if (!surfaceCanvas) return;
+
+    const ctx = this.olaHeatmapCtx;
+    ctx.clearRect(0, 0, 280, 180);
+
+    const isVi = this.currentLanguage === 'vi';
+    const hotspots = this.getHotspotsForBody(bodyId);
+    const centerX = this.olaTabletX + 140;
+    const centerY = this.olaTabletY + 90;
+
+    // 1. Optical 1.85x Zoom from surfaceCanvas
+    const zoom = 1.85;
+    const sourceW = 280 / zoom;
+    const sourceH = 180 / zoom;
+    const sourceX = Math.max(0, Math.min(900 - sourceW, centerX - sourceW / 2));
+    const sourceY = Math.max(0, Math.min(380 - sourceH, centerY - sourceH / 2));
+
+    try {
+      ctx.drawImage(surfaceCanvas, sourceX, sourceY, sourceW, sourceH, 0, 0, 280, 180);
+    } catch (e) {}
+
+    // Subtle optical recon lens tint
+    ctx.fillStyle = 'rgba(6, 22, 42, 0.22)';
+    ctx.fillRect(0, 0, 280, 180);
+
+    // 2. Discover & Reveal "Chấm Đen Bãi Đáp" (Safe Touchdown Dark Spot)
+    let lockedHs: any = null;
+    let minD = Infinity;
+
+    hotspots.forEach(hs => {
+      const d = Math.hypot(centerX - hs.x, centerY - hs.y);
+      if (d < 75 && d < minD) {
+        minD = d;
+        lockedHs = hs;
+      }
+
+      // Check if this hotspot appears inside the lens viewport
+      const relX = (hs.x - sourceX) * zoom;
+      const relY = (hs.y - sourceY) * zoom;
+      const spotR = hs.radius * zoom * 0.72;
+
+      if (relX >= -100 && relX <= 380 && relY >= -100 && relY <= 280) {
+        // --- CHẤM ĐEN BÃI ĐÁP AN TOÀN (THE SAFE DARK TOUCHDOWN BASIN) ---
+        // Vùng trũng đen mịn tương phản rõ rệt dưới tròng kính
+        const darkGrad = ctx.createRadialGradient(relX, relY, spotR * 0.08, relX, relY, spotR);
+        darkGrad.addColorStop(0, 'rgba(2, 6, 15, 0.98)');
+        darkGrad.addColorStop(0.55, 'rgba(6, 14, 28, 0.94)');
+        darkGrad.addColorStop(0.85, 'rgba(12, 24, 42, 0.7)');
+        darkGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = darkGrad;
+        ctx.beginPath();
+        ctx.arc(relX, relY, spotR, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Hạt mịn regolith bên trong chấm đen (bằng phẳng không có đá)
+        ctx.fillStyle = 'rgba(70, 85, 110, 0.4)';
+        for (let s = 0; s < 12; s++) {
+          const sx = relX + ((s * 37) % (spotR * 1.4)) - spotR * 0.7;
+          const sy = relY + ((s * 53) % (spotR * 1.4)) - spotR * 0.7;
+          ctx.fillRect(sx, sy, 1.2, 1.2);
+        }
+
+        // Vòng ngắm bãi đáp màu xanh lục
+        ctx.save();
+        ctx.strokeStyle = '#22c55e';
+        ctx.lineWidth = 1.6;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.arc(relX, relY, spotR * 0.75, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Bullseye tâm ngắm
+        ctx.strokeStyle = 'rgba(34, 197, 94, 0.85)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(relX - 10, relY); ctx.lineTo(relX + 10, relY);
+        ctx.moveTo(relX, relY - 10); ctx.lineTo(relX, relY + 10);
+        ctx.stroke();
+
+        ctx.fillStyle = '#22c55e';
+        ctx.beginPath();
+        ctx.arc(relX, relY, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Hiệu ứng sóng radar xung kích tỏa ra
+        const pulseR = spotR * (0.8 + Math.sin(Date.now() * 0.006) * 0.12);
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.5)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(relX, relY, pulseR, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Nhãn chỉ dẫn rõ ràng trên chấm đen
+        ctx.font = 'bold 9px monospace';
+        ctx.fillStyle = '#86efac';
+        ctx.textAlign = 'center';
+        ctx.fillText(isVi ? '● BÃI ĐÁP AN TOÀN' : '● SAFE TOUCHDOWN ZONE', relX, relY + spotR * 0.75 + 13);
+        ctx.font = '8px monospace';
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillText((isVi ? hs.nameVi : hs.nameEn).toUpperCase(), relX, relY - spotR * 0.75 - 5);
+        ctx.restore();
+      }
+    });
+
+    // 3. Rotating 360° Radar Recon Sweep Line
+    const cx = 140;
+    const cy = 90;
+    const maxR = 165;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(this.olaRadarAngle);
+    const sweepGrad = ctx.createLinearGradient(0, 0, maxR, 0);
+    sweepGrad.addColorStop(0, 'rgba(0, 240, 255, 0.45)');
+    sweepGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+    ctx.strokeStyle = sweepGrad;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(maxR, 0);
+    ctx.stroke();
+    ctx.restore();
+
+    // 4. Optical glass vignette border
+    const glassGrad = ctx.createRadialGradient(140, 90, 85, 140, 90, 160);
+    glassGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    glassGrad.addColorStop(0.75, 'rgba(0, 12, 28, 0.25)');
+    glassGrad.addColorStop(1, 'rgba(0, 8, 20, 0.85)');
+    ctx.fillStyle = glassGrad;
+    ctx.fillRect(0, 0, 280, 180);
+
+    // 5. Reticle & Telemetry Feedback
+    const lockBadge = document.getElementById('ola-lock-badge');
+    const coordsEl = document.getElementById('ola-lens-coords');
+
+    if (lockedHs) {
+      if (lockBadge) {
+        lockBadge.style.display = 'block';
+        lockBadge.style.background = 'rgba(34, 197, 94, 0.9)';
+        lockBadge.style.color = '#ffffff';
+        lockBadge.textContent = isVi 
+          ? `🎯 ĐÃ SOI THẤY: ${lockedHs.nameVi.toUpperCase()}`
+          : `🎯 SAFE SPOT FOUND: ${lockedHs.nameEn.toUpperCase()}`;
+      }
+      if (coordsEl) {
+        coordsEl.textContent = `LAT: ${lockedHs.latStr} | LON: ${lockedHs.lonStr} | ELEV: ${lockedHs.elev}m (BÃI ĐÁP PHẲNG)`;
+        coordsEl.style.color = '#22c55e';
+      }
+
+      if (!this.scoutedSites.has(lockedHs.siteId)) {
+        this.scoutedSites.add(lockedHs.siteId);
+        this.scoutedSites.add(lockedHs.sampleId);
+        this.playLaserPingSound();
+
+        const sampleCard = document.getElementById(`sample-card-${lockedHs.sampleId}`);
+        if (sampleCard) {
+          sampleCard.classList.add('scouted');
+          const badge = sampleCard.querySelector('.sample-scouted-badge');
+          if (badge) {
+            badge.classList.add('unlocked');
+            badge.textContent = isVi ? '✓ ĐÃ PHÁT HIỆN' : '✓ DISCOVERED';
+          }
+        }
+
+        this.renderHotspotsMarkers(bodyId, hotspots);
+      }
+    } else {
+      if (lockBadge) {
+        lockBadge.style.display = 'block';
+        lockBadge.style.background = 'rgba(14, 165, 233, 0.65)';
+        lockBadge.style.color = '#ffffff';
+        lockBadge.textContent = isVi ? '🔍 ĐANG DÒ TÌM CHẤM ĐEN BÃI ĐÁP...' : '🔍 SCANNING FOR SAFE LANDING SPOT...';
+      }
+      if (coordsEl) {
+        const lat = (90 - (centerY / 380) * 180).toFixed(1);
+        const lon = (-180 + (centerX / 900) * 360).toFixed(1);
+        coordsEl.textContent = `LAT: ${lat}° | LON: ${lon}° | SCANNING...`;
+        coordsEl.style.color = '#00f0ff';
+      }
+    }
+  }
+
+  private setupOlaDialogue(bodyId: string) {
+    const isVi = this.currentLanguage === 'vi';
+    const textEl = document.getElementById('ola-dialogue-text');
+    const counterEl = document.getElementById('ola-dialogue-counter');
+    const prevBtn = document.getElementById('ola-dialogue-prev');
+    const nextBtn = document.getElementById('ola-dialogue-next');
+
+    const hints = this.getDialogueStepsForBody(bodyId, isVi);
+    this.olaDialogueIndex = 0;
+
+    const renderDialogue = () => {
+      if (textEl) textEl.textContent = hints[this.olaDialogueIndex] || hints[0];
+      if (counterEl) counterEl.textContent = `${this.olaDialogueIndex + 1} / ${hints.length}`;
+    };
+
+    if (prevBtn) {
+      prevBtn.onclick = (e) => {
+        e.stopPropagation();
+        this.olaDialogueIndex = (this.olaDialogueIndex - 1 + hints.length) % hints.length;
+        renderDialogue();
+        this.playClickSound();
+      };
+    }
+    if (nextBtn) {
+      nextBtn.onclick = (e) => {
+        e.stopPropagation();
+        this.olaDialogueIndex = (this.olaDialogueIndex + 1) % hints.length;
+        renderDialogue();
+        this.playClickSound();
+      };
+    }
+
+    renderDialogue();
+  }
+
+  private getDialogueStepsForBody(bodyId: string, isVi: boolean): string[] {
+    const b = bodyId.toLowerCase();
+    if (b === 'bennu') {
+      return isVi ? [
+        "Chào phi hành gia! Hãy giữ chuột kéo chiếc kính lúp này rê khắp bề mặt tiểu hành tinh để soi tìm 'CHẤM ĐEN' (bãi đáp trũng phẳng an toàn không có đá tảng).",
+        "Khi kính lúp quét trúng bãi đáp, bên trong kính sẽ lộ rõ 'chấm đen' kèm vòng ngắm màu xanh lá (🎯 TARGET LOCKED) và mẫu vật địa chất sẽ được mở khóa!",
+        "Sau khi soi thấy chấm đen bãi đáp, hãy bấm nút 'THU THẬP MẪU NÀY' bên dưới để kích hoạt chu kỳ đáp TAGSAM hạ cánh an toàn xuống đúng vị trí đó!"
+      ] : [
+        "Welcome astronaut! Drag this magnifying recon lens across the asteroid to discover the 'DARK SPOT' (smooth, safe landing basin free of dangerous boulders).",
+        "When the lens sweeps over a landing site, the safe dark spot is revealed inside the scope with a green target lock ring, unlocking the geological specimen!",
+        "Once you discover the dark spot, click 'COLLECT SPECIMEN' below to initiate the TAGSAM touchdown descent safely onto that exact location!"
+      ];
+    } else if (b === 'moon') {
+      return isVi ? [
+        "Trạm trinh sát quỹ đạo Mặt Trăng: Cầm kính lúp rê khắp bề mặt để soi tìm 'chấm đen' bãi đáp an toàn (Biển Bình Yên Apollo 11, Lòng chảo Cực Nam chứa băng).",
+        "Kính lúp sẽ phóng to bề mặt và quét radar. Khi soi trúng vùng lòng chảo phẳng, chấm đen bãi đáp sẽ hiện rõ mồn một!",
+        "Khóa mục tiêu xong, hãy bấm thu thập mẫu để tàu đáp xuống bãi đáp an toàn lấy đá Mặt Trăng và Regolith."
+      ] : [
+        "Lunar reconnaissance station: Drag the magnifying lens across the moon to reveal safe dark landing basins (Mare Tranquillitatis, South Pole Aitken).",
+        "The scope magnifies the surface and runs radar sweeps. When hovering over flat basin craters, the dark safe spot is clearly revealed!",
+        "Once locked onto the dark spot, initiate touchdown to descend and retrieve pristine lunar rocks and regolith."
+      ];
+    } else if (b === 'mars') {
+      return isVi ? [
+        "Trạm trinh sát Sao Hỏa: Cầm kính lúp rê khắp bề mặt đỏ để soi tìm 'chấm đen' lòng chảo châu thổ Jezero và Valles Marineris.",
+        "Tránh các cồn cát dốc đứng nguy hiểm! Chỉ khi kính lúp soi trúng chấm đen phẳng an toàn mới được phép hạ cánh.",
+        "Khóa mục tiêu xong, chuyển sang chu kỳ tiếp đất để thu thập mẫu đá Sao Hỏa và phân tích khí quyển."
+      ] : [
+        "Mars reconnaissance: Drag the magnifying lens across Mars to search for safe dark landing basins at Jezero Crater and Valles Marineris.",
+        "Avoid high-angle dunes and jagged rocks! Only when the scope reveals the flat dark spot can you authorize touchdown.",
+        "Lock onto the dark landing spot, then initiate touchdown to harvest Martian samples and atmospheric gases."
+      ];
+    } else {
+      return isVi ? [
+        "Trạm địa chất học Trái Đất: Kéo kính lúp soi tìm các mảng kiến tạo bằng phẳng để hạ cánh nghiên cứu địa chất.",
+        "Soi thấy chấm đen bãi đáp để khóa mục tiêu an toàn trước khi tiếp đất.",
+        "Thu thập đủ 3 mẫu vật địa chất để hoàn thành xuất sắc mục tiêu sứ mệnh!"
+      ] : [
+        "Earth geology station: Drag the magnifying lens to scan for safe tectonic basins to conduct geological sampling.",
+        "Reveal the safe dark landing spots to lock touchdown coordinates.",
+        "Collect at least 3 distinct geological specimens to accomplish mission objectives!"
+      ];
+    }
+  }
+
+  /**
+   * Khởi động bộ mô phỏng OLA Laser Altimeter & TAGSAM Touch-And-Go (CSA / NASA OSIRIS-REx)
+   */
+  private initTagsamSimulation(bodyId: string) {
+    this.stopTagsamSimulation();
+
+    const canvas = document.getElementById('tagsam-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    this.tagsamCanvas = canvas;
+    this.tagsamCtx = canvas.getContext('2d');
+    if (!this.tagsamCtx) return;
+
+    const isVi = this.currentLanguage === 'vi';
+    const sites = LANDING_SITES_BY_BODY[bodyId] || LANDING_SITES_BY_BODY['moon'] || [];
+    let activeSite: LandingSite = sites[0] || {
+      id: 'default_site',
+      nameVi: 'Bãi đáp tiêu chuẩn',
+      nameEn: 'Standard Touchdown Site',
+      hazardVi: 'Hiểm họa: Thấp',
+      hazardEn: 'Hazard: Low',
+      sampleAbundanceVi: 'Mật độ: Cao',
+      sampleAbundanceEn: 'Abundance: High',
+      boulderDensity: 0.3,
+      surfaceColor: '#2d3748',
+      craterRadius: 25
+    };
+
+    // Render Candidate Site Tabs
+    const tabsContainer = document.getElementById('tagsam-site-buttons');
+    if (tabsContainer) {
+      tabsContainer.innerHTML = '';
+      sites.forEach((site, sIdx) => {
+        const tabBtn = document.createElement('button');
+        tabBtn.className = `tagsam-site-tab ${sIdx === 0 ? 'active' : ''}`;
+        tabBtn.textContent = isVi ? site.nameVi : site.nameEn;
+        tabBtn.title = isVi ? `${site.hazardVi} | ${site.sampleAbundanceVi}` : `${site.hazardEn} | ${site.sampleAbundanceEn}`;
+        tabBtn.onclick = () => {
+          tabsContainer.querySelectorAll('.tagsam-site-tab').forEach(b => b.classList.remove('active'));
+          tabBtn.classList.add('active');
+          activeSite = site;
+          if (this.tagsamState) {
+            this.tagsamState.activeSite = site;
+            this.generateTagsamTerrain(site);
+          }
+          const siteReadout = document.getElementById('tagsam-site-readout');
+          if (siteReadout) {
+            siteReadout.textContent = `TARGET: ${(isVi ? site.nameVi : site.nameEn).toUpperCase()}`;
+          }
+          this.playLaserPingSound();
+        };
+        tabsContainer.appendChild(tabBtn);
+      });
+    }
+
+    const siteReadout = document.getElementById('tagsam-site-readout');
+    if (siteReadout) {
+      siteReadout.textContent = `TARGET: ${(isVi ? activeSite.nameVi : activeSite.nameEn).toUpperCase()}`;
+    }
+
+    // Initialize Simulator State
+    this.tagsamState = {
+      phase: 'standby',
+      alt: 50.0,
+      vz: 0,
+      shipX: 0,
+      vx: 0,
+      armExtended: 0.15,
+      n2BurstTimer: 0,
+      terrainPoints: [],
+      boulders: [],
+      dustParticles: [],
+      flameParticles: [],
+      activeSite,
+      targetSample: null,
+      laserSweepAngle: 0
+    };
+
+    this.generateTagsamTerrain(activeSite);
+    this.tagsamSimRunning = true;
+
+    // Connect Action Buttons
+    const btnInitiate = document.getElementById('btn-initiate-tagsam');
+    if (btnInitiate) {
+      btnInitiate.onclick = () => {
+        const samples = GEOLOGICAL_SAMPLES_BY_BODY[bodyId] || [];
+        const uncollected = samples.find(s => !this.collectedSamples.has(s.id)) || samples[0];
+        this.runTagsamTouchdown(uncollected);
+      };
+    }
+
+    const btnThrustL = document.getElementById('tagsam-btn-thrust-left');
+    if (btnThrustL) {
+      btnThrustL.onclick = () => {
+        if (!this.tagsamState) return;
+        this.tagsamState.shipX = Math.max(-280, this.tagsamState.shipX - 18);
+        this.playThrusterBurnSound();
+        this.spawnTagsamFlameParticles(16, -1);
+      };
+    }
+
+    const btnThrustR = document.getElementById('tagsam-btn-thrust-right');
+    if (btnThrustR) {
+      btnThrustR.onclick = () => {
+        if (!this.tagsamState) return;
+        this.tagsamState.shipX = Math.min(280, this.tagsamState.shipX + 18);
+        this.playThrusterBurnSound();
+        this.spawnTagsamFlameParticles(16, 1);
+      };
+    }
+
+    const btnThrustRetro = document.getElementById('tagsam-btn-thrust-retro');
+    if (btnThrustRetro) {
+      btnThrustRetro.onclick = () => {
+        if (!this.tagsamState) return;
+        if (this.tagsamState.phase === 'standby') {
+          const samples = GEOLOGICAL_SAMPLES_BY_BODY[bodyId] || [];
+          const uncollected = samples.find(s => !this.collectedSamples.has(s.id)) || samples[0];
+          this.runTagsamTouchdown(uncollected);
+        } else if (this.tagsamState.phase === 'descending') {
+          this.tagsamState.alt = Math.min(50, this.tagsamState.alt + 3);
+          this.playThrusterBurnSound();
+          this.spawnTagsamFlameParticles(28, 0);
+        }
+      };
+    }
+
+    // Keyboard controls
+    const onKey = (e: KeyboardEvent) => {
+      if (!this.tagsamSimRunning || !this.tagsamState) return;
+      if (e.key === 'ArrowLeft') {
+        this.tagsamState.shipX = Math.max(-280, this.tagsamState.shipX - 14);
+        this.playThrusterBurnSound();
+        this.spawnTagsamFlameParticles(14, -1);
+      } else if (e.key === 'ArrowRight') {
+        this.tagsamState.shipX = Math.min(280, this.tagsamState.shipX + 14);
+        this.playThrusterBurnSound();
+        this.spawnTagsamFlameParticles(14, 1);
+      } else if (e.key === 'ArrowUp') {
+        if (this.tagsamState.phase === 'descending') {
+          this.tagsamState.alt = Math.min(50, this.tagsamState.alt + 2.5);
+          this.playThrusterBurnSound();
+          this.spawnTagsamFlameParticles(22, 0);
+        }
+      } else if (e.key === ' ' || e.key === 'Enter') {
+        if (this.tagsamState.phase === 'standby') {
+          const samples = GEOLOGICAL_SAMPLES_BY_BODY[bodyId] || [];
+          const uncollected = samples.find(s => !this.collectedSamples.has(s.id)) || samples[0];
+          this.runTagsamTouchdown(uncollected);
+        }
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    (this as any)._tagsamKeyHandler = onKey;
+
+    // Start 60fps Loop
+    const loop = () => {
+      if (!this.tagsamSimRunning) return;
+      this.updateTagsamPhysics();
+      this.drawTagsamFrame();
+      this.tagsamAnimId = requestAnimationFrame(loop);
+    };
+    this.tagsamAnimId = requestAnimationFrame(loop);
+  }
+
+  public stopTagsamSimulation() {
+    this.tagsamSimRunning = false;
+    if (this.tagsamAnimId) {
+      cancelAnimationFrame(this.tagsamAnimId);
+      this.tagsamAnimId = null;
+    }
+    if ((this as any)._tagsamKeyHandler) {
+      window.removeEventListener('keydown', (this as any)._tagsamKeyHandler);
+      (this as any)._tagsamKeyHandler = null;
+    }
+    this.tagsamState = null;
+  }
+
+  private generateTagsamTerrain(site: LandingSite) {
+    if (!this.tagsamState) return;
+    const w = 900;
+    const groundBase = 210;
+    const points: Array<{ x: number, y: number }> = [];
+    const step = 15;
+    for (let x = 0; x <= w; x += step) {
+      let y = groundBase + Math.sin(x * 0.015) * 10 + Math.cos(x * 0.038) * 5;
+      const distFromCenter = Math.abs(x - 450);
+      if (distFromCenter < 120) {
+        const bowlFactor = 1 - Math.cos((distFromCenter / 120) * Math.PI);
+        y = groundBase + 5 + bowlFactor * 4;
+      }
+      points.push({ x, y });
+    }
+    this.tagsamState.terrainPoints = points;
+
+    const boulders: Array<{ x: number, y: number, r: number, color: string }> = [];
+    const count = Math.floor(site.boulderDensity * 20) + 4;
+    for (let i = 0; i < count; i++) {
+      const side = (i % 2 === 0) ? -1 : 1;
+      const bx = 450 + side * (100 + (i * 38) % 300);
+      const by = groundBase - 2 + (i % 3) * 3;
+      const br = 4 + (i % 5) * 2.2;
+      boulders.push({
+        x: bx,
+        y: by,
+        r: br,
+        color: i % 2 === 0 ? '#475569' : '#334155'
+      });
+    }
+    this.tagsamState.boulders = boulders;
+  }
+
+  public runTagsamTouchdown(targetSample?: GeologicalSample, onComplete?: () => void) {
+    if (!this.tagsamState) return;
+    if (this.tagsamState.phase !== 'standby') return;
+
+    const isVi = this.currentLanguage === 'vi';
+    this.tagsamState.phase = 'descending';
+    this.tagsamState.targetSample = targetSample || null;
+    this.tagsamState.alt = 50.0;
+    this.tagsamState.vz = -0.32;
+    this.tagsamState.armExtended = 0.25;
+    this.tagsamState.onCompleteCallback = onComplete;
+
+    const statusEl = document.getElementById('tagsam-sim-status');
+    if (statusEl) {
+      statusEl.textContent = isVi 
+        ? 'TRẠNG THÁI: ĐANG HẠ CÁNH (OLA LASER ALTIMETER ĐO ĐỘ CAO)' 
+        : 'STATUS: DESCENT PROFILE (OLA LASER ALTIMETER ACTIVE)';
+      statusEl.style.color = '#38bdf8';
+    }
+
+    this.playThrusterBurnSound();
+    this.playLaserPingSound();
+  }
+
+  private spawnTagsamFlameParticles(count: number, direction: number) {
+    if (!this.tagsamState) return;
+    const landerX = 450 + this.tagsamState.shipX;
+    const landerY = 32 + (50 - this.tagsamState.alt) * 3.3;
+    for (let i = 0; i < count; i++) {
+      this.tagsamState.flameParticles.push({
+        x: landerX + (Math.random() - 0.5) * 22,
+        y: landerY + 16,
+        vx: direction * (Math.random() * 4 + 2) + (Math.random() - 0.5) * 2,
+        vy: (direction === 0 ? 1 : 0.4) * (Math.random() * 5 + 3),
+        alpha: 1.0,
+        size: Math.random() * 3.5 + 2,
+        color: Math.random() > 0.4 ? '#38bdf8' : '#00f0ff'
+      });
+    }
+  }
+
+  private updateTagsamPhysics() {
+    if (!this.tagsamState) return;
+    const st = this.tagsamState;
+
+    st.laserSweepAngle += 0.05;
+    st.shipX += st.vx;
+    st.vx *= 0.92;
+    st.shipX = Math.max(-280, Math.min(280, st.shipX));
+
+    if (st.phase === 'descending') {
+      st.alt = Math.max(0, st.alt - 0.24);
+      st.vz = -0.32;
+      st.armExtended = Math.min(1.0, st.armExtended + 0.012);
+
+      if (Math.random() > 0.35) {
+        this.spawnTagsamFlameParticles(2, 0);
+      }
+
+      if (st.alt <= 0.05) {
+        st.alt = 0;
+        st.vz = 0;
+        st.phase = 'contact';
+        this.playTagsamN2BlastSound();
+
+        const alertEl = document.getElementById('tagsam-contact-alert');
+        if (alertEl) {
+          alertEl.style.display = 'block';
+          alertEl.textContent = this.currentLanguage === 'vi' 
+            ? '💥 TIẾP XÚC TAGSAM! BẮN KHÍ N2 THU MẪU ĐỊA CHẤT!' 
+            : '💥 TOUCHDOWN CONTACT! N2 GAS BLAST - REGOLITH SECURED!';
+        }
+
+        for (let i = 0; i < 90; i++) {
+          const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.5;
+          const spd = Math.random() * 5 + 2;
+          st.dustParticles.push({
+            x: 450 + st.shipX + (Math.random() - 0.5) * 14,
+            y: 204,
+            vx: Math.cos(angle) * spd,
+            vy: Math.sin(angle) * spd,
+            alpha: 1.0,
+            size: Math.random() * 3 + 1.5,
+            color: Math.random() > 0.5 ? '#f59e0b' : '#38bdf8'
+          });
+        }
+
+        setTimeout(() => {
+          if (!this.tagsamSimRunning || !this.tagsamState) return;
+          const alertEl = document.getElementById('tagsam-contact-alert');
+          if (alertEl) alertEl.style.display = 'none';
+          this.tagsamState.phase = 'ascending';
+          this.playThrusterBurnSound();
+        }, 1400);
+      }
+    } else if (st.phase === 'ascending') {
+      st.alt = Math.min(50.0, st.alt + 0.38);
+      st.vz = 0.45;
+      this.spawnTagsamFlameParticles(4, 0);
+
+      if (st.alt >= 50.0) {
+        st.alt = 50.0;
+        st.vz = 0;
+        st.phase = 'standby';
+
+        const statusEl = document.getElementById('tagsam-sim-status');
+        if (statusEl) {
+          statusEl.textContent = this.currentLanguage === 'vi'
+            ? 'TRẠNG THÁI: QUỸ ĐẠO AN TOÀN - MẪU ĐÃ ĐÓNG KÍN KHÍ'
+            : 'STATUS: ORBITAL HOVER - SPECIMEN CANISTER LOCKED';
+          statusEl.style.color = '#22c55e';
+        }
+
+        if (st.targetSample) {
+          this.collectedSamples.add(st.targetSample.id);
+          this.currentScienceCollected += 80;
+          this.playSampleCollectSound();
+          if (st.onCompleteCallback) {
+            st.onCompleteCallback();
+          }
+        }
+      }
+    }
+
+    for (let i = st.dustParticles.length - 1; i >= 0; i--) {
+      const p = st.dustParticles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.08;
+      p.alpha -= 0.018;
+      if (p.alpha <= 0) st.dustParticles.splice(i, 1);
+    }
+
+    for (let i = st.flameParticles.length - 1; i >= 0; i--) {
+      const p = st.flameParticles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= 0.04;
+      p.size = Math.max(0.2, p.size - 0.1);
+      if (p.alpha <= 0) st.flameParticles.splice(i, 1);
+    }
+
+    const altReadout = document.getElementById('tagsam-alt-readout');
+    if (altReadout) {
+      altReadout.textContent = `ALT: ${st.alt.toFixed(1)} m | Vz: ${(st.vz).toFixed(2)} m/s`;
+    }
+    const altHud = document.getElementById('landing-altimeter-hud');
+    if (altHud) {
+      altHud.textContent = `${st.alt.toFixed(1)} m (${st.phase.toUpperCase()})`;
+    }
+  }
+
+  private drawTagsamFrame() {
+    if (!this.tagsamCtx || !this.tagsamCanvas || !this.tagsamState) return;
+    const ctx = this.tagsamCtx;
+    const w = this.tagsamCanvas.width;
+    const h = this.tagsamCanvas.height;
+    const st = this.tagsamState;
+
+    ctx.clearRect(0, 0, w, h);
+
+    // 1. Space background
+    ctx.fillStyle = '#030712';
+    ctx.fillRect(0, 0, w, h);
+
+    // Starfield
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    for (let i = 0; i < 45; i++) {
+      const sx = ((i * 127.3) % w);
+      const sy = ((i * 59.1) % 150);
+      ctx.fillRect(sx, sy, 1.2, 1.2);
+    }
+
+    // Distant planetary horizon gradient
+    const horizonGrad = ctx.createLinearGradient(0, 150, 0, 260);
+    horizonGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    horizonGrad.addColorStop(1, st.activeSite.surfaceColor + '60');
+    ctx.fillStyle = horizonGrad;
+    ctx.fillRect(0, 150, w, 110);
+
+    // 2. Procedural terrain
+    if (st.terrainPoints.length > 0) {
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+      st.terrainPoints.forEach((pt, i) => {
+        if (i === 0) ctx.lineTo(pt.x, pt.y);
+        else ctx.lineTo(pt.x, pt.y);
+      });
+      ctx.lineTo(w, h);
+      ctx.closePath();
+
+      const terrainGrad = ctx.createLinearGradient(0, 190, 0, h);
+      terrainGrad.addColorStop(0, st.activeSite.surfaceColor);
+      terrainGrad.addColorStop(1, '#0b0f17');
+      ctx.fillStyle = terrainGrad;
+      ctx.fill();
+
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#475569';
+      ctx.stroke();
+    }
+
+    // 3. Boulders
+    st.boulders.forEach(b => {
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.fillStyle = b.color;
+      ctx.fill();
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    // 4. Target Touchdown Ellipse (The Landing Zone)
+    const targetX = 450;
+    const targetY = 210;
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(targetX, targetY, 48, 12, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(34, 197, 94, 0.15)';
+    ctx.fill();
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#22c55e';
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.beginPath();
+    ctx.moveTo(targetX - 16, targetY);
+    ctx.lineTo(targetX + 16, targetY);
+    ctx.moveTo(targetX, targetY - 6);
+    ctx.lineTo(targetX, targetY + 6);
+    ctx.strokeStyle = '#22c55e';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.font = '10px monospace';
+    ctx.fillStyle = '#86efac';
+    ctx.textAlign = 'center';
+    ctx.fillText('TAG ZONE', targetX, targetY + 22);
+    ctx.restore();
+
+    // 5. OLA Laser Altimeter Beam
+    const landerX = 450 + st.shipX;
+    const landerY = 32 + (50 - st.alt) * 3.3;
+    const groundY = 210;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(landerX, landerY + 12);
+    ctx.lineTo(landerX, groundY);
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 1.5;
+    ctx.shadowColor = '#00f0ff';
+    ctx.shadowBlur = 8;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(landerX, groundY, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#00f0ff';
+    ctx.fill();
+
+    ctx.font = '9px monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.textAlign = 'left';
+    ctx.fillText(`OLA: ${st.alt.toFixed(1)}m`, landerX + 8, (landerY + groundY) / 2);
+    ctx.restore();
+
+    // 6. Thruster Flame Particles
+    st.flameParticles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1.0;
+
+    // 7. Lander Spacecraft (Apollo LM / OSIRIS-REx Style)
+    ctx.save();
+    ctx.translate(landerX, landerY);
+
+    ctx.fillStyle = '#d97706';
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(-16, -4);
+    ctx.lineTo(16, -4);
+    ctx.lineTo(20, 8);
+    ctx.lineTo(-20, 8);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#94a3b8';
+    ctx.beginPath();
+    ctx.moveTo(-10, -4);
+    ctx.lineTo(-7, -14);
+    ctx.lineTo(7, -14);
+    ctx.lineTo(10, -4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#00f0ff';
+    ctx.beginPath();
+    ctx.arc(0, -9, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(10, -10);
+    ctx.lineTo(15, -16);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(16, -18, 3, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(-16, 6);
+    ctx.lineTo(-26, 18);
+    ctx.lineTo(-30, 18);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(16, 6);
+    ctx.lineTo(26, 18);
+    ctx.lineTo(30, 18);
+    ctx.stroke();
+
+    const armExtension = st.armExtended * 16;
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(0, 8);
+    ctx.lineTo(-4, 12 + armExtension * 0.4);
+    ctx.lineTo(0, 16 + armExtension);
+    ctx.stroke();
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.arc(0, 17 + armExtension, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.restore();
+
+    // 8. Dust / Regolith Particles
+    st.dustParticles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1.0;
+  }
+
+  public stop3DReconViewport() {
+    if (this.reconAnimId) {
+      cancelAnimationFrame(this.reconAnimId);
+      this.reconAnimId = null;
+    }
+    if (this.reconCleanup) {
+      this.reconCleanup();
+      this.reconCleanup = null;
+    }
+    this.reconSunVisuals = null;
+  }
+
+  private createProceduralPlanetTexture(type: 'sun' | 'uranus' | 'neptune'): THREE.CanvasTexture {
+    const c = document.createElement('canvas');
+    c.width = 1024;
+    c.height = 512;
+    const ctx = c.getContext('2d')!;
+
+    if (type === 'sun') {
+      const grad = ctx.createLinearGradient(0, 0, 0, 512);
+      grad.addColorStop(0, '#ea580c');
+      grad.addColorStop(0.5, '#f59e0b');
+      grad.addColorStop(1, '#ea580c');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1024, 512);
+
+      ctx.fillStyle = 'rgba(254, 240, 138, 0.45)';
+      for (let i = 0; i < 600; i++) {
+        const x = Math.random() * 1024;
+        const y = Math.random() * 512;
+        const r = Math.random() * 18 + 6;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = 'rgba(67, 20, 7, 0.85)';
+      for (let i = 0; i < 6; i++) {
+        const sx = 200 + i * 140;
+        const sy = 220 + (i % 3) * 35;
+        ctx.beginPath();
+        ctx.ellipse(sx, sy, 18, 12, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (type === 'uranus') {
+      const grad = ctx.createLinearGradient(0, 0, 0, 512);
+      grad.addColorStop(0, '#a5f3fc');
+      grad.addColorStop(0.3, '#67e8f9');
+      grad.addColorStop(0.5, '#38bdf8');
+      grad.addColorStop(0.7, '#67e8f9');
+      grad.addColorStop(1, '#a5f3fc');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1024, 512);
+    } else if (type === 'neptune') {
+      const grad = ctx.createLinearGradient(0, 0, 0, 512);
+      grad.addColorStop(0, '#1d4ed8');
+      grad.addColorStop(0.3, '#2563eb');
+      grad.addColorStop(0.5, '#1e40af');
+      grad.addColorStop(0.7, '#2563eb');
+      grad.addColorStop(1, '#1d4ed8');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1024, 512);
+
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.ellipse(650, 220, 48, 25, 0.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+      for (let i = 0; i < 18; i++) {
+        const cx = Math.random() * 1024;
+        const cy = 180 + Math.random() * 150;
+        ctx.fillRect(cx, cy, 60 + Math.random() * 80, 2.5);
+      }
+    }
+
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
+    return tex;
+  }
+
+  private init3DReconViewport(canvas: HTMLCanvasElement, bodyId: string) {
+    this.stop3DReconViewport();
+
+    const w = 960;
+    const h = 380;
+
+    if (!this.reconRenderer) {
+      this.reconRenderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: true,
+        preserveDrawingBuffer: true
+      });
+      this.reconRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      this.reconRenderer.setSize(w, h, false);
+      this.reconRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+      this.reconRenderer.toneMappingExposure = 1.25;
+    }
+
+    this.reconScene = new THREE.Scene();
+    this.reconCamera = new THREE.PerspectiveCamera(34, w / h, 0.1, 100);
+    this.reconCamera.position.set(0, 0, 4.2);
+
+    const isSun = bodyId === 'sun';
+    const ambient = new THREE.AmbientLight(0xffffff, isSun ? 1.0 : 0.28);
+    this.reconScene.add(ambient);
+
+    const sunLight = new THREE.DirectionalLight(0xffffff, isSun ? 0.0 : 1.6);
+    sunLight.position.set(4.8, 1.8, 3.5);
+    this.reconScene.add(sunLight);
+
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, isSun ? 0.0 : 0.35);
+    rimLight.position.set(-4.5, -1.2, -2.8);
+    this.reconScene.add(rimLight);
+
+    // Deep space background starfield
+    const starGeo = new THREE.BufferGeometry();
+    const starCount = 380;
+    const starPos = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount * 3; i += 3) {
+      starPos[i] = (Math.random() - 0.5) * 36;
+      starPos[i + 1] = (Math.random() - 0.5) * 18;
+      starPos[i + 2] = -12 - Math.random() * 15;
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.12, transparent: true, opacity: 0.8 });
+    this.reconScene.add(new THREE.Points(starGeo, starMat));
+
+    const texLoader = new THREE.TextureLoader();
+    const loadTex = (url: string) => {
+      if (this.reconTextureCache.has(url)) return this.reconTextureCache.get(url)!;
+      const t = texLoader.load(url);
+      t.anisotropy = 8;
+      this.reconTextureCache.set(url, t);
+      return t;
+    };
+
+    let bodyMesh: THREE.Mesh;
+    let ringMesh: THREE.Mesh | null = null;
+    let atmosphereMesh: THREE.Mesh | null = null;
+    let coronaMesh: THREE.Mesh | null = null;
+
+    const b = bodyId.toLowerCase();
+
+    if (b === 'moon') {
+      const geo = new THREE.SphereGeometry(1.22, 64, 64);
+      const mat = new THREE.MeshStandardMaterial({
+        map: loadTex(moonPlanetUrl),
+        roughness: 0.94,
+        metalness: 0.05
+      });
+      bodyMesh = new THREE.Mesh(geo, mat);
+    } else if (b === 'earth') {
+      const geo = new THREE.SphereGeometry(1.24, 64, 64);
+      const mat = new THREE.MeshStandardMaterial({
+        map: loadTex(earthPlanetUrl),
+        roughness: 0.65,
+        metalness: 0.12
+      });
+      bodyMesh = new THREE.Mesh(geo, mat);
+
+      const atmoGeo = new THREE.SphereGeometry(1.27, 64, 64);
+      const atmoMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.18,
+        blending: THREE.AdditiveBlending,
+        side: THREE.BackSide
+      });
+      atmosphereMesh = new THREE.Mesh(atmoGeo, atmoMat);
+      bodyMesh.add(atmosphereMesh);
+    } else if (b === 'mars') {
+      const geo = new THREE.SphereGeometry(1.22, 64, 64);
+      const mat = new THREE.MeshStandardMaterial({
+        map: loadTex(marsPlanetUrl),
+        roughness: 0.85,
+        metalness: 0.08
+      });
+      bodyMesh = new THREE.Mesh(geo, mat);
+    } else if (b === 'jupiter') {
+      const geo = new THREE.SphereGeometry(1.35, 64, 64);
+      const mat = new THREE.MeshStandardMaterial({
+        map: loadTex(jupiterPlanetUrl),
+        roughness: 0.8,
+        metalness: 0.0
+      });
+      bodyMesh = new THREE.Mesh(geo, mat);
+    } else if (b === 'saturn') {
+      const geo = new THREE.SphereGeometry(1.15, 64, 64);
+      const mat = new THREE.MeshStandardMaterial({
+        map: loadTex(saturnPlanetUrl),
+        roughness: 0.8,
+        metalness: 0.0
+      });
+      bodyMesh = new THREE.Mesh(geo, mat);
+
+      const ringGeo = new THREE.RingGeometry(1.4, 2.5, 64);
+      const ringPos = ringGeo.attributes.position;
+      const ringUv = ringGeo.attributes.uv;
+      for (let i = 0; i < ringPos.count; i++) {
+        const vx = ringPos.getX(i);
+        const vy = ringPos.getY(i);
+        const d = Math.hypot(vx, vy);
+        const u = (d - 1.4) / (2.5 - 1.4);
+        ringUv.setXY(i, u, 0.5);
+      }
+      const ringMat = new THREE.MeshBasicMaterial({
+        map: loadTex(saturnRingPlanetUrl),
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.92
+      });
+      ringMesh = new THREE.Mesh(ringGeo, ringMat);
+      ringMesh.rotation.x = Math.PI / 2.3;
+      ringMesh.rotation.y = 0.18;
+      bodyMesh.add(ringMesh);
+    } else if (b === 'venus') {
+      const geo = new THREE.SphereGeometry(1.22, 64, 64);
+      const mat = new THREE.MeshStandardMaterial({
+        map: loadTex(venusPlanetUrl),
+        roughness: 0.72,
+        metalness: 0.06
+      });
+      bodyMesh = new THREE.Mesh(geo, mat);
+    } else if (b === 'mercury') {
+      const geo = new THREE.SphereGeometry(1.18, 64, 64);
+      const mat = new THREE.MeshStandardMaterial({
+        map: loadTex(mercuryPlanetUrl),
+        roughness: 0.92,
+        metalness: 0.08
+      });
+      bodyMesh = new THREE.Mesh(geo, mat);
+    } else if (b === 'sun') {
+      this.reconSunVisuals = new SunVisuals(1.15, 1.0);
+      bodyMesh = this.reconSunVisuals.group as any;
+    } else if (b === 'bennu' || b === 'asteroids') {
+      const geo = new THREE.DodecahedronGeometry(1.18, 4);
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const vx = pos.getX(i);
+        const vy = pos.getY(i);
+        const vz = pos.getZ(i);
+        const len = Math.hypot(vx, vy, vz);
+        const equatorBoost = 1.0 + 0.22 * Math.cos((vy / len) * Math.PI);
+        const noise = 1.0 + (Math.sin(vx * 7) * Math.cos(vy * 8) * Math.sin(vz * 6)) * 0.07;
+        const f = (equatorBoost * noise) / len;
+        pos.setXYZ(i, vx * f, vy * f, vz * f);
+      }
+      geo.computeVertexNormals();
+
+      const mat = new THREE.MeshStandardMaterial({
+        map: loadTex(osirisBennuBgImg),
+        roughness: 0.96,
+        metalness: 0.1
+      });
+      bodyMesh = new THREE.Mesh(geo, mat);
+    } else if (b === 'uranus') {
+      const geo = new THREE.SphereGeometry(1.24, 64, 64);
+      const mat = new THREE.MeshStandardMaterial({
+        map: this.createProceduralPlanetTexture('uranus'),
+        roughness: 0.7,
+        metalness: 0.05
+      });
+      bodyMesh = new THREE.Mesh(geo, mat);
+    } else if (b === 'neptune') {
+      const geo = new THREE.SphereGeometry(1.24, 64, 64);
+      const mat = new THREE.MeshStandardMaterial({
+        map: this.createProceduralPlanetTexture('neptune'),
+        roughness: 0.7,
+        metalness: 0.05
+      });
+      bodyMesh = new THREE.Mesh(geo, mat);
+    } else {
+      const geo = new THREE.SphereGeometry(1.22, 64, 64);
+      const mat = new THREE.MeshStandardMaterial({
+        map: loadTex(moonPlanetUrl),
+        roughness: 0.9,
+        metalness: 0.08
+      });
+      bodyMesh = new THREE.Mesh(geo, mat);
+    }
+
+    this.reconScene.add(bodyMesh);
+    this.reconBodyMesh = bodyMesh;
+    this.reconRingMesh = ringMesh;
+    this.reconAtmosphereMesh = atmosphereMesh;
+
+    let isDragging = false;
+    let prevX = 0;
+    let prevY = 0;
+
+    const onMouseDown = (e: MouseEvent) => {
+      isDragging = true;
+      prevX = e.clientX;
+      prevY = e.clientY;
+      canvas.style.cursor = 'grabbing';
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDragging || !this.reconBodyMesh) return;
+      const dx = e.clientX - prevX;
+      const dy = e.clientY - prevY;
+      this.reconBodyMesh.rotation.y += dx * 0.008;
+      this.reconBodyMesh.rotation.x += dy * 0.008;
+      prevX = e.clientX;
+      prevY = e.clientY;
+    };
+
+    const onMouseUp = () => {
+      isDragging = false;
+      canvas.style.cursor = 'grab';
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 0) return;
+      isDragging = true;
+      prevX = e.touches[0].clientX;
+      prevY = e.touches[0].clientY;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isDragging || e.touches.length === 0 || !this.reconBodyMesh) return;
+      const dx = e.touches[0].clientX - prevX;
+      const dy = e.touches[0].clientY - prevY;
+      this.reconBodyMesh.rotation.y += dx * 0.008;
+      this.reconBodyMesh.rotation.x += dy * 0.008;
+      prevX = e.touches[0].clientX;
+      prevY = e.touches[0].clientY;
+      e.preventDefault();
+    };
+
+    const onTouchEnd = () => { isDragging = false; };
+
+    canvas.style.cursor = 'grab';
+    canvas.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+
+    canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd);
+
+    this.reconCleanup = () => {
+      canvas.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+
+      canvas.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+
+    const animate = () => {
+      if (this.reconBodyMesh) {
+        if (!isDragging) {
+          this.reconBodyMesh.rotation.y += 0.003;
+        }
+      }
+      if (this.reconSunVisuals && this.reconCamera) {
+        this.reconSunVisuals.update(0.016, this.reconCamera);
+      }
+      if (coronaMesh) {
+        const s = 1.0 + Math.sin(Date.now() * 0.004) * 0.03;
+        coronaMesh.scale.set(s, s, s);
+      }
+      if (this.reconRenderer && this.reconScene && this.reconCamera) {
+        this.reconRenderer.render(this.reconScene, this.reconCamera);
+      }
+      this.reconAnimId = requestAnimationFrame(animate);
+    };
+    this.reconAnimId = requestAnimationFrame(animate);
   }
 
   public updateFlightTelemetry(o: any, headingApoapsis: number) {
     if (!o) return;
+
+    // Update nearest body for reconnaissance / landing
+    try {
+      if (o && o.parent && o.parent.name) {
+        const pName = o.parent.name.toLowerCase();
+        if (pName && pName !== this.currentCelestialLocation) {
+          this.currentCelestialLocation = pName;
+          this.currentReconBodyId = pName;
+          this.updateFlightHudBudget();
+        }
+      }
+    } catch (e) {}
 
     // Keplerian Elements from NASA WSMV
     const smaEl = document.getElementById('wsmv-a');

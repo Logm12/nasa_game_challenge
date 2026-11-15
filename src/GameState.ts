@@ -54,20 +54,26 @@ export default class GameState{
     }
 
     loadState(state: any){
-        const version = state.saveVersion || 0;
-        if(version !== currentVersion)
-            return;
-        this.simTime = new Date(state.simTime);
-        this.startTime = new Date(state.startTime);
-        const bodies = state.bodies;
-        for(let i = 0; i < bodies.length; i++){
-            const body = bodies[i];
-            if(CelestialBody.celestialBodies.has(body.name)){
-                CelestialBody.celestialBodies.get(body.name).deserialize(body);
+        try {
+            const version = state.saveVersion || 0;
+            if(version !== currentVersion)
+                return;
+            if(state.simTime) this.simTime = new Date(state.simTime);
+            if(state.startTime) this.startTime = new Date(state.startTime);
+            const bodies = state.bodies;
+            if(Array.isArray(bodies)){
+                for(let i = 0; i < bodies.length; i++){
+                    const body = bodies[i];
+                    if(body && body.name && CelestialBody.celestialBodies.has(body.name)){
+                        CelestialBody.celestialBodies.get(body.name).deserialize(body);
+                    }
+                }
             }
+            if(this.select_obj && this.onStateLoad)
+                this.onStateLoad();
+        } catch(e) {
+            console.warn('loadState error:', e);
         }
-        if(this.select_obj && this.onStateLoad)
-            this.onStateLoad();
     }
 
     startTicking(){

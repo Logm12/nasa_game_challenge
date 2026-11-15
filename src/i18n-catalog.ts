@@ -42,6 +42,18 @@ export interface OrreryTexts {
 
 export const MISSIONS_I18N: Record<SupportedLang, Record<string, LocalizedMissionText>> = {
   en_us: {
+    mission_1_survey: {
+      title: 'Mission 1: Planetary Exploration & Quiz',
+      destination: 'Solar System (12 Celestial Bodies)',
+      badge: '📸 RECON & QUIZ',
+      description: 'Planet exploration, capture images, and answer quizzes to learn about their features.'
+    },
+    mission_2_samples: {
+      title: 'Mission 2: Sample Return Mission',
+      destination: 'Earth, Moon & Mars Geology Sites',
+      badge: '🪨 SAMPLE RETURN',
+      description: 'Sample collection, land on suitable celestial bodies and collect at least 3 different samples.'
+    },
     nasa_dart: {
       title: 'NASA DART: Kinetic Impactor',
       destination: 'Didymos / Dimorphos (Planetary Defense)',
@@ -92,6 +104,18 @@ export const MISSIONS_I18N: Record<SupportedLang, Record<string, LocalizedMissio
     }
   },
   vi: {
+    mission_1_survey: {
+      title: 'Nhiệm vụ 1: Khảo sát Hành tinh & Trắc nghiệm Q&A',
+      destination: 'Hệ Mặt Trời (12 Thiên thể khảo sát)',
+      badge: '📸 KHẢO SÁT & QUIZ',
+      description: 'Khám phá các hành tinh, chụp ảnh bản đồ 2D và trả lời câu hỏi ngắn để tìm hiểu đặc điểm thiên văn.'
+    },
+    mission_2_samples: {
+      title: 'Nhiệm vụ 2: Hạ cánh & Thu thập Mẫu vật Địa chất',
+      destination: 'Trái Đất, Mặt Trăng & Sao Hỏa',
+      badge: '🪨 THU THẬP MẪU',
+      description: 'Lựa chọn tàu có chân đáp phù hợp, hạ cánh xuống bề mặt rắn và thu thập ít nhất 3 mẫu vật địa chất khác nhau.'
+    },
     nasa_dart: {
       title: 'NASA DART: Va chạm đổi hướng tiểu hành tinh',
       destination: 'Didymos / Dimorphos (Phòng vệ hành tinh)',
@@ -142,6 +166,18 @@ export const MISSIONS_I18N: Record<SupportedLang, Record<string, LocalizedMissio
     }
   },
   en_uk: {
+    mission_1_survey: {
+      title: 'Mission 1: Planetary Exploration & Quiz',
+      destination: 'Solar System (12 Celestial Bodies)',
+      badge: '📸 RECON & QUIZ',
+      description: 'Planet exploration, capture images, and answer quizzes to learn about their features.'
+    },
+    mission_2_samples: {
+      title: 'Mission 2: Sample Return Mission',
+      destination: 'Earth, Moon & Mars Geology Sites',
+      badge: '🪨 SAMPLE RETURN',
+      description: 'Sample collection, land on suitable celestial bodies and collect at least 3 different samples.'
+    },
     nasa_dart: {
       title: 'NASA DART: Kinetic Impactor',
       destination: 'Didymos / Dimorphos (Planetary Defence)',
@@ -192,6 +228,18 @@ export const MISSIONS_I18N: Record<SupportedLang, Record<string, LocalizedMissio
     }
   },
   ja: {
+    mission_1_survey: {
+      title: 'ミッション1：惑星探査・2D撮影＆クイズ',
+      destination: '太陽系（12天体観測）',
+      badge: '📸 観測＆クイズ',
+      description: '惑星を探査し、画像を撮影してクイズに答えて天体の特徴を学びます。'
+    },
+    mission_2_samples: {
+      title: 'ミッション2：サンプルリターン（着陸・地質採取）',
+      destination: '地球・月・火星の着陸地点',
+      badge: '🪨 サンプル採取',
+      description: '着陸脚を備えた探査機を選定し、固体天体に着陸して少なくとも3種類の地質試料を回収します。'
+    },
     nasa_dart: {
       title: 'NASA DART：小惑星軌道変更実験',
       destination: 'ディディモス / ディモルフォス（惑星防衛）',
@@ -242,6 +290,18 @@ export const MISSIONS_I18N: Record<SupportedLang, Record<string, LocalizedMissio
     }
   },
   ko: {
+    mission_1_survey: {
+      title: '미션 1: 행성 탐사 및 퀴즈',
+      destination: '태양계 (12개 천체 관측)',
+      badge: '📸 탐사 및 퀴즈',
+      description: '행성을 탐사하고 이미지를 캡처하며 퀴즈를 풀어 천체의 특징을 배웁니다.'
+    },
+    mission_2_samples: {
+      title: '미션 2: 샘플 리턴 (착륙 및 지질 표본 수집)',
+      destination: '지구, 달 및 화성 지질 착륙지',
+      badge: '🪨 표본 수집',
+      description: '적합한 착륙선을 선택하여 표면에 착륙하고 3가지 이상의 서로 다른 지질 표본을 채취합니다.'
+    },
     nasa_dart: {
       title: 'NASA DART: 소행성 궤도 변경 실험',
       destination: '디디모스 / 디모르포스 (행성 방어)',
@@ -292,6 +352,18 @@ export const MISSIONS_I18N: Record<SupportedLang, Record<string, LocalizedMissio
     }
   },
   fr: {
+    mission_1_survey: {
+      title: 'Mission 1 : Exploration planétaire et quiz',
+      destination: 'Système solaire (12 corps célestes)',
+      badge: '📸 RECO & QUIZ',
+      description: 'Explorer les planètes, capturer des images et répondre à des quiz éducatifs.'
+    },
+    mission_2_samples: {
+      title: "Mission 2 : Retour d'échantillons géologiques",
+      destination: 'Sites géologiques de la Terre, Lune et Mars',
+      badge: '🪨 ÉCHANTILLONS',
+      description: "Choisir un atterrisseur adapté, se poser sur un sol solide et collecter au moins 3 échantillons géologiques."
+    },
     nasa_dart: {
       title: 'NASA DART : Impacteur cinétique',
       destination: 'Didymos / Dimorphos (Défense planétaire)',
@@ -342,6 +414,18 @@ export const MISSIONS_I18N: Record<SupportedLang, Record<string, LocalizedMissio
     }
   },
   de: {
+    mission_1_survey: {
+      title: 'Mission 1: Planeten-Erkundung & Quiz',
+      destination: 'Sonnensystem (12 Himmelskörper)',
+      badge: '📸 RECON & QUIZ',
+      description: 'Planeten erkunden, 2D-Aufnahmen erstellen und Quizfragen beantworten.'
+    },
+    mission_2_samples: {
+      title: 'Mission 2: Proben-Rückholmission (Sample Return)',
+      destination: 'Erde, Mond und Mars Geologie-Landeplätze',
+      badge: '🪨 PROBENNAHME',
+      description: 'Ein geeignetes Landeschiff wählen, auf festem Boden landen und mindestens 3 verschiedene Gesteinsproben sammeln.'
+    },
     nasa_dart: {
       title: 'NASA DART: Kinetischer Impaktor',
       destination: 'Didymos / Dimorphos (Planetenverteidigung)',
@@ -392,6 +476,18 @@ export const MISSIONS_I18N: Record<SupportedLang, Record<string, LocalizedMissio
     }
   },
   it: {
+    mission_1_survey: {
+      title: 'Missione 1: Esplorazione planetaria e quiz',
+      destination: 'Sistema Solare (12 corpi celesti)',
+      badge: '📸 RECON & QUIZ',
+      description: 'Esplora i pianeti, cattura immagini e rispondi ai quiz per conoscerne le caratteristiche.'
+    },
+    mission_2_samples: {
+      title: 'Missione 2: Ritorno di campioni geologici',
+      destination: 'Siti geologici di Terra, Luna e Marte',
+      badge: '🪨 RACCOLTA CAMPIONI',
+      description: 'Scegli un lander idoneo, atterra su corpi solidi e raccogli almeno 3 campioni geologici differenti.'
+    },
     nasa_dart: {
       title: 'NASA DART: Impattore cinetico',
       destination: 'Didymos / Dimorphos (Difesa planetaria)',
@@ -442,6 +538,18 @@ export const MISSIONS_I18N: Record<SupportedLang, Record<string, LocalizedMissio
     }
   },
   es: {
+    mission_1_survey: {
+      title: 'Misión 1: Exploración planetaria y cuestionario',
+      destination: 'Sistema Solar (12 cuerpos celestes)',
+      badge: '📸 RECON & QUIZ',
+      description: 'Explora los planetas, captura imágenes y responde preguntas educativas.'
+    },
+    mission_2_samples: {
+      title: 'Misión 2: Retorno de muestras geológicas',
+      destination: 'Sitios geológicos de la Tierra, Luna y Marte',
+      badge: '🪨 MUESTRAS',
+      description: 'Selecciona una nave con tren de aterrizaje, desciende a superficies sólidas y recoge al menos 3 muestras diferentes.'
+    },
     nasa_dart: {
       title: 'NASA DART: Impactador cinético',
       destination: 'Didymos / Dimorphos (Defensa planetaria)',

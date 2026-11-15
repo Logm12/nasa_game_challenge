@@ -6,5 +6,8 @@ module.exports = merge(common, {
   devtool: 'inline-source-map',
   devServer: {
     contentBase: './dist',
+    host: '0.0.0.0',
+    port: 8080,
+    disableHostCheck: true,
   },
 });

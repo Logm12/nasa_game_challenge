@@ -62,6 +62,10 @@ let accelerate = false;
 let decelerate = false;
 
 function init() {
+    // Automatically purge legacy/conflicting simulation caches to guarantee a clean launch
+    try {
+        localStorage.removeItem('WebGLOrbiterAutoSave');
+    } catch(e) {}
 
     container = document.createElement( 'div' );
     document.body.appendChild(container);
@@ -339,6 +343,9 @@ function init() {
         (msg) => messageControl.setText(msg)
     );
 
+    nasaDesigner.setSolarExplorer(solarExplorer);
+    solarExplorer.setMissionDesigner(nasaDesigner);
+
     saveControl = new SaveControl(
         function(){ return gameState.serializeState(); },
         function(msg){ messageControl.setText(msg); },
@@ -363,9 +370,19 @@ function init() {
     window.addEventListener( 'keydown', onKeyDown, false );
     window.addEventListener( 'keyup', onKeyUp, false );
     window.addEventListener( 'pageshow', function(){
-        const state = localStorage.getItem('WebGLOrbiterAutoSave');
-        if(state){
-            gameState.loadState(JSON.parse(state));
+        try {
+            const raw = localStorage.getItem('WebGLOrbiterAutoSave');
+            if(raw){
+                const parsed = JSON.parse(raw);
+                if(parsed && parsed.saveVersion === GameState.currentVersion){
+                    gameState.loadState(parsed);
+                } else {
+                    localStorage.removeItem('WebGLOrbiterAutoSave');
+                }
+            }
+        } catch(e) {
+            console.warn('Auto-save load skipped:', e);
+            try { localStorage.removeItem('WebGLOrbiterAutoSave'); } catch(_) {}
         }
     });
     window.addEventListener( 'beforeunload', function(){

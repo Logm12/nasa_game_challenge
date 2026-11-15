@@ -10,6 +10,7 @@ import { onLangChange, formatTpl } from './i18n';
 import { getOrreryTexts } from './i18n-catalog';
 import { CelestialBody, AU, AxisAngleQuaternion } from './CelestialBody';
 import { Settings } from './SettingsControl';
+import { CELESTIAL_QUIZ_DATA, getTravelCost, LANDABLE_BODIES_M2 } from './nasa_mission_quiz_data';
 
 export interface PlanetDossier {
   id: string;
@@ -491,6 +492,11 @@ export class SolarSystemExplorer {
   private isDockCollapsed = false;
   private currentTargetBody: CelestialBody | null = null;
   private currentDossier: PlanetDossier | null = null;
+  private missionDesigner: any = null;
+
+  public setMissionDesigner(designer: any) {
+    this.missionDesigner = designer;
+  }
 
   constructor(
     private getSelectObj: () => CelestialBody | null,
@@ -646,6 +652,12 @@ export class SolarSystemExplorer {
           <button class="dossier-act-btn secondary" id="dossier-btn-teleport">
             🚀 ESTABLISH ORBIT HERE
           </button>
+          <button class="dossier-act-btn secondary" id="dossier-btn-recon" style="display: none; background: linear-gradient(135deg, rgba(14, 165, 233, 0.4), rgba(6, 182, 212, 0.3)); border-color: #00f0ff; color: #fff;">
+            📸 2D RECON & QUIZ
+          </button>
+          <button class="dossier-act-btn secondary" id="dossier-btn-land" style="display: none; background: linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(234, 88, 12, 0.3)); border-color: #f59e0b; color: #fff;">
+            🛬 LAND & SAMPLE
+          </button>
         </div>
       </div>
     `;
@@ -735,6 +747,22 @@ export class SolarSystemExplorer {
     // Teleport / Establish Orbit button inside Dossier
     document.getElementById('dossier-btn-teleport')?.addEventListener('click', () => {
       this.establishOrbitAtCurrentTarget();
+    });
+
+    // 2D Recon & Quiz button inside Dossier
+    document.getElementById('dossier-btn-recon')?.addEventListener('click', () => {
+      if (this.modalElement) this.modalElement.style.display = 'none';
+      if (this.missionDesigner && this.currentDossier) {
+        this.missionDesigner.openReconPhotoModal(this.currentDossier.id);
+      }
+    });
+
+    // Surface Landing & Sampling button inside Dossier
+    document.getElementById('dossier-btn-land')?.addEventListener('click', () => {
+      if (this.modalElement) this.modalElement.style.display = 'none';
+      if (this.missionDesigner && this.currentDossier) {
+        this.missionDesigner.openSurfaceLandingModal(this.currentDossier.id);
+      }
     });
 
     // Close on background click
@@ -910,6 +938,52 @@ export class SolarSystemExplorer {
       hlList.innerHTML = dossier.highlights.map((h) => `<li>${h}</li>`).join('');
     }
 
+    // Dynamic Mission Actions & Travel Costs
+    const btnRecon = document.getElementById('dossier-btn-recon');
+    const btnLand = document.getElementById('dossier-btn-land');
+    const btnTeleport = document.getElementById('dossier-btn-teleport');
+
+    if (this.missionDesigner && this.missionDesigner.isMissionActive) {
+      const missionId = this.missionDesigner.selectedMission?.id;
+      const travelCost = getTravelCost(missionId, dossier.id);
+      
+      if (missionId === 'mission_1_survey') {
+        const quizData = CELESTIAL_QUIZ_DATA[dossier.id];
+        if (quizData && descEl) {
+          const isVi = this.missionDesigner.getCurrentLanguage() === 'vi';
+          descEl.textContent = isVi ? quizData.descVi : quizData.descEn;
+        }
+        if (btnTeleport) {
+          btnTeleport.textContent = `🚀 ESTABLISH ORBIT ($${travelCost}M)`;
+        }
+        if (btnRecon) {
+          btnRecon.style.display = 'inline-block';
+        }
+        if (btnLand) {
+          btnLand.style.display = 'none';
+        }
+      } else if (missionId === 'mission_2_samples') {
+        const isLandable = LANDABLE_BODIES_M2.includes(dossier.id);
+        if (btnTeleport) {
+          btnTeleport.textContent = isLandable ? `🚀 ESTABLISH ORBIT ($${travelCost}M)` : `🚀 ORBIT ONLY ($${travelCost}M)`;
+        }
+        if (btnRecon) {
+          btnRecon.style.display = 'none';
+        }
+        if (btnLand) {
+          btnLand.style.display = isLandable ? 'inline-block' : 'none';
+        }
+      } else {
+        if (btnTeleport) btnTeleport.textContent = ot.btnTeleport;
+        if (btnRecon) btnRecon.style.display = 'none';
+        if (btnLand) btnLand.style.display = 'none';
+      }
+    } else {
+      if (btnTeleport) btnTeleport.textContent = ot.btnTeleport;
+      if (btnRecon) btnRecon.style.display = 'none';
+      if (btnLand) btnLand.style.display = 'none';
+    }
+
     this.modalElement.style.display = 'flex';
   }
 
@@ -920,6 +994,13 @@ export class SolarSystemExplorer {
   private establishOrbitAtCurrentTarget() {
     if (!this.currentTargetBody) return;
     const target = this.currentTargetBody;
+
+    if (this.missionDesigner && this.missionDesigner.isMissionActive) {
+      const allowed = this.missionDesigner.handlePlanetaryTravel(target.name);
+      if (!allowed) {
+        return;
+      }
+    }
 
     // Tìm phi thuyền điều khiển được của người chơi
     let rocket = CelestialBody.findBody('rocket');
