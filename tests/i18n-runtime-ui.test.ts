@@ -8,6 +8,7 @@ import {
   formatTpl
 } from '../src/i18n';
 import { RunResult } from '../src/domain/mission-contract';
+import { getMissionText } from '../src/i18n-catalog';
 
 console.log('--- Testing 9-Language Runtime UI Switching & Result Immutability ---');
 
@@ -94,6 +95,22 @@ function runRuntimeI18nTests() {
   check(reportSnapshotJson === afterSwitchJson, 'Dữ liệu kết quả report không đổi sau nhiều lần chuyển ngôn ngữ');
   check(originalReport.score === 8.5, 'Score vẫn là 8.5 nguyên bản');
   check(originalReport.status === 'SUCCESS', 'Status vẫn là SUCCESS nguyên bản');
+
+  // 3. Kiểm chứng việc đồng bộ ngôn ngữ cho History (tên nhiệm vụ & nút hành động) theo 9 ngôn ngữ
+  const dartTitles: Record<string, string> = {};
+  for (const lang of EXPECTED_9_LANGS) {
+    setCurrentLang(lang);
+    const m = getMissionText('nasa_dart', lang);
+    check(!!m && !!m.title, `[${lang}] getMissionText('nasa_dart') trả về tiêu đề hợp lệ`);
+    if (m) dartTitles[lang] = m.title;
+
+    const ct = getControlTexts(lang);
+    check(!!ct.historyTitle && !!ct.historyViewReport, `[${lang}] Khóa historyTitle và historyViewReport khả dụng`);
+  }
+
+  // Đảm bảo tiêu đề nhiệm vụ có sự khác biệt giữa các ngôn ngữ đại diện
+  check(dartTitles['vi'] !== dartTitles['en_us'], 'Tiêu đề tiếng Việt khác tiếng Anh');
+  check(dartTitles['ja'] !== dartTitles['en_us'], 'Tiêu đề tiếng Nhật khác tiếng Anh');
 
   console.log(`PASS: All ${totalTests} 9-Language Runtime UI & Immutability checks succeeded.`);
 }
