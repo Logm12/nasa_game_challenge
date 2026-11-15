@@ -202,10 +202,10 @@ $$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \
 
 | Parameter | Value | Scientific Significance |
 | :--- | :--- | :--- |
-| **Mean Diameter** | $12,742\text{ km}$ | Largest terrestrial planet in the Solar System |
-| **Total Mass** | $5.972 \times 10^{24}\text{ kg}$ | Determines standard gravity ($g_0 = 9.80665\text{ m/s}^2$) |
-| **Surface Temperature** | $15\text{^\circ C}$ (Mean: $-88\text{^\circ C}$ to $+58\text{^\circ C}$) | Resides stably inside the circumstellar habitable zone |
-| **Atmospheric Composition** | $78\%\text{ N}_2, 21\%\text{ O}_2, 0.93\%\text{ Ar}, 0.04\%\text{ CO}_2$ | Breathable surface pressure: $101.325\text{ kPa}$ |
+| **Mean Diameter** | 12,742 km | Largest terrestrial planet in the Solar System |
+| **Total Mass** | 5.972 × 10²⁴ kg | Determines standard gravity ($g_0 = 9.80665\text{ m/s}^2$) |
+| **Surface Temperature** | 15°C (Mean: -88°C to +58°C) | Resides stably inside the circumstellar habitable zone |
+| **Atmospheric Composition** | 78% N₂, 21% O₂, 0.93% Ar, 0.04% CO₂ | Breathable surface pressure: 101.325 kPa |
 
 ---
 
@@ -219,10 +219,10 @@ $$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \
 
 | Parameter | Value | Scientific Significance |
 | :--- | :--- | :--- |
-| **Mean Diameter** | $3,474\text{ km}$ | $0.273\times$ Earth's diameter |
-| **Total Mass** | $7.342 \times 10^{22}\text{ kg}$ | $1/81$ mass of Earth; drives terrestrial ocean tides |
-| **Surface Temperature** | $-130\text{^\circ C}$ (Night) to $+120\text{^\circ C}$ (Day) | Extreme thermal swings due to zero atmospheric shielding |
-| **Surface Gravity** | $1.62\text{ m/s}^2$ ($0.166g$) | Allows lightweight Apollo Lunar Module ascent stage |
+| **Mean Diameter** | 3,474 km | 0.273× Earth's diameter |
+| **Total Mass** | 7.342 × 10²² kg | 1/81 mass of Earth; drives terrestrial ocean tides |
+| **Surface Temperature** | -130°C (Night) to +120°C (Day) | Extreme thermal swings due to zero atmospheric shielding |
+| **Surface Gravity** | 1.62 m/s² (0.166g) | Allows lightweight Apollo Lunar Module ascent stage |
 
 ---
 
@@ -236,10 +236,10 @@ $$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \
 
 | Parameter | Value | Scientific Significance |
 | :--- | :--- | :--- |
-| **Mean Diameter** | $6,779\text{ km}$ ($0.53\times$ Earth) | Hosts Olympus Mons, the largest volcano in the Solar System |
-| **Total Mass** | $6.417 \times 10^{23}\text{ kg}$ ($0.107\times$ Earth) | Lower gravity facilitated ancient atmospheric hydrodynamic escape |
-| **Surface Temperature** | $-63\text{^\circ C}$ (Mean: $-140\text{^\circ C}$ to $+20\text{^\circ C}$) | Subsurface permafrost and polar water/dry-ice ice caps |
-| **Surface Gravity** | $3.72\text{ m/s}^2$ ($0.379g$) | Prime target for human interplanetary colonization & sample return |
+| **Mean Diameter** | 6,779 km (0.53× Earth) | Hosts Olympus Mons, the largest volcano in the Solar System |
+| **Total Mass** | 6.417 × 10²³ kg (0.107× Earth) | Lower gravity facilitated ancient atmospheric hydrodynamic escape |
+| **Surface Temperature** | -63°C (Mean: -140°C to +20°C) | Subsurface permafrost and polar water/dry-ice ice caps |
+| **Surface Gravity** | 3.72 m/s² (0.379g) | Prime target for human interplanetary colonization & sample return |
 
 ---
 
@@ -253,10 +253,10 @@ $$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \
 
 | Parameter | Value | Scientific Significance |
 | :--- | :--- | :--- |
-| **Equatorial Diameter** | $116,460\text{ km}$ ($9.45\times$ Earth) | Rapid rotation causes pronounced oblate oblateness ($0.098$) |
-| **Total Mass** | $5.683 \times 10^{26}\text{ kg}$ ($95.2\times$ Earth) | Lowest mean density of all planets ($0.687\text{ g/cm}^3$) |
-| **Ring System Span** | Up to $282,000\text{ km}$ across | Over $99\%$ water ice particles with Cassini division gap |
-| **Surface Temperature** | $-140\text{^\circ C}$ | Hydrogen-helium gas giant atmosphere |
+| **Equatorial Diameter** | 116,460 km (9.45× Earth) | Rapid rotation causes pronounced oblate oblateness (0.098) |
+| **Total Mass** | 5.683 × 10²⁶ kg (95.2× Earth) | Lowest mean density of all planets (0.687 g/cm³) |
+| **Ring System Span** | Up to 282,000 km across | Over 99% water ice particles with Cassini division gap |
+| **Surface Temperature** | -140°C | Hydrogen-helium gas giant atmosphere |
 
 ---
 
@@ -270,10 +270,10 @@ $$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \
 
 | Parameter | Value | Scientific Significance |
 | :--- | :--- | :--- |
-| **Mean Diameter** | $1,392,700\text{ km}$ ($109\times$ Earth) | Contains $99.86\%$ of total mass in the Solar System |
-| **Total Mass** | $1.989 \times 10^{30}\text{ kg}$ | Drives the gravitational barycenter of all planetary orbits |
-| **Photosphere Temp** | $5,500\text{^\circ C}$ (Surface) / $15,000,000\text{^\circ C}$ (Core) | Powered by proton-proton chain nuclear fusion |
-| **Surface Gravity** | $274.0\text{ m/s}^2$ ($27.94g$) | Escape velocity: $617.5\text{ km/s}$ |
+| **Mean Diameter** | 1,392,700 km (109× Earth) | Contains 99.86% of total mass in the Solar System |
+| **Total Mass** | 1.989 × 10³⁰ kg | Drives the gravitational barycenter of all planetary orbits |
+| **Photosphere Temp** | 5,500°C (Surface) / 15,000,000°C (Core) | Powered by proton-proton chain nuclear fusion |
+| **Surface Gravity** | 274.0 m/s² (27.94g) | Escape velocity: 617.5 km/s |
 
 ---
 
@@ -287,8 +287,8 @@ $$\text{TravelBudget}_{\text{reserve}} = \text{Budget}_{\text{initial}} - \sum \
 
 | Parameter | Value | Scientific Significance |
 | :--- | :--- | :--- |
-| **Mean Diameter** | $492\text{ m}$ (Spinning top rubble-pile) | Low bulk density ($1,190\text{ kg/m}^3$) indicating $50\%$ porosity |
-| **Total Mass** | $7.329 \times 10^{10}\text{ kg}$ | Microgravity regime ($8 \times 10^{-6} g$) with regolith particle ejection |
+| **Mean Diameter** | 492 m (Spinning top rubble-pile) | Low bulk density (1,190 kg/m³) indicating 50% porosity |
+| **Total Mass** | 7.329 × 10¹⁰ kg | Microgravity regime (8 × 10⁻⁶ g) with regolith particle ejection |
 | **Spectral Class** | B-type carbonaceous chondrite | Untouched primitive volatile reservoir from early Solar Nebula |
 | **Touchdown Site** | Nightingale Crater | Targeted for low boulder density and fine-grained regolith beds |
 
@@ -418,18 +418,18 @@ $$u = \frac{\alpha}{2\pi} + 0.5, \qquad v = \frac{\delta}{\pi} + 0.5$$
 
 All planetary ephemerides, radii, and gravitational constants are calibrated against official NASA Jet Propulsion Laboratory (JPL) astrodynamic tables:
 
-| Celestial Body | Radius ($R$, km) | Standard Gravitational Parameter ($\mu = GM, \text{km}^3/\text{s}^2$) | Semi-Major Axis ($a$, AU) | Eccentricity ($e$) | Inclination ($i$, deg) | Rotation Period |
+| Celestial Body | Radius ($R$, km) | Standard Gravitational Parameter ($\mu = GM, \text{km}^3/\text{s}^2$) | Semi-Major Axis ($a$, AU) | Eccentricity ($e$) | Inclination ($i$) | Rotation Period |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **The Sun (Sol)** | $695,800.0$ | $1.32712440018 \times 10^{11}$ | — | — | — | $25.38\text{ days}$ |
-| **Mercury** | $2,439.7$ | $2.2032 \times 10^4$ | $0.387098$ | $0.205630$ | $7.005^\circ$ | $58.646\text{ days}$ |
-| **Venus** | $6,051.8$ | $3.24859 \times 10^5$ | $0.723332$ | $0.006773$ | $3.394^\circ$ | $-243.025\text{ days}$ |
-| **Earth** | $6,371.0$ | $3.986004418 \times 10^5$ | $1.000000$ | $0.016708$ | $0.000^\circ$ | $23\text{h } 56\text{m } 04\text{s}$ |
-| **The Moon** | $1,737.4$ | $4.9048695 \times 10^3$ | $0.002570$ | $0.054900$ | $5.145^\circ$ | $27.321\text{ days}$ |
-| **Mars** | $3,389.5$ | $4.282837 \times 10^4$ | $1.523679$ | $0.093400$ | $1.850^\circ$ | $24\text{h } 37\text{m } 22\text{s}$ |
-| **Jupiter** | $69,911.0$ | $1.26686534 \times 10^8$ | $5.204267$ | $0.048498$ | $1.303^\circ$ | $9\text{h } 55\text{m } 30\text{s}$ |
-| **Saturn** | $58,232.0$ | $3.7931187 \times 10^7$ | $9.582600$ | $0.055550$ | $2.485^\circ$ | $10\text{h } 33\text{m } 38\text{s}$ |
-| **Uranus** | $25,362.0$ | $5.793939 \times 10^6$ | $19.229411$ | $0.047318$ | $0.772^\circ$ | $-17\text{h } 14\text{m } 24\text{s}$ |
-| **Neptune** | $24,622.0$ | $6.836529 \times 10^6$ | $30.068963$ | $0.008606$ | $1.769^\circ$ | $16\text{h } 06\text{m } 36\text{s}$ |
+| **The Sun (Sol)** | 695,800.0 | $1.32712440018 \times 10^{11}$ | — | — | — | 25.38 days |
+| **Mercury** | 2,439.7 | $2.2032 \times 10^4$ | 0.387098 | 0.205630 | 7.005° | 58.646 days |
+| **Venus** | 6,051.8 | $3.24859 \times 10^5$ | 0.723332 | 0.006773 | 3.394° | -243.025 days |
+| **Earth** | 6,371.0 | $3.986004418 \times 10^5$ | 1.000000 | 0.016708 | 0.000° | 23h 56m 04s |
+| **The Moon** | 1,737.4 | $4.9048695 \times 10^3$ | 0.002570 | 0.054900 | 5.145° | 27.321 days |
+| **Mars** | 3,389.5 | $4.282837 \times 10^4$ | 1.523679 | 0.093400 | 1.850° | 24h 37m 22s |
+| **Jupiter** | 69,911.0 | $1.26686534 \times 10^8$ | 5.204267 | 0.048498 | 1.303° | 9h 55m 30s |
+| **Saturn** | 58,232.0 | $3.7931187 \times 10^7$ | 9.582600 | 0.055550 | 2.485° | 10h 33m 38s |
+| **Uranus** | 25,362.0 | $5.793939 \times 10^6$ | 19.229411 | 0.047318 | 0.772° | -17h 14m 24s |
+| **Neptune** | 24,622.0 | $6.836529 \times 10^6$ | 30.068963 | 0.008606 | 1.769° | 16h 06m 36s |
 
 ---
 
